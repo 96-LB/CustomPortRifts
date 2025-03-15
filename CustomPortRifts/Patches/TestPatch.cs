@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using HarmonyLib;
@@ -40,7 +41,6 @@ public static class TestPatch2 {
         }
 
         if(____animator) {
-            // TODO: we probably want some animator functions
             ____animator.enabled = !UsingCustomSprites;
         }
 
@@ -163,18 +163,25 @@ internal static class TestPatch4 {
 internal static class TestPatch5 {
     public static void Postfix(
         RRPortraitUiController __instance,
-        bool isHeroPortrait
+        bool isHeroPortrait,
+        ref IEnumerator __result
     ) {
         if(!TestPatch2.UsingCustomSprites || isHeroPortrait) {
             return;
         }
 
-        // TODO: error handling
-        // TODO: add something for onconfigchange
-        var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
-        DebugUtil.PrintAllChildren(portrait, true, true);
-        var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
-        image.sprite = TestPatch2.normalSprites[0];
+        var original = __result;
+        IEnumerator wrapper() {
+            // TODO: error handling
+            // TODO: add something for onconfigchange
+            yield return original;
+            var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
+            DebugUtil.PrintAllChildren(portrait, true, true);
+            var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
+            image.sprite = TestPatch2.normalSprites[0];
+        }
+
+        __result = wrapper(); // since this is an iterator, we need to wrap it to properly postfix
     }
 }
 

@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using HarmonyLib;
 using RhythmRift;
+using UnityEngine;
 using UnityEngine.UI;
 
 namespace CustomPortRifts.Patches;
@@ -15,29 +16,42 @@ internal static class RRPortraitUiControllerPatch {
     public static void UpdateDisplay(
         RRPerformanceLevel performanceLevel
     ) {
-        BeatmapAnimatorControllerPatch.performanceLevel = performanceLevel;
+        CustomPortraits.PerformanceLevel = performanceLevel;
+    }
+
+    [HarmonyPatch("LoadCharacterPortrait")]
+    [HarmonyPrefix]
+    public static void LoadCharacterPortrait_Pre(
+        bool isHeroPortrait,
+        ref string characterId
+    ) {
+        if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
+            return;
+        }
+
+        characterId = "NecrodancerCloak";        
     }
 
     [HarmonyPatch("LoadCharacterPortrait")]
     [HarmonyPostfix]
-    public static void LoadCharacterPortrait(
+    public static void LoadCharacterPortrait_Post(
         P __instance,
         bool isHeroPortrait,
         ref IEnumerator __result
     ) {
-        if(!BeatmapAnimatorControllerPatch.UsingCustomSprites || isHeroPortrait) {
+        if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
             return;
         }
 
         var original = __result;
         IEnumerator wrapper() {
-            // TODO: error handling
-            // TODO: add something for onconfigchange
             yield return original;
             var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
-            DebugUtil.PrintAllChildren(portrait, true, true);
+            portrait.Field<Animator>("_portraitAnimator").Value.enabled = false;
+
+            // TODO: error handling
             var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
-            image.sprite = BeatmapAnimatorControllerPatch.normalSprites[0];
+            image.sprite = CustomPortraits.NormalSprites[0];
         }
 
         __result = wrapper(); // since this is an iterator, we need to wrap it to properly postfix

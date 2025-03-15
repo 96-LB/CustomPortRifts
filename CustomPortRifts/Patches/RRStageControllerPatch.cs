@@ -16,15 +16,20 @@ internal static class RRStageControllerPatch {
     public static void Postfix(
         ScenePayload currentScenePayload
     ) {
-        BeatmapAnimatorControllerPatch.performanceLevel = RRPerformanceLevel.Normal;
-        BeatmapAnimatorControllerPatch.normalSprites = null;
-        BeatmapAnimatorControllerPatch.wellSprites = null;
-        BeatmapAnimatorControllerPatch.poorlySprites = null;
-        BeatmapAnimatorControllerPatch.vibePowerSprites = null;
-
-        if(currentScenePayload is not RRCustomTrackScenePayload payload) {
+        CustomPortraits.Enabled = Config.CustomPortraits.Enabled.Value;
+        if(!CustomPortraits.Enabled || currentScenePayload is not RRCustomTrackScenePayload payload) {
+            // TODO: this should trigger upon exiting to main menu too
+            CustomPortraits.Reset();
             return;
         }
+        
+        string levelId = payload.GetLevelId();
+        if(levelId == CustomPortraits.LevelId) {
+            // don't reload sprites if we're just retrying the same level
+            return;
+        }
+        
+        CustomPortraits.Reset();
 
         var dir = Path.GetDirectoryName(payload.GetBeatmapFileName());
         dir = Path.Combine(dir, "CustomPortRifts");
@@ -71,9 +76,6 @@ internal static class RRStageControllerPatch {
             return;
         }
 
-        BeatmapAnimatorControllerPatch.normalSprites = normalSprites;
-        BeatmapAnimatorControllerPatch.wellSprites = wellSprites;
-        BeatmapAnimatorControllerPatch.poorlySprites = poorlySprites;
-        BeatmapAnimatorControllerPatch.vibePowerSprites = vibePowerSprites;
+        CustomPortraits.SetSprites(levelId, normalSprites, wellSprites, poorlySprites, vibePowerSprites);
     }
 }

@@ -11,13 +11,6 @@ using P = BeatmapAnimatorController;
 
 [HarmonyPatch(typeof(P), nameof(P.UpdateSystem))]
 public static class BeatmapAnimatorControllerPatch {
-    public static RRPerformanceLevel performanceLevel;
-    public static Sprite[] normalSprites; // TODO: these being public is dangerous
-    public static Sprite[] wellSprites;
-    public static Sprite[] vibePowerSprites;
-    public static Sprite[] poorlySprites;
-    public static bool UsingCustomSprites => Config.CustomPortraits.Enabled.Value && normalSprites != null && normalSprites.Length > 0;
-
     public static void Postfix(
         Animator ____animator,
         FmodTimeCapsule fmodTimeCapsule
@@ -27,19 +20,16 @@ public static class BeatmapAnimatorControllerPatch {
             return;
         }
 
-        if(____animator) {
-            ____animator.enabled = !UsingCustomSprites;
-        }
-
-        if(!UsingCustomSprites) {
+        if(!CustomPortraits.UsingCustomSprites) {
             return;
         }
 
-        Sprite[] sprites = performanceLevel switch {
-            RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => wellSprites,
-            RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => poorlySprites,
-            RRPerformanceLevel.VibePower => vibePowerSprites,
-            _ => normalSprites
+        // TODO: move this switch statement to CustomPortraits
+        Sprite[] sprites = CustomPortraits.PerformanceLevel switch {
+            RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => CustomPortraits.WellSprites,
+            RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => CustomPortraits.PoorlySprites,
+            RRPerformanceLevel.VibePower => CustomPortraits.VibePowerSprites,
+            _ => CustomPortraits.NormalSprites
         };
 
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;

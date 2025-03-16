@@ -1,4 +1,5 @@
 ﻿using RhythmRift;
+using Shared.RhythmEngine;
 using UnityEngine;
 
 namespace CustomPortRifts;
@@ -10,6 +11,15 @@ public static class CustomPortraits {
     public static Sprite[] WellSprites { get; private set; }
     public static Sprite[] PoorlySprites { get; private set; }
     public static Sprite[] VibePowerSprites { get; private set; }
+
+    public static Sprite[] ActiveSprites => PerformanceLevel switch {
+        RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => WellSprites,
+        RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => PoorlySprites,
+        RRPerformanceLevel.VibePower => VibePowerSprites,
+        _ => NormalSprites
+    };
+
+    public static RRPortraitView Portrait { get; set; }
     public static bool Enabled { get; set; }
     public static bool HasSprites => NormalSprites != null && NormalSprites.Length > 0;
     public static bool UsingCustomSprites => Enabled && HasSprites;

@@ -12,25 +12,18 @@ using P = BeatmapAnimatorController;
 [HarmonyPatch(typeof(P), nameof(P.UpdateSystem))]
 public static class BeatmapAnimatorControllerPatch {
     public static void Postfix(
+        P __instance,
         Animator ____animator,
         FmodTimeCapsule fmodTimeCapsule
     ) {
-        // TODO: this check is jank; we can identify this in a better way
-        if(!____animator.gameObject.name.StartsWith("RR") || ____animator.gameObject.name.Contains("Cadence")) {
+        if(!CustomPortraits.UsingCustomSprites || __instance != CustomPortraits.Portrait.BeatmapAnimatorController || !____animator) {
             return;
         }
 
-        if(!CustomPortraits.UsingCustomSprites) {
-            return;
-        }
+        ____animator.enabled = false;
 
         // TODO: move this switch statement to CustomPortraits
-        Sprite[] sprites = CustomPortraits.PerformanceLevel switch {
-            RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => CustomPortraits.WellSprites,
-            RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => CustomPortraits.PoorlySprites,
-            RRPerformanceLevel.VibePower => CustomPortraits.VibePowerSprites,
-            _ => CustomPortraits.NormalSprites
-        };
+        Sprite[] sprites = CustomPortraits.ActiveSprites;
 
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;
         int frame = Mathf.FloorToInt(beat * 62);
@@ -41,7 +34,6 @@ public static class BeatmapAnimatorControllerPatch {
             spriteIndex = 0;
         }
 
-        // TODO: error handling
         Image image = ____animator.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
         image.sprite = sprites[spriteIndex];
     }

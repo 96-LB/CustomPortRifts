@@ -28,8 +28,7 @@ internal static class RRPortraitUiControllerPatch {
         if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
             return;
         }
-
-        characterId = "NecrodancerCloak";        
+        characterId = "Dove"; // every character has different portraits and animations. dove's is probably the nicest to work with
     }
 
     [HarmonyPatch("LoadCharacterPortrait")]
@@ -49,9 +48,11 @@ internal static class RRPortraitUiControllerPatch {
             var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
             portrait.Field<Animator>("_portraitAnimator").Value.enabled = false;
 
-            // TODO: error handling
             var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = CustomPortraits.NormalSprites[0];
+            image.preserveAspect = true;
+
+            CustomPortraits.Portrait = portrait;
         }
 
         __result = wrapper(); // since this is an iterator, we need to wrap it to properly postfix

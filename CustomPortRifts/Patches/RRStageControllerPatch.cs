@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 using HarmonyLib;
 using RhythmRift;
 using Shared.SceneLoading.Payloads;
@@ -13,12 +14,11 @@ using P = RRStageController;
 
 [HarmonyPatch(typeof(P), "UnpackScenePayload")]
 internal static class RRStageControllerPatch {
-    public static void Postfix(
+    public async static void Postfix(
         ScenePayload currentScenePayload
     ) {
         CustomPortraits.Enabled = Config.CustomPortraits.Enabled.Value;
         if(!CustomPortraits.Enabled || currentScenePayload is not RRCustomTrackScenePayload payload) {
-            // TODO: this should trigger upon exiting to main menu too
             CustomPortraits.Reset();
             return;
         }
@@ -38,18 +38,16 @@ internal static class RRStageControllerPatch {
             return;
         }
 
-        Sprite[] LoadSprites(string dirName) {
+        async Task<Sprite[]> LoadSprites(string dirName) {
             var fullDir = Path.Combine(dir, dirName);
             List<Sprite> sprites = [];
             if(Directory.Exists(fullDir)) {
                 var files = Directory.GetFiles(fullDir, "*.png");
                 Array.Sort(files);
                 foreach(var file in files) {
-                    var bytes = File.ReadAllBytes(file);
-                    var texture = new Texture2D(1, 1);
                     try {
-                        // TODO: this is slow! consider handling this asynchronously to avoid game freeze
-                        // TODO: loading this on every reload is really bad
+                        var bytes = await File.ReadAllBytesAsync(file);
+                        var texture = new Texture2D(1, 1);
                         texture.LoadImage(bytes);
                         var sprite = Sprite.Create(texture, new Rect(0, 0, texture.width, texture.height), new Vector2(0.5f, 0.5f));
                         sprites.Add(sprite);
@@ -61,10 +59,10 @@ internal static class RRStageControllerPatch {
             return sprites.Count > 0 ? [..sprites] : null;
         }
 
-        var normalSprites = LoadSprites("Normal");
-        var poorlySprites = LoadSprites("DoingPoorly");
-        var wellSprites = LoadSprites("DoingWell");
-        var vibePowerSprites = LoadSprites("VibePower");
+        var normalSprites = await LoadSprites("Normal");
+        var poorlySprites = await LoadSprites("DoingPoorly");
+        var wellSprites = await LoadSprites("DoingWell");
+        var vibePowerSprites = await LoadSprites("VibePower");
 
         normalSprites ??= wellSprites ?? poorlySprites ?? vibePowerSprites;
         wellSprites ??= normalSprites;

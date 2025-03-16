@@ -38,23 +38,26 @@ internal static class RRPortraitUiControllerPatch {
         bool isHeroPortrait,
         ref IEnumerator __result
     ) {
-        if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
-            return;
-        }
-
+        // since the original function is a coroutine, we need to wrap the output to properly postfix
         var original = __result;
-        IEnumerator wrapper() {
+        __result = Wrapper();
+
+        IEnumerator Wrapper() {
             yield return original;
+            
+            if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
+                yield break;
+            }
+
             var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
             portrait.Field<Animator>("_portraitAnimator").Value.enabled = false;
 
             var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = CustomPortraits.NormalSprites[0];
             image.preserveAspect = true;
+            image.GetComponent<RectTransform>().anchoredPosition += new Vector2(0, 100);
 
             CustomPortraits.Portrait = portrait;
         }
-
-        __result = wrapper(); // since this is an iterator, we need to wrap it to properly postfix
     }
 }

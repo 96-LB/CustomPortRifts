@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RhythmRift;
 using Shared.RhythmEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -22,9 +21,7 @@ public static class BeatmapAnimatorControllerPatch {
 
         ____animator.enabled = false;
 
-        // TODO: move this switch statement to CustomPortraits
         Sprite[] sprites = CustomPortraits.ActiveSprites;
-
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;
         int frame = Mathf.FloorToInt(beat * 62);
 

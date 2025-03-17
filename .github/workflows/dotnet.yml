@@ -29,5 +29,5 @@ jobs:
       uses: actions/upload-artifact@4cec3d8aa04e39d1a68397de0c4cd6fb9dce8ec1 # v4.6.1
       with:
         name: CustomPortRifts.dll
-        path: CustomPortRifts/bin/Release/netstandard2.1
+        path: CustomPortRifts/bin/Release/netstandard2.1/CustomPortRifts.dll
         if-no-files-found: error

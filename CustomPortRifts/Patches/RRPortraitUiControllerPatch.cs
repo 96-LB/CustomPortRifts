@@ -49,13 +49,13 @@ internal static class RRPortraitUiControllerPatch {
                 yield break;
             }
 
-            var portrait = __instance.Field<RRPortraitView>("_counterpartPortraitViewInstance").Value;
-            portrait.Field<Animator>("_portraitAnimator").Value.enabled = false;
+            var portrait = __instance._counterpartPortraitViewInstance;
+            portrait._portraitAnimator.enabled = false;
 
             var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = CustomPortraits.NormalSprites[0];
             image.preserveAspect = true;
-            image.GetComponent<RectTransform>().anchoredPosition += new Vector2(0, 100);
+            image.GetComponent<RectTransform>().anchoredPosition += 100 * Vector2.up;
 
             CustomPortraits.Portrait = portrait;
         }

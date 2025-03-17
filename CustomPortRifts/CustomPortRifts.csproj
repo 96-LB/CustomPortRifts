@@ -27,10 +27,10 @@
   
   <ItemGroup>
     <Reference Include="Assembly-CSharp">
-      <HintPath>..\..\LalaDancer\LalaDancer\lib\RiftOfTheNecroDancer.dll</HintPath>
+      <HintPath>lib\RiftOfTheNecroDancer.dll</HintPath>
     </Reference>
     <Reference Include="UnityEngine.UI">
-      <HintPath>..\..\..\..\..\..\Program Files (x86)\Steam\steamapps\common\RiftOfTheNecroDancerOSTVolume1\RiftOfTheNecroDancer_Data\Managed\UnityEngine.UI.dll</HintPath>
+      <HintPath>lib\UnityEngine.UI.dll</HintPath>
     </Reference>
   </ItemGroup>
 </Project>

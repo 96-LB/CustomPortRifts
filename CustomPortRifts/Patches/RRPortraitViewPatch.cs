@@ -11,6 +11,7 @@ internal static class RRPortraitViewPatch {
     public static bool Prefix(
         P __instance
     ) {
+        // suppress animator/voiceline changes if we're using custom sprites
         return !CustomPortraits.UsingCustomSprites || __instance != CustomPortraits.Portrait;
     }
 }

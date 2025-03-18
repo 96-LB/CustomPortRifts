@@ -74,6 +74,6 @@ internal static class RRStageControllerPatch {
             return;
         }
 
-        CustomPortraits.SetSprites(levelId, normalSprites, wellSprites, poorlySprites, vibePowerSprites);
+        CustomPortraits.SetSprites(levelId, normalSprites, poorlySprites, wellSprites, vibePowerSprites);
     }
 }

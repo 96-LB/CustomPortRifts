@@ -26,8 +26,7 @@ internal static class RRPortraitUiControllerPatch {
         bool isHeroPortrait,
         ref string characterId
     ) {
-        var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
-        if(!portrait.UsingCustomSprites) {
+        if(!Portrait.Counterpart.UsingCustomSprites || isHeroPortrait) {
             return;
         }
         characterId = "Dove"; // every character has different portraits and animations. dove's is probably the nicest to work with
@@ -59,7 +58,6 @@ internal static class RRPortraitUiControllerPatch {
             var image = portraitView.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = portrait.NormalSprites[0];
             image.preserveAspect = true;
-            image.GetComponent<RectTransform>().anchoredPosition += 100 * Vector2.up;
 
             State<RRPortraitView, PortraitData>.Of(portraitView).Portrait = portrait;
             State<BeatmapAnimatorController, BeatmapData>.Of(portraitView.BeatmapAnimatorController).Portrait = portrait;

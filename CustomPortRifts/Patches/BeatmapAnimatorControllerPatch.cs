@@ -1,5 +1,4 @@
 ﻿using HarmonyLib;
-using RhythmRift;
 using Shared.RhythmEngine;
 using UnityEngine;
 using UnityEngine.UI;

@@ -1,4 +1,8 @@
 ﻿using RhythmRift;
+using System.Collections.Generic;
+using System.IO;
+using System.Threading.Tasks;
+using System;
 using UnityEngine;
 
 namespace CustomPortRifts;
@@ -37,24 +41,58 @@ public class Portrait {
         Counterpart.VibePowerSprites = null;
     }
 
-    public void SetSprites(string levelId, Sprite[] normal, Sprite[] poorly, Sprite[] well, Sprite[] vibePower) {
+    public static async Task<Sprite[]> LoadPose(string dir, string pose) {
+        dir = Path.Combine(dir, pose);
+        List<Sprite> sprites = [];
+        if(Directory.Exists(dir)) {
+            var files = Directory.GetFiles(dir, "*.png");
+            Array.Sort(files);
+            foreach(var file in files) {
+                try {
+                    var bytes = await File.ReadAllBytesAsync(file);
+                    var texture = new Texture2D(1, 1);
+                    texture.LoadImage(bytes);
+                    var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f));
+                    sprites.Add(sprite);
+                } catch(Exception e) {
+                    Plugin.Log.LogError($"Failed to load sprite from {file}: {e}");
+                }
+            }
+        }
+        return sprites.Count > 0 ? [.. sprites] : null;
+    }
+
+    public async Task LoadSprites(string dir) {
+        var normalSprites = await LoadPose(dir, "Normal");
+        var poorlySprites = await LoadPose(dir, "DoingPoorly");
+        var wellSprites = await LoadPose(dir, "DoingWell");
+        var vibePowerSprites = await LoadPose(dir, "VibePower");
+
+        normalSprites ??= wellSprites ?? poorlySprites ?? vibePowerSprites;
+        wellSprites ??= normalSprites;
+        poorlySprites ??= normalSprites;
+        vibePowerSprites ??= wellSprites;
+
+        SetSprites(normalSprites, poorlySprites, wellSprites, vibePowerSprites);
+    }
+
+    public void SetSprites(Sprite[] normal, Sprite[] poorly, Sprite[] well, Sprite[] vibePower) {
         if(normal == null || normal.Length == 0) {
-            throw new System.ArgumentException("Normal sprites must not be null or empty.", nameof(normal));
+            throw new ArgumentException("Normal sprites must not be null or empty.", nameof(normal));
         }
         
         if(poorly == null || poorly.Length == 0) {
-            throw new System.ArgumentException("DoingPoorly sprites must not be null or empty.", nameof(poorly));
+            throw new ArgumentException("DoingPoorly sprites must not be null or empty.", nameof(poorly));
         }
 
         if(well == null || well.Length == 0) {
-            throw new System.ArgumentException("DoingWell sprites must not be null or empty.", nameof(well));
+            throw new ArgumentException("DoingWell sprites must not be null or empty.", nameof(well));
         }
 
         if(vibePower == null || vibePower.Length == 0) {
-            throw new System.ArgumentException("VibePower sprites must not be null or empty.", nameof(vibePower));
+            throw new ArgumentException("VibePower sprites must not be null or empty.", nameof(vibePower));
         }
 
-        LevelId = levelId;
         NormalSprites = normal;
         PoorlySprites = poorly;
         WellSprites = well;

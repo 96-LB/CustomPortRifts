@@ -17,19 +17,19 @@ internal static class RRStageControllerPatch {
     public async static void Postfix(
         ScenePayload currentScenePayload
     ) {
-        CustomPortraits.Enabled = Config.CustomPortraits.Enabled.Value;
-        if(!CustomPortraits.Enabled || currentScenePayload is not RRCustomTrackScenePayload payload) {
-            CustomPortraits.Reset();
+        Portrait.Enabled = Config.CustomPortraits.Enabled.Value;
+        if(!Portrait.Enabled || currentScenePayload is not RRCustomTrackScenePayload payload) {
+            Portrait.Reset();
             return;
         }
         
         string levelId = payload.GetLevelId();
-        if(levelId == CustomPortraits.LevelId) {
+        if(levelId == Portrait.LevelId) {
             // don't reload sprites if we're just retrying the same level
             return;
         }
         
-        CustomPortraits.Reset();
+        Portrait.Reset();
 
         var dir = Path.GetDirectoryName(payload.GetBeatmapFileName());
         dir = Path.Combine(dir, "CustomPortRifts");
@@ -74,6 +74,7 @@ internal static class RRStageControllerPatch {
             return;
         }
 
-        CustomPortraits.SetSprites(levelId, normalSprites, poorlySprites, wellSprites, vibePowerSprites);
+        // TODO: add hero
+        Portrait.Counterpart.SetSprites(levelId, normalSprites, poorlySprites, wellSprites, vibePowerSprites);
     }
 }

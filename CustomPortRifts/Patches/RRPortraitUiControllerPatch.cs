@@ -1,6 +1,7 @@
 ﻿using System.Collections;
 using HarmonyLib;
 using RhythmRift;
+using Shared.RhythmEngine;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -16,7 +17,7 @@ internal static class RRPortraitUiControllerPatch {
     public static void UpdateDisplay(
         RRPerformanceLevel performanceLevel
     ) {
-        CustomPortraits.PerformanceLevel = performanceLevel;
+        Portrait.PerformanceLevel = performanceLevel;
     }
 
     [HarmonyPatch("LoadCharacterPortrait")]
@@ -25,7 +26,8 @@ internal static class RRPortraitUiControllerPatch {
         bool isHeroPortrait,
         ref string characterId
     ) {
-        if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
+        var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
+        if(!portrait.UsingCustomSprites) {
             return;
         }
         characterId = "Dove"; // every character has different portraits and animations. dove's is probably the nicest to work with
@@ -45,19 +47,22 @@ internal static class RRPortraitUiControllerPatch {
         IEnumerator Wrapper() {
             yield return original;
             
-            if(!CustomPortraits.UsingCustomSprites || isHeroPortrait) {
+            // TODO: we're repeating this
+            var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
+            if(!portrait.UsingCustomSprites) {
                 yield break;
             }
 
-            var portrait = __instance._counterpartPortraitViewInstance;
-            portrait._portraitAnimator.enabled = false;
+            var portraitView = isHeroPortrait ? __instance._heroPortraitViewInstance : __instance._counterpartPortraitViewInstance;
+            portraitView._portraitAnimator.enabled = false;
 
-            var image = portrait.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
-            image.sprite = CustomPortraits.NormalSprites[0];
+            var image = portraitView.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
+            image.sprite = portrait.NormalSprites[0];
             image.preserveAspect = true;
             image.GetComponent<RectTransform>().anchoredPosition += 100 * Vector2.up;
 
-            CustomPortraits.Portrait = portrait;
+            State<RRPortraitView, PortraitData>.Of(portraitView).Portrait = portrait;
+            State<BeatmapAnimatorController, BeatmapData>.Of(portraitView.BeatmapAnimatorController).Portrait = portrait;
         }
     }
 }

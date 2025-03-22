@@ -12,6 +12,23 @@ using P = RRPortraitUiController;
 
 [HarmonyPatch(typeof(P))]
 internal static class RRPortraitUiControllerPatch {
+    [HarmonyPatch(nameof(P.Initialize))]
+    [HarmonyPostfix]
+    public static void Initialize(
+        ref IEnumerator __result
+    ) {
+        // since the original function is a coroutine, we need to wrap the output to properly postfix
+        var original = __result;
+        __result = Wrapper();
+
+        IEnumerator Wrapper() {
+            // prevents the portrait gameobjects from being loaded until we know whether we're using custom sprites
+            yield return new WaitUntil(() => !Portrait.Loading);
+            yield return original;
+        }
+    }
+
+
     [HarmonyPatch(nameof(P.UpdateDisplay))]
     [HarmonyPostfix]
     public static void UpdateDisplay(
@@ -46,7 +63,6 @@ internal static class RRPortraitUiControllerPatch {
         IEnumerator Wrapper() {
             yield return original;
             
-            // TODO: we're repeating this
             var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
             if(!portrait.UsingCustomSprites) {
                 yield break;

@@ -14,6 +14,7 @@ public class Portrait {
     public static RRPerformanceLevel PerformanceLevel { get; set; }
     public static string LevelId { get; set; }
     public static bool Enabled { get; set; }
+    public static bool Loading { get; set; }
 
     public Sprite[] NormalSprites { get; private set; }
     public Sprite[] PoorlySprites { get; private set; }
@@ -54,6 +55,7 @@ public class Portrait {
                     texture.LoadImage(bytes);
                     var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f));
                     sprites.Add(sprite);
+                    Plugin.Log.LogInfo($"Loaded sprite from {file}");
                 } catch(Exception e) {
                     Plugin.Log.LogError($"Failed to load sprite from {file}: {e}");
                 }

@@ -28,6 +28,7 @@ internal static class RRStageControllerPatch {
         }
         
         Portrait.Reset();
+        Portrait.Loading = true;
 
         var dir = Path.GetDirectoryName(payload.GetBeatmapFileName());
         dir = Path.Combine(dir, "CustomPortRifts");
@@ -50,6 +51,8 @@ internal static class RRStageControllerPatch {
 
         if(Portrait.Hero.HasSprites || Portrait.Counterpart.HasSprites) {
             Portrait.LevelId = levelId;
+            Plugin.Log.LogInfo("Custom portraits loaded successfully.");
         }
+        Portrait.Loading = false;
     }
 }

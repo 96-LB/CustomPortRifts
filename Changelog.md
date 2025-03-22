@@ -1,5 +1,8 @@
 # Changelog
 
+## v0.2.1 - 21 March 2025
+- Fixes a bug which caused portraits to sometimes not properly display on the first attempt of the level if they took a long time to load.
+
 ## v0.2.0 - 21 March 2025
 ⚠️ **This release contains breaking changes.**
 - Added support for custom hero portraits to replace Cadence on the left side. Hero portraits are loaded from `CustomPortRifts/Hero` and follow the same conventions as counterpart portraits.

@@ -1,7 +1,7 @@
 # Custom PortRifts
 This project is a mod for Rift of the NecroDancer which adds support for custom character portraits in custom levels. Levels designers can add images to their track's directory before uploading to the workshop, and anyone with the mod installed will see the images loaded as sprites. Portraits can be animated, and up to four different portraits can be provided (Normal, DoingWell, DoingPoorly, VibePower). The mod is designed to be compatible with the vanilla game, so that users without the mod can still load and play the level without causing a crash.
 
-The current version is <ins>**v0.2.1**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
+The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
 ## Installation
 

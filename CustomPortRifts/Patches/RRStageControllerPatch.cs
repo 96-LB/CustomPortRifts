@@ -28,7 +28,6 @@ internal static class RRStageControllerPatch {
         }
         
         Portrait.Reset();
-        Portrait.Loading = true;
 
         var dir = Path.GetDirectoryName(payload.GetBeatmapFileName());
         dir = Path.Combine(dir, "CustomPortRifts");
@@ -37,6 +36,7 @@ internal static class RRStageControllerPatch {
             return;
         }
 
+        Portrait.Loading = true;
         foreach(var (subdir, portrait) in new[] { ("Counterpart", Portrait.Counterpart), ("Hero", Portrait.Hero) }) {
             var fullDir = Path.Combine(dir, subdir);
             if(Directory.Exists(fullDir)) {

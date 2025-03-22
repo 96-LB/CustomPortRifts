@@ -67,7 +67,7 @@ public class Portrait {
 
                     var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f));
                     sprites.Add(sprite);
-                    Plugin.Log.LogInfo($"Loaded sprite from {Path.GetRelativePath(dir, file)}");
+                    Plugin.Log.LogInfo($"Loaded sprite from {Path.Join(Path.GetFileName(dir), Path.GetRelativePath(dir, file))}");
                 } catch(Exception e) {
                     Plugin.Log.LogError($"Failed to load sprite from {file}: {e}");
                 }

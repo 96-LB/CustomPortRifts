@@ -71,7 +71,6 @@ internal static class RRPortraitUiControllerPatch {
             var portraitView = isHeroPortrait ? __instance._heroPortraitViewInstance : __instance._counterpartPortraitViewInstance;
             Object.DestroyImmediate(portraitView._portraitAnimator);
             portraitView._portraitAnimator = portraitView.gameObject.AddComponent<Animator>(); // dummy to prevent null reference exceptions
-            Plugin.Log.LogMessage(portraitView._portraitAnimator);
 
             var image = portraitView.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = portrait.NormalSprites[0];

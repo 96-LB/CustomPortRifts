@@ -43,19 +43,31 @@ public class Portrait {
     }
 
     public static async Task<Sprite[]> LoadPose(string dir, string pose) {
-        dir = Path.Combine(dir, pose);
+        var fullDir = Path.Combine(dir, pose);
         List<Sprite> sprites = [];
-        if(Directory.Exists(dir)) {
-            var files = Directory.GetFiles(dir, "*.png");
+        if(Directory.Exists(fullDir)) {
+            var files = Directory.GetFiles(fullDir, "*.png");
             Array.Sort(files);
             foreach(var file in files) {
                 try {
                     var bytes = await File.ReadAllBytesAsync(file);
-                    var texture = new Texture2D(1, 1);
+                    var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
                     texture.LoadImage(bytes);
+
+                    // simulates 'Alpha Is Transparency' import setting
+                    // https://stackoverflow.com/a/77746375
+                    var pixels = texture.GetPixels32();
+                    for(int i = 0; i < pixels.Length; i++) {
+                        if(pixels[i].a <= 1e-6) {
+                            pixels[i] = new();
+                        }
+                    }
+                    texture.SetPixels32(pixels);
+                    texture.Apply();
+
                     var sprite = Sprite.Create(texture, new(0, 0, texture.width, texture.height), new(0.5f, 0.5f));
                     sprites.Add(sprite);
-                    Plugin.Log.LogInfo($"Loaded sprite from {file}");
+                    Plugin.Log.LogInfo($"Loaded sprite from {Path.GetRelativePath(dir, file)}");
                 } catch(Exception e) {
                     Plugin.Log.LogError($"Failed to load sprite from {file}: {e}");
                 }

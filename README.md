@@ -46,10 +46,12 @@ To add custom portraits to your custom level, you do not need the mod installed,
 
 2. Inside the folder for your level, create a new folder called `CustomPortRifts`.
 
-3. Inside the new folder, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, and/or `VibePower`.
+3. Inside the new folder, create subfolders called `Hero` and/or `Counterpart` to add custom portraits for the left and right side, respectively.
+
+4. Inside the counterpart and/or hero folders, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, and/or `VibePower`.
    > ℹ️ You don't need all of these, but at least one needs to have sprites inside of it for your custom portrait to load.
 
-4. Add your custom sprites as `.png` files inside the corresponding subfolders. To use an animation, upload each individual frame as a separate `.png` file.
+5. Add your custom sprites as `.png` files inside the corresponding subfolders. To use an animation, upload each individual frame as a separate `.png` file.
    > ℹ️ The frames should be in alphabetical order. See below for more details regarding animations.
 
    > ℹ️ Here's an example of what your custom track directory could look like:
@@ -57,14 +59,20 @@ To add custom portraits to your custom level, you do not need the mod installed,
    > info.json
    > level_1.json
    > CustomPortRifts/
-   >   DoingPoorly/
-   >     angry00.png
-   >   DoingWell/
-   >     happy00.png
-   >   Normal/
-   >     stand00.png
-   >     stand01.png
-   >     stand02.png
+   >   Counterpart/
+   >     DoingPoorly/
+   >       angry00.png
+   >     DoingWell/
+   >       happy00.png
+   >     Normal/
+   >       stand00.png
+   >       stand01.png
+   >       stand02.png
+   >   Hero/
+   >     Normal/
+   >       heroic00.png
+   >     VibePower/
+   >       superheroic00.png
    > ```
 
 6. Publish your track to the Steam workshop using the official editor. Your portraits will automatically be attached.
@@ -72,14 +80,14 @@ To add custom portraits to your custom level, you do not need the mod installed,
 That's it! If everything is properly configured, your track will have custom portraits for any players with the mod installed. Here are some important notes and caveats:
 
 - The character you choose in the editor is what all players without the mod will see. It also affects which background is displayed when custom portraits are active.
-- Every vanilla character's portrait is a little bit different in the codebase—the exact size, animation timings, and mask all vary. The mod uses Dove's portrait as a base for custom portraits because it has the most open mask—only the bottom of your sprite will be covered. The sprite is also shifted upwards a bit, since Dove's default hides a lot of the sprite. This does mean that designing modified vanilla sprites isn't as simple as just drawing over the original sprites; the character might not look the same in Dove's portrait as they do in their own portrait. Future updates may make this more configurable.
+- Every vanilla character's portrait is a little bit different in the codebase—the exact size, animation timings, and mask all vary. The mod uses Dove's portrait as a base for counterpart portraits because it has the most open mask—only the bottom of your sprite will be covered. This does mean that designing modified vanilla sprites isn't as simple as just drawing over the original sprites; the character might not look the same in Dove's portrait as they do in their own portrait. Future updates may make this more configurable.
 - Sprites are scaled up to fill the context box, so no specific resolution is needed. If your sprite is small, however, it might look blurry. Aspect ratio is preserved when scaling up. It's recommended that you test out how the sprite looks in-game and modify it accordingly because it's very hard to predict just from your image file.
 - Animations are created by loading the sprites in alphabetical order. The first sprite is the "resting" position which they'll hold for most of the beat. At the start of each beat, they quickly cycle through the rest of the sprites before returning to the first sprite. The second sprite lasts for 3/31ths of a beat, and all the remaining ones last for 2/31ths of a beat (these numbers were chosen to most closely match the vanilla portraits, which all vary a little bit). The exact timings may be configurable in future versions.
-- Not all four subfolders are necessary. When a folder is missing, the mod will use the other folders to generate the animation. The resolution order is as follows: 
+- Not all four subpose folders are necessary. When a folder is missing, the mod will use the other folders to generate the animation. The resolution order is as follows: 
   - When vibe power is active: `VibePower`, `DoingWell`, `Normal`, `DoingPoorly`
   - When the player has less than 3/10 HP: `DoingPoorly`, `Normal`, `DoingWell`, `VibePower`
   - When the player has 80+ combo: `DoingWell`, `Normal`, `DoingPoorly`, `VibePower`
   - All other times: `Normal`, `DoingWell`, `DoingPoorly`, `VibePower`
 - Voicelines are silenced when custom portraits are active. Future versions may provide the ability to add custom voicelines.
 - To reduce load times, custom portraits are not reloaded when the map is replayed using the retry feature. If you modified your portrait, to see the changes you must first exit to the track selection menu and reopen the map.
-- To update (or delete) your portrait on the workshop, just edit (or delete) the contents `CustomPortRifts` folder and re-upload your track to the workshop.
+- To update (or delete) your portrait on the workshop, just edit (or delete) the contents of the `CustomPortRifts` folder and re-upload your track to the workshop.

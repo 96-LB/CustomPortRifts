@@ -69,14 +69,20 @@ internal static class RRPortraitUiControllerPatch {
             }
 
             var portraitView = isHeroPortrait ? __instance._heroPortraitViewInstance : __instance._counterpartPortraitViewInstance;
-            portraitView._portraitAnimator.enabled = false;
+            Object.DestroyImmediate(portraitView._portraitAnimator);
+            portraitView._portraitAnimator = portraitView.gameObject.AddComponent<Animator>(); // dummy to prevent null reference exceptions
+            Plugin.Log.LogMessage(portraitView._portraitAnimator);
 
             var image = portraitView.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
             image.sprite = portrait.NormalSprites[0];
             image.preserveAspect = true;
 
-            State<RRPortraitView, PortraitData>.Of(portraitView).Portrait = portrait;
-            State<BeatmapAnimatorController, BeatmapData>.Of(portraitView.BeatmapAnimatorController).Portrait = portrait;
+            var portraitState = State<RRPortraitView, PortraitData>.Of(portraitView);
+            portraitState.Portrait = portrait;
+
+            var beatmapState = State<BeatmapAnimatorController, BeatmapData>.Of(portraitView.BeatmapAnimatorController);
+            beatmapState.Portrait = portrait;
+            beatmapState.Image = image;
         }
     }
 }

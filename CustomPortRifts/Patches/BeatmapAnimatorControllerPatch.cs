@@ -10,33 +10,33 @@ using P = BeatmapAnimatorController;
 using BeatmapState = State<BeatmapAnimatorController, BeatmapData>;
 public class BeatmapData {
     public Portrait Portrait { get; set; }
+    public Image Image { get; set; }
+
+    public bool UsingCustomSprites => Portrait?.UsingCustomSprites ?? false;
 }
 
 [HarmonyPatch(typeof(P), nameof(P.UpdateSystem))]
 public static class BeatmapAnimatorControllerPatch {
     public static void Postfix(
         P __instance,
-        Animator ____animator,
         FmodTimeCapsule fmodTimeCapsule
     ) {
-        var portrait = BeatmapState.Of(__instance).Portrait;
-        if(portrait == null || !portrait.UsingCustomSprites || !____animator) {
+        var state = BeatmapState.Of(__instance);
+        if(!state.UsingCustomSprites) {
             return;
         }
 
-        ____animator.enabled = false;
-
-        Sprite[] sprites = portrait.ActiveSprites;
+        Sprite[] sprites = state.Portrait.ActiveSprites;
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;
-        int frame = Mathf.FloorToInt(beat * 62);
+        int frame = Mathf.FloorToInt(beat * 31); // portraits are animated at 31 fps, for some reason
 
-        // frame 1 lasts 6 frames and the rest last 4
-        int spriteIndex = Mathf.Max(1, Mathf.FloorToInt(frame + 2) / 4);
+        // frame 1 lasts 3 frames and the rest last 2
+        int spriteIndex = Mathf.Max(1, Mathf.FloorToInt(frame + 1) / 2);
         if(spriteIndex >= sprites.Length) {
             spriteIndex = 0;
         }
 
-        Image image = ____animator.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
-        image.sprite = sprites[spriteIndex];
+        // TODO: respect static portrait setting
+        state.Image.sprite = sprites[spriteIndex];
     }
 }

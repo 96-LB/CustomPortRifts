@@ -3,6 +3,11 @@ This project is a mod for Rift of the NecroDancer which adds support for custom 
 
 The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
+To preview the mod, check out the [mod showcase](https://steamcommunity.com/sharedfiles/filedetails/?id=3450077451) on the Steam workshop or view the video below.
+
+[![showcase video](https://github.com/user-attachments/assets/ca11a9de-9396-485e-87a5-575b5087b0f4)](https://www.youtube.com/watch?v=29wiIiOfLn4)
+
+
 ## Installation
 
 Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first install BepInEx into your Rift of the NecroDancer. A more detailed guide can be found [here](https://docs.bepinex.dev/articles/user_guide/installation/index.html), but a summary is provided below. If BepInEx is already installed, you can skip the next subsection.
@@ -32,6 +37,10 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 3. Place `CustomPortRifts.dll` in the `BepInEx/plugins` directory inside the Rift of the NecroDancer game folder.
 
    > ℹ️ You can find this folder by right clicking on the game in your Steam library and clicking 'Properties'. Then navigate to 'Installed Files' and click 'Browse'.
+
+4. Check that your mod is working by playing the [mod showcase](https://steamcommunity.com/sharedfiles/filedetails/?id=3450077451) level.
+
+   > ⚠️ Loading times will be longer than usual, as custom portraits are only loaded when you play the level for the first time.
 
 ## Usage
 

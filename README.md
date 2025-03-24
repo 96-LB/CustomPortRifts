@@ -22,9 +22,11 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 4. Extract the contents of the `.zip` file into your Rift of the NecroDancer game folder.
     > ℹ️ You can find this folder by right clicking on the game in your Steam library and clicking 'Properties'. Then navigate to 'Installed Files' and click 'Browse'.
     
-    > ⚠️ BepInEx contains a replacement for `winhttp.dll`. Make sure this file is replaced, or the mod loader will not run. If there is no `winhttp.dll` being replaced, you are copying your files to the wrong directory.
-    
-5. Run Rift of the NecroDancer to set up BepInEx.
+    > ⚠️ On Windows, BepInEx contains a replacement for `winhttp.dll`. Make sure this file is replaced, or the mod loader will not run. If there is no `winhttp.dll` being replaced, you are copying your files to the wrong directory.
+
+5. If you're on Mac or Linux, configure Steam to run BepInEx when you launch your game. Follow the guide [here](https://docs.bepinex.dev/articles/advanced/steam_interop.html).
+
+6. Run Rift of the NecroDancer to set up BepInEx.
     > ℹ️ If done correctly, a console window should pop up while the game is running.
 
 ### Installing Custom PortRifts

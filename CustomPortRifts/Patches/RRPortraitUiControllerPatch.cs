@@ -34,7 +34,7 @@ internal static class RRPortraitUiControllerPatch {
     public static void UpdateDisplay(
         RRPerformanceLevel performanceLevel
     ) {
-        Portrait.PerformanceLevel = performanceLevel;
+        Portrait.SetPerformanceLevel(performanceLevel);
     }
 
     [HarmonyPatch("LoadCharacterPortrait")]

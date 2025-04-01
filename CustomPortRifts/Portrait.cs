@@ -4,6 +4,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System;
 using UnityEngine;
+using Newtonsoft.Json;
 
 namespace CustomPortRifts;
 
@@ -11,7 +12,8 @@ namespace CustomPortRifts;
 public class Portrait {
     public static Portrait Hero { get; } = new();
     public static Portrait Counterpart { get; } = new();
-    public static RRPerformanceLevel PerformanceLevel { get; set; }
+    public static Settings Settings { get; set; } = new();
+    public static PoseType Pose { get; private set; }
     public static string LevelId { get; set; }
     public static bool Enabled { get; set; }
     public static bool Loading { get; set; }
@@ -20,18 +22,17 @@ public class Portrait {
     public Sprite[] PoorlySprites { get; private set; }
     public Sprite[] WellSprites { get; private set; }
     public Sprite[] VibePowerSprites { get; private set; }
-    public Sprite[] ActiveSprites => PerformanceLevel switch {
-        RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => WellSprites,
-        RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => PoorlySprites,
-        RRPerformanceLevel.VibePower => VibePowerSprites,
-        _ => NormalSprites
+    public Sprite[] ActiveSprites => Pose switch {
+        PoseType.Normal => NormalSprites,
+        PoseType.DoingPoorly => PoorlySprites,
+        PoseType.DoingWell => WellSprites,
+        PoseType.VibePower => VibePowerSprites,
+        _ => NormalSprites // should never happen
     };
     public bool HasSprites => NormalSprites != null && NormalSprites.Length > 0;
     public bool UsingCustomSprites => Enabled && HasSprites;
     
     public static void Reset() {
-        LevelId = "";
-        PerformanceLevel = RRPerformanceLevel.Normal;
         Hero.NormalSprites = null;
         Hero.PoorlySprites = null;
         Hero.WellSprites = null;
@@ -40,6 +41,24 @@ public class Portrait {
         Counterpart.PoorlySprites = null;
         Counterpart.WellSprites = null;
         Counterpart.VibePowerSprites = null;
+        Settings = new();
+        Pose = PoseType.Normal;
+        LevelId = "";
+    }
+
+    public static async Task LoadSettings(string file) {
+        var settingsText = await File.ReadAllTextAsync(file);
+        var serializerSettings = new JsonSerializerSettings {
+            Error = (sender, args) => {
+                if(args.CurrentObject == args.ErrorContext.OriginalObject) {
+                    Plugin.Log.LogError($"Encountered error while deserializing settings: {args.ErrorContext.Error.Message}");
+                    args.ErrorContext.Handled = true;
+                }
+            }
+        };
+
+        Settings = JsonConvert.DeserializeObject<Settings>(settingsText, serializerSettings);
+        Plugin.Log.LogMessage(JsonConvert.SerializeObject(Settings, Formatting.Indented));
     }
 
     public static async Task<Sprite[]> LoadPose(string dir, string pose) {
@@ -74,6 +93,15 @@ public class Portrait {
             }
         }
         return sprites.Count > 0 ? [.. sprites] : null;
+    }
+
+    public static PoseType SetPerformanceLevel(RRPerformanceLevel level) {
+        return Pose = level switch {
+            RRPerformanceLevel.Awesome or RRPerformanceLevel.Amazing => PoseType.DoingWell,
+            RRPerformanceLevel.Poor or RRPerformanceLevel.Terrible or RRPerformanceLevel.GameOver => PoseType.DoingPoorly,
+            RRPerformanceLevel.VibePower => PoseType.VibePower,
+            _ => PoseType.Normal
+        };
     }
 
     public async Task LoadSprites(string dir) {

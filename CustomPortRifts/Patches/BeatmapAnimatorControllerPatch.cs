@@ -38,5 +38,6 @@ public static class BeatmapAnimatorControllerPatch {
 
         // TODO: respect static portrait setting
         state.Image.sprite = sprites[spriteIndex];
+        // TODO: set the offset here
     }
 }

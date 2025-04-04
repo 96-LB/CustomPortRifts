@@ -1,16 +1,25 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using HarmonyLib;
 using RhythmRift;
+using Shared.PlayerData;
+using Shared;
 using Shared.SceneLoading.Payloads;
+using UnityEngine;
+using System.Collections;
+using UnityEngine.ResourceManagement.AsyncOperations;
+using UnityEngine.AddressableAssets;
 
 namespace CustomPortRifts.Patches;
 
 
 using P = RRStageController;
 
-[HarmonyPatch(typeof(P), "UnpackScenePayload")]
+[HarmonyPatch(typeof(P))]
 internal static class RRStageControllerPatch {
-    public async static void Postfix(
+    [HarmonyPatch(nameof(P.UnpackScenePayload))]
+    [HarmonyPostfix]
+    public async static void UnpackScenePayload(
         ScenePayload currentScenePayload
     ) {
         Portrait.Enabled = Config.CustomPortraits.Enabled.Value;
@@ -69,5 +78,80 @@ internal static class RRStageControllerPatch {
         }
 
         Portrait.Loading = false;
+    }
+
+    [HarmonyPatch(nameof(P.InitializeBackgroundRoutine))]
+    [HarmonyPostfix]
+    public static void InitializeBackgroundRoutine(
+        P __instance,
+        ref IEnumerator __result
+    ) {
+        // since the original function is a coroutine, we need to wrap the output to properly postfix
+        var original = __result;
+        __result = Wrapper();
+
+        IEnumerator Wrapper() {
+            yield return original;
+
+            IEnumerator TryLoad(string id, Action<RiftFXColorConfig> callback) {
+                if(string.IsNullOrWhiteSpace(id)) {
+                    yield break;
+                }
+
+                var characterFxConfigRef = __instance._riftCharacterFxConfigDatabase.GetConfig(id);
+                if(characterFxConfigRef != null && characterFxConfigRef.RuntimeKeyIsValid()) {
+                    var handle = Addressables.LoadAssetAsync<RiftFXColorConfig>(characterFxConfigRef);
+                    if(handle.Status == AsyncOperationStatus.Succeeded) {
+                        Plugin.Log.LogInfo($"Loaded character effect configuration for '{id}'.");
+                        __instance._assetRefsToCleanUpOnDestroy.Add(characterFxConfigRef);
+                        callback(handle.Result);
+                        DebugUtil.Dump(handle.Result);
+                    } else {
+                        Plugin.Log.LogError($"Failed to load character effect configuration for '{id}'.");
+                        characterFxConfigRef.ReleaseAsset();
+                    }
+                } else {
+                    Plugin.Log.LogError($"Unknown character effect configuration '{id}'.");
+                }
+            }
+
+            var backgroundDetailLevel = PlayerSaveController.Instance.GetBackgroundDetailLevel();
+            if(__instance._rhythmRiftBackgroundFx && __instance._riftFXConfig) {
+                var settings = Portrait.Settings.background;
+                var baseConfig = __instance._riftFXConfig.CharacterRiftColorConfig;
+                var colorConfig = baseConfig;
+                var particleConfig = baseConfig;
+
+                if(__instance._riftCharacterFxConfigDatabase) {
+                    yield return TryLoad(settings.color, config => colorConfig = config);
+                    yield return TryLoad(settings.particles, config => particleConfig = config);
+                }
+
+                baseConfig.BackgroundMaterial = colorConfig.BackgroundMaterial;
+                baseConfig.CoreStartColor1 = colorConfig.CoreStartColor1;
+                baseConfig.CoreStartColor2 = colorConfig.CoreStartColor2;
+                baseConfig.CoreColorOverLifetime = colorConfig.CoreColorOverLifetime;
+                baseConfig.RiftGlowColor = colorConfig.RiftGlowColor;
+                baseConfig.StrobeColor1 = colorConfig.StrobeColor1;
+                baseConfig.StrobeColor2 = colorConfig.StrobeColor2;
+                baseConfig.SpeedlinesStartColor = colorConfig.SpeedlinesStartColor;
+                baseConfig.SpeedlinesColorOverLifetime = colorConfig.SpeedlinesColorOverLifetime;
+
+                baseConfig.CustomParticleColor1 = particleConfig.CustomParticleColor1;
+                baseConfig.CustomParticleColor2 = particleConfig.CustomParticleColor2;
+                baseConfig.CustomParticleColorOverLifetime = particleConfig.CustomParticleColorOverLifetime;
+                baseConfig.CustomParticleMaterial = particleConfig.CustomParticleMaterial;
+
+                if(settings.rotation.HasValue && float.IsNormal(settings.rotation.Value)) {
+                    baseConfig.HasCustomRotation = settings.rotation.Value != 0;
+                    baseConfig.CustomParticleRotation = settings.rotation.Value;
+                }
+
+                __instance._riftFXConfig.CharacterRiftColorConfig = baseConfig;
+                DebugUtil.Dump(colorConfig);
+                DebugUtil.Dump(__instance._riftFXConfig);
+                __instance._rhythmRiftBackgroundFx.SetConfig(__instance._riftFXConfig, __instance.BeatmapPlayer, backgroundDetailLevel == BackgroundDetailLevel.NoBackground);
+            }
+        }
     }
 }

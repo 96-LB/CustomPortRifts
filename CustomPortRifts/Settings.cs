@@ -45,8 +45,17 @@ public readonly struct Settings {
         }
     }
 
+    [JsonObject(MemberSerialization.Fields)]
+    public readonly struct BackgroundSettings {
+        public readonly string color;
+        public readonly string particles;
+        public readonly float? rotation;
+
+    }
+
     public readonly PortraitSettings hero;
     public readonly PortraitSettings counterpart;
+    public readonly BackgroundSettings background;
 
     public readonly PortraitSettings GetPortraitSettings(bool isHero) {
         return isHero ? hero : counterpart;

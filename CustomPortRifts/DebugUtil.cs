@@ -1,4 +1,5 @@
-﻿using UnityEngine;
+﻿using Shared;
+using UnityEngine;
 
 namespace CustomPortRifts;
 
@@ -78,5 +79,50 @@ public static class DebugUtil {
         Log($"pixels per unit {sprite.pixelsPerUnit}");
         Log($"packing mode {sprite.packingMode}");
         Footer(sprite);
+    }
+    
+    public static void Dump(RiftFXConfig config) {
+        Header(config);
+        Dump(config.CharacterRiftColorConfig);
+        Footer(config);
+    }
+
+    public static void Dump(RiftFXColorConfig config) {
+        Header(config);
+        Log($" bg mat {config.BackgroundMaterial}");
+        Log("color1");
+        Dump(config.CoreStartColor1);
+        Log("color2");
+        Dump(config.CoreStartColor2);
+        Log("color");
+        Dump(config.CoreColorOverLifetime);
+        Log($" glow {config.RiftGlowColor}");
+        Log($" strobe1 {config.StrobeColor1}");
+        Log($" strobe2 {config.StrobeColor2}");
+        Log("speedstart");
+        Dump(config.SpeedlinesStartColor);
+        Log("speed");
+        Dump(config.SpeedlinesColorOverLifetime);
+        Log("particle1");
+        Dump(config.CustomParticleColor1);
+        Log("particle2");
+        Dump(config.CustomParticleColor2);
+        Log("particle");
+        Dump(config.CustomParticleColorOverLifetime);
+        Log($" part mat {config.CustomParticleMaterial}");
+        Log($" rotation {config.CustomParticleRotation}");
+        Log($" rotation? {config.HasCustomRotation}");
+        Footer(config);
+    }
+
+    public static void Dump(Gradient gradient) {
+        Header(gradient);
+        foreach(var colorKey in gradient.colorKeys) {
+            Log($"color {colorKey.color} {colorKey.time}");
+        }
+        foreach(var alphaKey in gradient.alphaKeys) {
+            Log($"alpha {alphaKey.alpha} {alphaKey.time}");
+        }
+        Footer(gradient);
     }
 }

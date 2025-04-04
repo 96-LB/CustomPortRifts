@@ -51,13 +51,18 @@ public class Portrait {
         var serializerSettings = new JsonSerializerSettings {
             Error = (sender, args) => {
                 if(args.CurrentObject == args.ErrorContext.OriginalObject) {
-                    Plugin.Log.LogError($"Encountered error while deserializing settings: {args.ErrorContext.Error.Message}");
-                    args.ErrorContext.Handled = true;
+                    Plugin.Log.LogError($"Encountered error while deserializing settings:\n{args.ErrorContext.Error.Message}");
                 }
+                args.ErrorContext.Handled = true;
             }
         };
 
-        Settings = JsonConvert.DeserializeObject<Settings>(settingsText, serializerSettings);
+        try {
+            Settings = JsonConvert.DeserializeObject<Settings>(settingsText, serializerSettings);
+        } catch(Exception e) {
+            Plugin.Log.LogError($"Failed to load settings:\n{e}");
+            return;
+        }
         Plugin.Log.LogMessage(JsonConvert.SerializeObject(Settings, Formatting.Indented));
     }
 

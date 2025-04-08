@@ -1,4 +1,5 @@
-﻿using RhythmRift;
+﻿using CustomPortRifts.Settings;
+using RhythmRift;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
@@ -12,7 +13,7 @@ namespace CustomPortRifts;
 public class Portrait {
     public static Portrait Hero { get; } = new();
     public static Portrait Counterpart { get; } = new();
-    public static Settings Settings { get; set; } = new();
+    public static LevelSettings Settings { get; set; } = new();
     public static PoseType Pose { get; private set; }
     public static string LevelId { get; set; }
     public static bool Enabled { get; set; }
@@ -58,7 +59,7 @@ public class Portrait {
         };
 
         try {
-            Settings = JsonConvert.DeserializeObject<Settings>(settingsText, serializerSettings);
+            Settings = JsonConvert.DeserializeObject<LevelSettings>(settingsText, serializerSettings);
         } catch(Exception e) {
             Plugin.Log.LogError($"Failed to load settings:\n{e}");
             return;

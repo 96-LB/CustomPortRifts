@@ -118,7 +118,7 @@ internal static class RRStageControllerPatch {
 
             var backgroundDetailLevel = PlayerSaveController.Instance.GetBackgroundDetailLevel();
             if(__instance._rhythmRiftBackgroundFx && __instance._riftFXConfig) {
-                var settings = Portrait.Settings.background;
+                var settings = Portrait.Settings.vfx;
                 var baseConfig = Object.Instantiate(__instance._riftFXConfig.CharacterRiftColorConfig);
                 var colorConfig = baseConfig;
                 var particleConfig = baseConfig;
@@ -143,95 +143,33 @@ internal static class RRStageControllerPatch {
                 baseConfig.CustomParticleColorOverLifetime = particleConfig.CustomParticleColorOverLifetime;
                 baseConfig.CustomParticleMaterial = particleConfig.CustomParticleMaterial;
 
-                var color1 = settings.color1;
-                if(color1.HasValue) {
-                    // TODO: should make a gradient converter
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(color1.Value, 0)], [new(color1.Value.a, 0)]);
-                    baseConfig.CoreStartColor1 = gradient;
-                }
 
-                var color2 = settings.color2;
-                if(color2.HasValue) {
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(color2.Value, 0)], [new(color2.Value.a, 0)]);
-                    baseConfig.CoreStartColor2 = gradient;
-                }
+                settings.clouds.color1?.Pipe(x => baseConfig.CoreStartColor1 = x);
+                settings.clouds.color2?.Pipe(x => baseConfig.CoreStartColor2 = x);
+                settings.clouds.colorOverTime?.Pipe(x => baseConfig.CoreColorOverLifetime = x);
 
-                var colorOverTime = settings.colorOverTime;
-                if(colorOverTime.HasValue) {
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(colorOverTime.Value, 0)], [new(colorOverTime.Value.a, 0)]);
-                    baseConfig.CoreColorOverLifetime = gradient;
-                }
+                settings.particles.rotation?.Pipe(x => {
+                    baseConfig.HasCustomRotation = x != 0;
+                    baseConfig.CustomParticleRotation = x;
+                });
 
-                var particleColor1 = settings.particles.color1;
-                if(particleColor1.HasValue) {
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(particleColor1.Value, 0)], [new(particleColor1.Value.a, 0)]);
-                    baseConfig.CustomParticleColor1 = gradient;
-                }
-
-                var particleColor2 = settings.particles.color2;
-                if(particleColor2.HasValue) {
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(particleColor2.Value, 0)], [new(particleColor2.Value.a, 0)]);
-                    baseConfig.CustomParticleColor2 = gradient;
-                }
-
-                var particleColorOverTime = settings.particles.colorOverTime;
-                if(particleColorOverTime.HasValue) {
-                    var gradient = new Gradient();
-                    gradient.SetKeys([new(particleColorOverTime.Value, 0)], [new(particleColorOverTime.Value.a, 0)]);
-                    baseConfig.CustomParticleColorOverLifetime = gradient;
-                }
-
-                var glow = settings.glow;
-                if(glow.HasValue) {
-                    baseConfig.RiftGlowColor = glow.Value;
-                }
-
-                Plugin.Log.LogWarning("!!!!!!!!!!!!!!!!!!!!!");
-                for(int i = 0; i < baseConfig.BackgroundMaterial.shader.GetPropertyCount(); i++) {
-                    // TODO: list all the shader properties
-                    var propertyName = baseConfig.BackgroundMaterial.shader.GetPropertyName(i);
-                    var propertyType = baseConfig.BackgroundMaterial.shader.GetPropertyType(i);
-                    object value = propertyType switch {
-                        ShaderPropertyType.Color => baseConfig.BackgroundMaterial.GetColor(propertyName),
-                        ShaderPropertyType.Vector => baseConfig.BackgroundMaterial.GetVector(propertyName),
-                        ShaderPropertyType.Float => baseConfig.BackgroundMaterial.GetFloat(propertyName),
-                        ShaderPropertyType.Range => baseConfig.BackgroundMaterial.GetFloat(propertyName),
-                        ShaderPropertyType.Texture => baseConfig.BackgroundMaterial.GetTexture(propertyName),
-                        _ => null
-                    };
-                    Plugin.Log.LogMessage($"{propertyName} {propertyType} {value}");
-                }
-                Plugin.Log.LogWarning("!!!!!!!!!!!!!!!!!!!!");
-
+                var particles = settings.particles.color;
+                particles.color1?.Pipe(x => baseConfig.CustomParticleColor1 = x);
+                particles.color2?.Pipe(x => baseConfig.CustomParticleColor2 = x);
+                particles.colorOverTime?.Pipe(x => baseConfig.CustomParticleColorOverLifetime = x);
+                
+                settings.rift?.Pipe(x => baseConfig.RiftGlowColor = x);
+                
                 // TODO: these break if something like suzu is loaded
                 baseConfig.BackgroundMaterial = new(baseConfig.BackgroundMaterial);
-                var bgColor = settings.bgColor1; // TODO: change this
-                if(bgColor.HasValue) {
-                    baseConfig.BackgroundMaterial.SetColor("_TopColor", bgColor.Value);
-                }
-                if(settings.intensity.HasValue) {
-                    baseConfig.BackgroundMaterial.SetFloat("_GradientIntensity", settings.intensity.Value);
-                }
-                if(settings.additiveintensity.HasValue) {
-                    baseConfig.BackgroundMaterial.SetFloat("_AdditiveIntensity", settings.additiveintensity.Value);
-                }
-                if(settings.bgColor2.HasValue) {
-                    baseConfig.BackgroundMaterial.SetColor("_BottomColor", settings.bgColor2.Value);
-                }
-                if(settings.rotategradient.HasValue) {
-                    baseConfig.BackgroundMaterial.SetFloat("_RotateGradient", settings.rotategradient.Value);
-                }
 
-                var rotation = settings.particles.rotation;
-                if(rotation.HasValue) {
-                    baseConfig.HasCustomRotation = rotation.Value != 0;
-                    baseConfig.CustomParticleRotation = rotation.Value;
-                }
+                var background = settings.background;
+                background.baseColor?.Pipe(x => baseConfig.BackgroundMaterial.SetColor("_BottomColor", x));
+                background.highlightColor?.Pipe(x => baseConfig.BackgroundMaterial.SetColor("_TopColor", x));
+                background.intensity?.Pipe(x => baseConfig.BackgroundMaterial.SetFloat("_GradientIntensity", x));
+                background.intensity2?.Pipe(x => baseConfig.BackgroundMaterial.SetFloat("_AdditiveIntensity", x));
+                background.rotation?.Pipe(x => baseConfig.BackgroundMaterial.SetFloat("_RotateGradient", x));
+                
 
                 __instance._riftFXConfig.CharacterRiftColorConfig = baseConfig;
                 //DebugUtil.Dump(colorConfig);

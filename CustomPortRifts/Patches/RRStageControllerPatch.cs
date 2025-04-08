@@ -8,7 +8,6 @@ using UnityEngine;
 using System.Collections;
 using UnityEngine.ResourceManagement.AsyncOperations;
 using UnityEngine.AddressableAssets;
-using UnityEngine.Rendering;
 
 namespace CustomPortRifts.Patches;
 
@@ -68,13 +67,22 @@ internal static class RRStageControllerPatch {
         Portrait.LevelId = levelId;
         Plugin.Log.LogInfo("Custom portraits loaded successfully.");
         
-        // search for settings
+        // search for settings // TODO: we should move this so it happens even if no sprites are loaded
         var settingsFile = Path.Combine(dir, "config.json");
         if(File.Exists(settingsFile)) {
             Plugin.Log.LogInfo("Loading configuration file.");
             await Portrait.LoadSettings(settingsFile);
         } else {
             Plugin.Log.LogInfo("No configuration file found. File should be called 'config.json' and be located in the custom portraits directory. Using default settings.");
+        }
+
+        // search for particles
+        var particlesFile = Path.Combine(dir, "particles.png");
+        if(File.Exists(particlesFile)) {
+            Plugin.Log.LogInfo("Loading particles file.");
+            await Portrait.LoadParticles(particlesFile);
+        } else {
+            Plugin.Log.LogInfo("No particles file found. File should be called 'particles.png' and be located in the custom portraits directory. Using default particles.");
         }
 
         Portrait.Loading = false;
@@ -142,7 +150,11 @@ internal static class RRStageControllerPatch {
                 baseConfig.CustomParticleColor2 = particleConfig.CustomParticleColor2;
                 baseConfig.CustomParticleColorOverLifetime = particleConfig.CustomParticleColorOverLifetime;
                 baseConfig.CustomParticleMaterial = particleConfig.CustomParticleMaterial;
-
+                
+                Portrait.Particles?.Pipe(x => {
+                    baseConfig.CustomParticleMaterial = new(baseConfig.CustomParticleMaterial);
+                    baseConfig.CustomParticleMaterial.SetTexture("_Texture2D", x);
+                });
 
                 settings.clouds.color1?.Pipe(x => baseConfig.CoreStartColor1 = x);
                 settings.clouds.color2?.Pipe(x => baseConfig.CoreStartColor2 = x);

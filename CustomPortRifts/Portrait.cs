@@ -13,7 +13,8 @@ namespace CustomPortRifts;
 public class Portrait {
     public static Portrait Hero { get; } = new();
     public static Portrait Counterpart { get; } = new();
-    public static LevelSettings Settings { get; set; } = new();
+    public static Texture2D Particles { get; private set; }
+    public static LevelSettings Settings { get; private set; } = new();
     public static PoseType Pose { get; private set; }
     public static string LevelId { get; set; }
     public static bool Enabled { get; set; }
@@ -32,7 +33,7 @@ public class Portrait {
     };
     public bool HasSprites => NormalSprites != null && NormalSprites.Length > 0;
     public bool UsingCustomSprites => Enabled && HasSprites;
-    
+
     public static void Reset() {
         Hero.NormalSprites = null;
         Hero.PoorlySprites = null;
@@ -42,6 +43,7 @@ public class Portrait {
         Counterpart.PoorlySprites = null;
         Counterpart.WellSprites = null;
         Counterpart.VibePowerSprites = null;
+        Particles = null;
         Settings = new();
         Pose = PoseType.Normal;
         LevelId = "";
@@ -67,6 +69,26 @@ public class Portrait {
         Plugin.Log.LogMessage(JsonConvert.SerializeObject(Settings, Formatting.Indented));
     }
 
+    public static async Task<Texture2D> LoadImage(string file) {
+        if(File.Exists(file)) {
+            try {
+                var bytes = await File.ReadAllBytesAsync(file);
+                var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
+                texture.LoadImage(bytes);
+                return texture;
+            } catch(Exception e) {
+                Plugin.Log.LogError($"Failed to load image from {file}: {e}");
+            }
+        } else {
+            Plugin.Log.LogError($"Attempted to load image from file {file}, which does not exist.");
+        }
+        return null;
+    }
+
+    public static async Task LoadParticles(string file) {
+        Particles = await LoadImage(file) ?? Particles;
+    }
+
     public static async Task<Sprite[]> LoadPose(string dir, string pose) {
         var fullDir = Path.Combine(dir, pose);
         List<Sprite> sprites = [];
@@ -75,10 +97,9 @@ public class Portrait {
             Array.Sort(files);
             foreach(var file in files) {
                 try {
-                    var bytes = await File.ReadAllBytesAsync(file);
-                    var texture = new Texture2D(1, 1, TextureFormat.ARGB32, false);
-                    texture.LoadImage(bytes);
+                    var texture = await LoadImage(file);
 
+                    // TODO: remove this
                     // simulates 'Alpha Is Transparency' import setting
                     // https://stackoverflow.com/a/77746375
                     var pixels = texture.GetPixels32();

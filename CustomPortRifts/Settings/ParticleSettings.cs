@@ -9,4 +9,5 @@ public readonly struct ParticleSettings {
     public readonly string character;
     public readonly float? rotation;
     public readonly GradientSettings color;
+    public readonly byte? count;
 }

@@ -156,6 +156,32 @@ internal static class RRStageControllerPatch {
                     baseConfig.CustomParticleMaterial.SetTexture("_Texture2D", x);
                 });
 
+                settings.particles.count?.Pipe(x => {
+                    int dim = Mathf.CeilToInt(Mathf.Sqrt(Mathf.Max(1, x)));
+                    __instance?._rhythmRiftBackgroundFx?._customCharacterParticles?.textureSheetAnimation.Pipe(y => {
+                        y.numTilesX = dim;
+                        y.numTilesY = dim;
+                        y.startFrame = new(0, x / Mathf.Pow(dim, 2));
+                    });
+                });
+
+                var x = __instance._rhythmRiftBackgroundFx._customCharacterParticles;
+                Plugin.Log.LogMessage(x.textureSheetAnimation);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.mode);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.spriteCount);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.numTilesX);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.numTilesY);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.timeMode);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.fps);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.animation);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.enabled);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.startFrame.constantMin);
+                Plugin.Log.LogMessage(x.textureSheetAnimation.startFrame.constantMax);
+                var y = baseConfig.CustomParticleMaterial.shader;
+                Plugin.Log.LogMessage(y.name);
+                Plugin.Log.LogMessage(y.subshaderCount);
+
+
                 settings.clouds.color1?.Pipe(x => baseConfig.CoreStartColor1 = x);
                 settings.clouds.color2?.Pipe(x => baseConfig.CoreStartColor2 = x);
                 settings.clouds.gradient?.Pipe(x => baseConfig.CoreColorOverLifetime = x);

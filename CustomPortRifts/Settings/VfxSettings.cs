@@ -11,6 +11,7 @@ public readonly struct VfxSettings {
     public readonly ParticleSettings particles;
     public readonly BackgroundSettings background;
     public readonly GradientSettings clouds;
+    public readonly GradientSettings speedlines;
 
     [JsonConverter(typeof(ColorConverter))]
     public readonly Color? rift;

@@ -157,9 +157,15 @@ internal static class RRStageControllerPatch {
                 particles.color1?.Pipe(x => baseConfig.CustomParticleColor1 = x);
                 particles.color2?.Pipe(x => baseConfig.CustomParticleColor2 = x);
                 particles.gradient?.Pipe(x => baseConfig.CustomParticleColorOverLifetime = x);
-                
-                settings.rift?.Pipe(x => baseConfig.RiftGlowColor = x);
-                
+
+                var speedlines = settings.speedlines;
+                speedlines.color1?.Pipe(x => baseConfig.SpeedlinesStartColor = x);
+                // TODO: we ignore color2 here. probably not the best design
+                speedlines.gradient?.Pipe(x => baseConfig.SpeedlinesColorOverLifetime = x);
+
+                settings.strobe1?.Pipe(x => baseConfig.StrobeColor1 = x);
+                settings.strobe2?.Pipe(x => baseConfig.StrobeColor2 = x);
+
                 // TODO: these break if something like suzu is loaded
                 baseConfig.BackgroundMaterial = new(baseConfig.BackgroundMaterial);
 

@@ -17,11 +17,21 @@ public static class Config {
     public static class CustomPortraits {
         public static ConfigEntry<bool> Enabled { get; private set; }
         public static void Initialize(ConfigGroup config) {
-            Enabled = config.Bind("Enabled", true, "Enables custom portraits when the custom track supports them.");
+            Enabled = config.Bind("Enabled", true, "Enables custom portraits when a custom track supports them.");
+        }
+    }
+
+    public static class CustomBackgrounds {
+        public static ConfigEntry<bool> Colors { get; private set; }
+        public static ConfigEntry<bool> Particles { get; private set; }
+        public static void Initialize(ConfigGroup config) {
+            Colors = config.Bind("Colors", true, "Enables custom background colors when a custom track supports them.");
+            Particles = config.Bind("Particles", true, "Enables custom visualizer particles when athe custom track supports them.");
         }
     }
 
     public static void Initialize(ConfigFile config) {
         CustomPortraits.Initialize(new(config, "Custom Portraits"));
+        CustomBackgrounds.Initialize(new(config, "Custom Backgrounds"));
     }
 }

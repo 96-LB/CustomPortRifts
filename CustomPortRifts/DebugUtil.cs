@@ -89,16 +89,16 @@ public static class DebugUtil {
 
     public static void Dump(RiftFXColorConfig config) {
         Header(config);
-        Log($" bg mat {config.BackgroundMaterial}");
+        Log($"bg mat {config.BackgroundMaterial}");
         Log("color1");
         Dump(config.CoreStartColor1);
         Log("color2");
         Dump(config.CoreStartColor2);
         Log("color");
         Dump(config.CoreColorOverLifetime);
-        Log($" glow {config.RiftGlowColor}");
-        Log($" strobe1 {config.StrobeColor1}");
-        Log($" strobe2 {config.StrobeColor2}");
+        Log($"glow {config.RiftGlowColor}");
+        Log($"strobe1 {config.StrobeColor1}");
+        Log($"strobe2 {config.StrobeColor2}");
         Log("speedstart");
         Dump(config.SpeedlinesStartColor);
         Log("speed");
@@ -109,9 +109,9 @@ public static class DebugUtil {
         Dump(config.CustomParticleColor2);
         Log("particle");
         Dump(config.CustomParticleColorOverLifetime);
-        Log($" part mat {config.CustomParticleMaterial}");
-        Log($" rotation {config.CustomParticleRotation}");
-        Log($" rotation? {config.HasCustomRotation}");
+        Log($"part mat {config.CustomParticleMaterial}");
+        Log($"rotation {config.CustomParticleRotation}");
+        Log($"rotation? {config.HasCustomRotation}");
         Footer(config);
     }
 

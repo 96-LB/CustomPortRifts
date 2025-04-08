@@ -1,4 +1,5 @@
-﻿using Newtonsoft.Json;
+﻿using CustomPortRifts.JsonConverters;
+using Newtonsoft.Json;
 using System;
 using UnityEngine;
 
@@ -30,7 +31,7 @@ public readonly struct Settings {
         public readonly PoseSettings doingWell;
         public readonly PoseSettings vibePower;
 
-        public readonly string baseCharacter;
+        public readonly string character;
         public readonly float x;
         public readonly float y;
 
@@ -47,10 +48,32 @@ public readonly struct Settings {
 
     [JsonObject(MemberSerialization.Fields)]
     public readonly struct BackgroundSettings {
-        public readonly string color;
-        public readonly string particles;
-        public readonly float? rotation;
+        [JsonObject(MemberSerialization.Fields)]
+        public readonly struct ParticleSettings {
+            public readonly string character;
+            public readonly float? rotation;
+            [JsonConverter(typeof(ColorConverter))] public readonly Color? color1;
+            [JsonConverter(typeof(ColorConverter))] public readonly Color? color2;
+            [JsonConverter(typeof(ColorConverter))] public readonly Color? colorOverTime;
+        }
 
+        public readonly ParticleSettings particles;
+
+        public readonly string character;
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? bgColor1;
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? bgColor2;
+        public readonly float? rotategradient;
+        public readonly float? intensity;
+        public readonly float? additiveintensity;
+
+
+
+
+
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? color1;
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? color2;
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? colorOverTime;
+        [JsonConverter(typeof(ColorConverter))] public readonly Color? glow;
     }
 
     public readonly PortraitSettings hero;

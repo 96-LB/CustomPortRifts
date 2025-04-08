@@ -164,7 +164,7 @@ internal static class RRStageControllerPatch {
                 baseConfig.BackgroundMaterial = new(baseConfig.BackgroundMaterial);
 
                 var background = settings.background;
-                background.baseColor?.Pipe(x => baseConfig.BackgroundMaterial.SetColor("_BottomColor", x));
+                background.color?.Pipe(x => baseConfig.BackgroundMaterial.SetColor("_BottomColor", x));
                 background.highlightColor?.Pipe(x => baseConfig.BackgroundMaterial.SetColor("_TopColor", x));
                 background.intensity?.Pipe(x => baseConfig.BackgroundMaterial.SetFloat("_GradientIntensity", x));
                 background.intensity2?.Pipe(x => baseConfig.BackgroundMaterial.SetFloat("_AdditiveIntensity", x));

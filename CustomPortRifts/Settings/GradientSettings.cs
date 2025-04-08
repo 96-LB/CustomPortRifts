@@ -13,5 +13,5 @@ public readonly struct GradientSettings {
     public readonly Gradient color2;
 
     [JsonConverter(typeof(GradientConverter))]
-    public readonly Gradient colorOverTime;
+    public readonly Gradient gradient;
 }

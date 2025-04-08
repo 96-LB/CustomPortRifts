@@ -6,6 +6,8 @@ namespace CustomPortRifts.Settings;
 
 
 public class ColorConverter : JsonConverter<Color> {
+    public static readonly ColorConverter Instance = new();
+
     public override Color ReadJson(JsonReader reader, Type objectType, Color existingValue, bool hasExistingValue, JsonSerializer serializer) {
         if(reader.TokenType != JsonToken.String) {
             Plugin.Log.LogError($"When parsing color at {reader.Path}, expected string but got {reader.TokenType} instead.");

@@ -146,7 +146,7 @@ internal static class RRStageControllerPatch {
 
                 settings.clouds.color1?.Pipe(x => baseConfig.CoreStartColor1 = x);
                 settings.clouds.color2?.Pipe(x => baseConfig.CoreStartColor2 = x);
-                settings.clouds.colorOverTime?.Pipe(x => baseConfig.CoreColorOverLifetime = x);
+                settings.clouds.gradient?.Pipe(x => baseConfig.CoreColorOverLifetime = x);
 
                 settings.particles.rotation?.Pipe(x => {
                     baseConfig.HasCustomRotation = x != 0;
@@ -156,7 +156,7 @@ internal static class RRStageControllerPatch {
                 var particles = settings.particles.color;
                 particles.color1?.Pipe(x => baseConfig.CustomParticleColor1 = x);
                 particles.color2?.Pipe(x => baseConfig.CustomParticleColor2 = x);
-                particles.colorOverTime?.Pipe(x => baseConfig.CustomParticleColorOverLifetime = x);
+                particles.gradient?.Pipe(x => baseConfig.CustomParticleColorOverLifetime = x);
                 
                 settings.rift?.Pipe(x => baseConfig.RiftGlowColor = x);
                 

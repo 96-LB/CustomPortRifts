@@ -8,8 +8,6 @@ namespace CustomPortRifts.Settings;
 
 
 public class GradientConverter : JsonConverter<Gradient> {
-    private static readonly ColorConverter colorConverter = new();
-
     public override Gradient ReadJson(JsonReader reader, Type objectType, Gradient existingValue, bool hasExistingValue, JsonSerializer serializer) {
         var colors = new List<Color>();
         if(reader.TokenType == JsonToken.StartArray) {
@@ -19,20 +17,22 @@ public class GradientConverter : JsonConverter<Gradient> {
                 if(reader.TokenType == JsonToken.EndArray) {
                     break;
                 }
-                colors.Add(colorConverter.ReadJson(reader, objectType, default, false, serializer));
+                colors.Add(ColorConverter.Instance.ReadJson(reader, objectType, default, false, serializer));
             }
         } else if(reader.TokenType == JsonToken.String) {
-            colors.Add(colorConverter.ReadJson(reader, objectType, default, false, serializer));
+            colors.Add(ColorConverter.Instance.ReadJson(reader, objectType, default, false, serializer));
         } else {
             Plugin.Log.LogError($"When parsing gradient at {reader.Path}, expected string or array but got {reader.TokenType} instead.");
             return existingValue;
         }
 
-        var count = Mathf.Max(2, colors.Count); // max prevents divide by 0 error
-        var colorKeys = colors.Select((x, i) => new GradientColorKey(x, i / (float)count)).ToArray();
-        var alphaKeys = colors.Select((x, i) => new GradientAlphaKey(x.a, i / (float)count)).ToArray();
+        var count = Mathf.Max(1f, colors.Count - 1); // max prevents divide by 0 error
+        var colorKeys = colors.Select((x, i) => new GradientColorKey(x, i / count)).ToArray();
+        var alphaKeys = colors.Select((x, i) => new GradientAlphaKey(x.a, i / count)).ToArray();
         var gradient = new Gradient();
         gradient.SetKeys(colorKeys, alphaKeys);
+        Plugin.Log.LogMessage(reader.Path);
+        DebugUtil.Dump(gradient);
         return gradient;
     }
 

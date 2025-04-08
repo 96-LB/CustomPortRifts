@@ -163,9 +163,6 @@ internal static class RRStageControllerPatch {
                 // TODO: we ignore color2 here. probably not the best design
                 speedlines.gradient?.Pipe(x => baseConfig.SpeedlinesColorOverLifetime = x);
 
-                settings.strobe1?.Pipe(x => baseConfig.StrobeColor1 = x);
-                settings.strobe2?.Pipe(x => baseConfig.StrobeColor2 = x);
-
                 // TODO: these break if something like suzu is loaded
                 baseConfig.BackgroundMaterial = new(baseConfig.BackgroundMaterial);
 

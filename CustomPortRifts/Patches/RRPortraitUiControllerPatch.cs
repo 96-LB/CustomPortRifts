@@ -43,7 +43,7 @@ internal static class RRPortraitUiControllerPatch {
         bool isHeroPortrait,
         ref string characterId
     ) {
-        if(!Portrait.Counterpart.UsingCustomSprites || isHeroPortrait) {
+        if(!Portrait.Counterpart.HasSprites || isHeroPortrait) {
             return;
         }
         characterId = "Dove"; // every character has different portraits and animations. dove's is probably the nicest to work with
@@ -64,7 +64,7 @@ internal static class RRPortraitUiControllerPatch {
             yield return original;
             
             var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
-            if(!portrait.UsingCustomSprites) {
+            if(!portrait.HasSprites) {
                 yield break;
             }
 

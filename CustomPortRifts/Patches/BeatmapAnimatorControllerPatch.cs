@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using Shared.PlayerData;
 using Shared.RhythmEngine;
 using UnityEngine;
 using UnityEngine.UI;
@@ -12,7 +13,7 @@ public class BeatmapData {
     public Portrait Portrait { get; set; }
     public Image Image { get; set; }
 
-    public bool UsingCustomSprites => Portrait?.UsingCustomSprites ?? false;
+    public bool HasSprites => Portrait?.HasSprites ?? false;
 }
 
 [HarmonyPatch(typeof(P), nameof(P.UpdateSystem))]
@@ -22,10 +23,16 @@ public static class BeatmapAnimatorControllerPatch {
         FmodTimeCapsule fmodTimeCapsule
     ) {
         var state = BeatmapState.Of(__instance);
-        if(!state.UsingCustomSprites) {
+        if(!state.HasSprites) {
             return;
         }
-
+        
+        if(PlayerSaveController.Instance.GetShouldShowStaticPortraits()) {
+            // don't animate when static portraits are enabled
+            state.Image.sprite = state.Portrait.NormalSprites[0];
+            return;
+        }
+        
         Sprite[] sprites = state.Portrait.ActiveSprites;
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;
         int frame = Mathf.FloorToInt(beat * 31); // portraits are animated at 31 fps, for some reason
@@ -36,7 +43,6 @@ public static class BeatmapAnimatorControllerPatch {
             spriteIndex = 0;
         }
 
-        // TODO: respect static portrait setting
         state.Image.sprite = sprites[spriteIndex];
         // TODO: set the offset here
     }

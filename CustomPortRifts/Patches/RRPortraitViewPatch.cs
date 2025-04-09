@@ -9,7 +9,7 @@ using PortraitState = State<RRPortraitView, PortraitData>;
 public class PortraitData {
     public Portrait Portrait { get; set; }
 
-    public bool UsingCustomSprites => Portrait?.UsingCustomSprites ?? false;
+    public bool HasSprites => Portrait?.HasSprites ?? false;
 }
 
 [HarmonyPatch(typeof(P), nameof(P.PerformanceLevelChange))]
@@ -18,6 +18,6 @@ internal static class RRPortraitViewPatch {
         P __instance
     ) {
         // suppress animator/voiceline changes if we're using custom sprites
-        return !PortraitState.Of(__instance).UsingCustomSprites;
+        return !PortraitState.Of(__instance).HasSprites;
     }
 }

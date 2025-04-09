@@ -14,24 +14,38 @@ public static class Config {
         }
     }
 
-    public static class CustomPortraits {
+    public static class General {
         public static ConfigEntry<bool> Enabled { get; private set; }
         public static void Initialize(ConfigGroup config) {
-            Enabled = config.Bind("Enabled", true, "Enables custom portraits when a custom track supports them.");
+            Enabled = config.Bind("Enabled", true, "Enables the mod.");
         }
     }
 
-    public static class CustomBackgrounds {
+    public static class Custom {
+        public static ConfigEntry<bool> Portraits { get; private set; }
         public static ConfigEntry<bool> Colors { get; private set; }
         public static ConfigEntry<bool> Particles { get; private set; }
         public static void Initialize(ConfigGroup config) {
-            Colors = config.Bind("Colors", true, "Enables custom background colors when a custom track supports them.");
-            Particles = config.Bind("Particles", true, "Enables custom visualizer particles when athe custom track supports them.");
+            Portraits = config.Bind("Custom Portraits", true, "Enables custom portraits when a custom track supports them.");
+            Colors = config.Bind("Custom Colors", true, "Enables custom background colors when a custom track supports them.");
+            Particles = config.Bind("Custom Particles", true, "Enables custom visualizer particles when athe custom track supports them.");
         }
     }
 
+    public static class PracticeMode {
+        public static ConfigEntry<bool> Portraits { get; private set; }
+        public static ConfigEntry<bool> Colors { get; private set; }
+        public static ConfigEntry<bool> Particles { get; private set; }
+        public static void Initialize(ConfigGroup config) {
+            Portraits = config.Bind("Custom Portraits", false, "Enables custom portraits in practice mode.");
+            Colors = config.Bind("Custom Colors", false, "Enables custom background colors in practice mode.");
+            Particles = config.Bind("Custom Particles", false, "Enables custom particles in practice mode.");
+        }
+    }
+    
     public static void Initialize(ConfigFile config) {
-        CustomPortraits.Initialize(new(config, "Custom Portraits"));
-        CustomBackgrounds.Initialize(new(config, "Custom Backgrounds"));
+        General.Initialize(new(config, "General"));
+        Custom.Initialize(new(config, "Custom Portraits"));
+        PracticeMode.Initialize(new(config, "Practice Mode"));
     }
 }

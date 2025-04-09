@@ -17,7 +17,6 @@ public class Portrait {
     public static LevelSettings Settings { get; private set; } = new();
     public static PoseType Pose { get; private set; }
     public static string LevelId { get; set; }
-    public static bool Enabled { get; set; }
     public static bool Loading { get; set; }
 
     public Sprite[] NormalSprites { get; private set; }
@@ -32,7 +31,6 @@ public class Portrait {
         _ => NormalSprites // should never happen
     };
     public bool HasSprites => NormalSprites != null && NormalSprites.Length > 0;
-    public bool UsingCustomSprites => Enabled && HasSprites;
 
     public static void Reset() {
         Hero.NormalSprites = null;
@@ -44,9 +42,12 @@ public class Portrait {
         Counterpart.WellSprites = null;
         Counterpart.VibePowerSprites = null;
         Particles = null;
-        Settings = new();
         Pose = PoseType.Normal;
         LevelId = "";
+    }
+
+    public static void ResetSettings() {
+        Settings = new();
     }
 
     public static async Task LoadSettings(string file) {
@@ -64,6 +65,7 @@ public class Portrait {
             Settings = JsonConvert.DeserializeObject<LevelSettings>(settingsText, serializerSettings);
         } catch(Exception e) {
             Plugin.Log.LogError($"Failed to load settings:\n{e}");
+            Settings = new();
             return;
         }
         Plugin.Log.LogMessage(JsonConvert.SerializeObject(Settings, Formatting.Indented));
@@ -86,7 +88,7 @@ public class Portrait {
     }
 
     public static async Task LoadParticles(string file) {
-        Particles = await LoadImage(file) ?? Particles;
+        Particles = await LoadImage(file);
     }
 
     public static async Task<Sprite[]> LoadPose(string dir, string pose) {

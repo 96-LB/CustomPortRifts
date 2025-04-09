@@ -29,10 +29,17 @@ internal static class RRStageControllerPatch {
             return;
         }
 
-        Portrait.Loading = true;
         
         var dir = Path.GetDirectoryName(payload.GetBeatmapFileName());
         dir = Path.Combine(dir, "CustomPortRifts");
+
+        // search for portraits
+        if(!Directory.Exists(dir)) {
+            Plugin.Log.LogInfo("No custom portrait folder found. Folder should be called 'CustomPortRifts' and be located in the same directory as the beatmap. Falling back to default.");
+            return;
+        }
+
+        Portrait.Loading = true;
 
         // always load settings, even on level retry, since this is cheap
         var settingsFile = Path.Combine(dir, "config.json");
@@ -54,12 +61,6 @@ internal static class RRStageControllerPatch {
         // don't reload sprites if we're just retrying the same level
         string levelId = payload.GetLevelId();
         if(usingPortraits && levelId != Portrait.LevelId) {
-            // search for portraits
-            if(!Directory.Exists(dir)) {
-                Plugin.Log.LogInfo("No custom portrait folder found. Folder should be called 'CustomPortRifts' and be located in the same directory as the beatmap. Falling back to default.");
-                return;
-            }
-
             foreach(var (subdir, portrait) in new[] { ("Counterpart", Portrait.Counterpart), ("Hero", Portrait.Hero) }) {
                 var fullDir = Path.Combine(dir, subdir);
                 if(Directory.Exists(fullDir)) {

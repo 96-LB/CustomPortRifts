@@ -32,6 +32,20 @@ public static class BeatmapAnimatorControllerPatch {
             state.Image.sprite = state.Portrait.NormalSprites[0];
             return;
         }
+
+        float missDiff = fmodTimeCapsule.TrueBeatNumber - RRStageControllerPatch.last_miss;
+        if( missDiff < 1.0f && state.Portrait.HasMissSprites ){
+            int missFrame = Mathf.FloorToInt(missDiff * 31);
+            int missIndex = Mathf.Max(1, Mathf.FloorToInt(missFrame + 1) / 2);
+            if( state.Portrait.InVibe ) { //vibe miss
+                if(missIndex >= state.Portrait.VibePowerMissSprites.Length) missIndex = 0;
+                state.Image.sprite = state.Portrait.VibePowerMissSprites[missIndex];
+            } else {
+                if(missIndex >= state.Portrait.NormalMissSprites.Length) missIndex = 0;
+                state.Image.sprite = state.Portrait.NormalMissSprites[missIndex];
+            }
+            return;
+        }
         
         Sprite[] sprites = state.Portrait.ActiveSprites;
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;

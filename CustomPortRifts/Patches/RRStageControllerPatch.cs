@@ -16,11 +16,14 @@ using P = RRStageController;
 
 [HarmonyPatch(typeof(P))]
 internal static class RRStageControllerPatch {
+    public static float last_miss = 0;
+
     [HarmonyPatch(nameof(P.UnpackScenePayload))]
     [HarmonyPostfix]
     public async static void UnpackScenePayload(
         ScenePayload currentScenePayload
     ) {
+        last_miss = -1.0f;
         if(
             currentScenePayload is not RRCustomTrackScenePayload payload
             || !Config.General.Enabled.Value
@@ -96,6 +99,13 @@ internal static class RRStageControllerPatch {
         // bring that back (probably requires separating out the particles)
         Portrait.LevelId = levelId;
         Portrait.Loading = false;
+    }
+
+    [HarmonyPatch( nameof(P.HandleEnemyAttack) )]
+    [HarmonyPrefix]
+    public static void HandleEnemyAttack( P __instance ){
+        Shared.RhythmEngine.FmodTimeCapsule fmodTimeCapsule = __instance.BeatmapPlayer.FmodTimeCapsule;
+        last_miss = fmodTimeCapsule.TrueBeatNumber;
     }
 
     [HarmonyPatch(nameof(P.InitializeBackgroundRoutine))]

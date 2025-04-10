@@ -58,8 +58,9 @@ To add custom portraits to your custom level, you do not need the mod installed,
 
 3. Inside the new folder, create subfolders called `Hero` and/or `Counterpart` to add custom portraits for the left and right side, respectively.
 
-4. Inside the counterpart and/or hero folders, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, and/or `VibePower`.
+4. Inside the counterpart and/or hero folders, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, `VibePower`, `NormalMiss` and/or `VibePowerMiss`.
    > ℹ️ You don't need all of these, but at least one needs to have sprites inside of it for your custom portrait to load.
+   > ℹ️ `VibePowerMiss` won't be active unless you also have `NormalMiss` sprites
 
 5. Add your custom sprites as `.png` files inside the corresponding subfolders. To use an animation, upload each individual frame as a separate `.png` file.
    > ℹ️ The frames should be in alphabetical order. See below for more details regarding animations.
@@ -83,6 +84,10 @@ To add custom portraits to your custom level, you do not need the mod installed,
    >       heroic00.png
    >     VibePower/
    >       superheroic00.png
+   >     NormalMiss/
+   >       heroicmiss00.png
+   >     VibePowerMiss/
+   >       heroicvibemiss00.png
    > ```
 
 6. Publish your track to the Steam workshop using the official editor. Your portraits will automatically be attached.
@@ -98,6 +103,7 @@ That's it! If everything is properly configured, your track will have custom por
   - When the player has less than 3/10 HP: `DoingPoorly`, `Normal`, `DoingWell`, `VibePower`
   - When the player has 80+ combo: `DoingWell`, `Normal`, `DoingPoorly`, `VibePower`
   - All other times: `Normal`, `DoingWell`, `DoingPoorly`, `VibePower`
+- Missing overrides other animations for 1 beat whenever a note is missed, and plays either `VibePowerMiss` or `NormalMiss` depending on if vibe power is active or not.
 - Voicelines are silenced when custom portraits are active. Future versions may provide the ability to add custom voicelines.
 - To reduce load times, custom portraits are not reloaded when the map is replayed using the retry feature. If you modified your portrait, to see the changes you must first exit to the track selection menu and reopen the map.
 - To update (or delete) your portrait on the workshop, just edit (or delete) the contents of the `CustomPortRifts` folder and re-upload your track to the workshop.

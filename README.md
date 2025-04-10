@@ -60,6 +60,7 @@ To add custom portraits to your custom level, you do not need the mod installed,
 
 4. Inside the counterpart and/or hero folders, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, `VibePower`, `NormalMiss` and/or `VibePowerMiss`.
    > ℹ️ You don't need all of these, but at least one needs to have sprites inside of it for your custom portrait to load.
+   
    > ℹ️ `VibePowerMiss` won't be active unless you also have `NormalMiss` sprites
 
 5. Add your custom sprites as `.png` files inside the corresponding subfolders. To use an animation, upload each individual frame as a separate `.png` file.

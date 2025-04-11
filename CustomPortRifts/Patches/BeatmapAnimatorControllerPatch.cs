@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using System;
+using HarmonyLib;
 using Shared.PlayerData;
 using Shared.RhythmEngine;
 using UnityEngine;
@@ -32,7 +33,21 @@ public static class BeatmapAnimatorControllerPatch {
             state.Image.sprite = state.Portrait.NormalSprites[0];
             return;
         }
+
+        bool vanillaMissBehaviour = true;
+        float missDiff = fmodTimeCapsule.TrueBeatNumber - (vanillaMissBehaviour ? RRStageControllerPatch.lastVanillaMiss : RRStageControllerPatch.lastMiss);
+        int missFrame = Mathf.FloorToInt(missDiff * 31);
+        int missIndex = Mathf.Max(1, Mathf.FloorToInt(missFrame + 1) / 2);
+        var missSpriteSet = state.Portrait.InVibe ? state.Portrait.VibePowerMissSprites : state.Portrait.NormalMissSprites;
+        if( missIndex >= missSpriteSet.Length ) missIndex = 0;
         
+        if( (vanillaMissBehaviour && !state.Portrait.InVibe) || !vanillaMissBehaviour ){
+            if( missDiff < 1.0f && state.Portrait.HasMissSprites ){
+                state.Image.sprite = missSpriteSet[missIndex];
+                return;
+            }
+        }
+
         Sprite[] sprites = state.Portrait.ActiveSprites;
         float beat = Mathf.Max(fmodTimeCapsule.TrueBeatNumber, 0) % 1;
         int frame = Mathf.FloorToInt(beat * 31); // portraits are animated at 31 fps, for some reason

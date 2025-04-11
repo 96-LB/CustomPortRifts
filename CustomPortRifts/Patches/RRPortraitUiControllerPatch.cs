@@ -37,6 +37,13 @@ internal static class RRPortraitUiControllerPatch {
         Portrait.SetPerformanceLevel(performanceLevel);
     }
 
+    //vanilla miss behaivour
+    [HarmonyPatch("MissRecorded")]
+    [HarmonyPrefix]
+    public static void MissRecorded(){
+        RRStageControllerPatch.lastVanillaMiss = RRStageControllerPatch.lastMiss;        
+    }
+
     [HarmonyPatch("LoadCharacterPortrait")]
     [HarmonyPrefix]
     public static void LoadCharacterPortrait_Pre(

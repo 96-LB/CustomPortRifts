@@ -23,6 +23,8 @@ public class Portrait {
     public Sprite[] PoorlySprites { get; private set; }
     public Sprite[] WellSprites { get; private set; }
     public Sprite[] VibePowerSprites { get; private set; }
+    public Sprite[] NormalMissSprites { get; private set; }
+    public Sprite[] VibePowerMissSprites { get; private set; }
     public Sprite[] ActiveSprites => Pose switch {
         PoseType.Normal => NormalSprites,
         PoseType.DoingPoorly => PoorlySprites,
@@ -31,16 +33,21 @@ public class Portrait {
         _ => NormalSprites // should never happen
     };
     public bool HasSprites => NormalSprites != null && NormalSprites.Length > 0;
-
+    public bool InVibe => Pose == PoseType.VibePower;
+    public bool HasMissSprites = false;
     public static void Reset() {
         Hero.NormalSprites = null;
         Hero.PoorlySprites = null;
         Hero.WellSprites = null;
         Hero.VibePowerSprites = null;
+        Hero.NormalMissSprites = null;
+        Hero.VibePowerMissSprites = null;
         Counterpart.NormalSprites = null;
         Counterpart.PoorlySprites = null;
         Counterpart.WellSprites = null;
         Counterpart.VibePowerSprites = null;
+        Counterpart.NormalMissSprites = null;
+        Counterpart.VibePowerMissSprites = null;
         Particles = null;
         Pose = PoseType.Normal;
         LevelId = "";
@@ -138,16 +145,21 @@ public class Portrait {
         var poorlySprites = await LoadPose(dir, "DoingPoorly");
         var wellSprites = await LoadPose(dir, "DoingWell");
         var vibePowerSprites = await LoadPose(dir, "VibePower");
+        var normalMissSprites = await LoadPose(dir, "NormalMiss");
+        var vibeMissSprites = await LoadPose(dir, "VibePowerMiss");
 
         normalSprites ??= wellSprites ?? poorlySprites ?? vibePowerSprites;
         wellSprites ??= normalSprites;
         poorlySprites ??= normalSprites;
         vibePowerSprites ??= wellSprites;
+        HasMissSprites = normalMissSprites != null; 
+        if( normalSprites.Length != 0 ) normalMissSprites ??= [normalSprites[0]];
+        if( normalMissSprites.Length != 0 ) vibeMissSprites ??= normalMissSprites;
 
-        SetSprites(normalSprites, poorlySprites, wellSprites, vibePowerSprites);
+        SetSprites(normalSprites, poorlySprites, wellSprites, vibePowerSprites, normalMissSprites, vibeMissSprites);
     }
 
-    public void SetSprites(Sprite[] normal, Sprite[] poorly, Sprite[] well, Sprite[] vibePower) {
+    public void SetSprites(Sprite[] normal, Sprite[] poorly, Sprite[] well, Sprite[] vibePower, Sprite[] normalMiss, Sprite[] vibePowerMiss ) {
         if(normal == null || normal.Length == 0) {
             throw new ArgumentException("Normal sprites must not be null or empty.", nameof(normal));
         }
@@ -164,9 +176,19 @@ public class Portrait {
             throw new ArgumentException("VibePower sprites must not be null or empty.", nameof(vibePower));
         }
 
+        if(normalMiss == null || normalMiss.Length == 0) {
+            throw new ArgumentException("NormalMiss sprites must not be null or empty.", nameof(normalMiss));
+        }
+
+        if(vibePowerMiss == null || vibePowerMiss.Length == 0) {
+            throw new ArgumentException("VibeMiss sprites must not be null or empty.", nameof(vibePowerMiss));
+        }
+
         NormalSprites = normal;
         PoorlySprites = poorly;
         WellSprites = well;
         VibePowerSprites = vibePower;
+        NormalMissSprites = normalMiss;
+        VibePowerMissSprites = vibePowerMiss;
     }
 }

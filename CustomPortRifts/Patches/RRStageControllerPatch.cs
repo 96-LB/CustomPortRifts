@@ -16,11 +16,16 @@ using P = RRStageController;
 
 [HarmonyPatch(typeof(P))]
 internal static class RRStageControllerPatch {
+    public static float lastMiss = 0.0f;
+    public static float lastVanillaMiss = 0.0f;
+
     [HarmonyPatch(nameof(P.UnpackScenePayload))]
     [HarmonyPostfix]
     public async static void UnpackScenePayload(
         ScenePayload currentScenePayload
     ) {
+        lastMiss = -1.0f;
+        lastVanillaMiss = -1.0f;
         if(
             currentScenePayload is not RRCustomTrackScenePayload payload
             || !Config.General.Enabled.Value
@@ -96,6 +101,22 @@ internal static class RRStageControllerPatch {
         // bring that back (probably requires separating out the particles)
         Portrait.LevelId = levelId;
         Portrait.Loading = false;
+    }
+
+    //Miss when hit by enemy
+    [HarmonyPatch( nameof(P.HandleEnemyAttack) )]
+    [HarmonyPrefix]
+    public static void HandleEnemyAttack( P __instance ){
+        Shared.RhythmEngine.FmodTimeCapsule fmodTimeCapsule = __instance.BeatmapPlayer.FmodTimeCapsule;
+        lastMiss = fmodTimeCapsule.TrueBeatNumber;
+    }
+
+    //Miss when hit by overtapping as Coda
+    [HarmonyPatch( nameof(P.HandleCodaErrantDamage) )]
+    [HarmonyPrefix]
+    public static void HandleCodaErrantDamage( P __instance ){
+        Shared.RhythmEngine.FmodTimeCapsule fmodTimeCapsule = __instance.BeatmapPlayer.FmodTimeCapsule;
+        lastMiss = fmodTimeCapsule.TrueBeatNumber;
     }
 
     [HarmonyPatch(nameof(P.InitializeBackgroundRoutine))]

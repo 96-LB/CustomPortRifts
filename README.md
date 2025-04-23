@@ -1,5 +1,5 @@
-> ## ⚠️ THE LATEST UPDATE TO THE GAME IS NO LONGER COMPATIBLE WITH THIS MOD. UNINSTALL THE MOD IF YOU ARE HAVING ISSUES OPENING YOUR GAME!
-> The base game now supports custom portraits, so this repository exists only as a historical record for now, unless this mod gets a new update. The base game implementation is backwards compatible with the mod, so you can still use the instructions below to create custom portraits. Enjoy!
+> ## ⚠️ As of 23 April 2025, this mod is no longer compatible with the game. Uninstall the mod if you're running into an infinite loading screen!
+> The base game now supports custom portraits, so this repository exists only as a historical record, unless this mod gets a new update in the future. The base game implementation is backwards compatible with the mod, so you can still use the instructions below to create custom portraits. Enjoy!
 
 # Custom PortRifts
 

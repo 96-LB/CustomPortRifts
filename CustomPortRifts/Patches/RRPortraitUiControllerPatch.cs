@@ -1,66 +1,57 @@
-﻿using System.Collections;
-using HarmonyLib;
+﻿using HarmonyLib;
 using RhythmRift;
-using Shared.RhythmEngine;
+using Shared.DLC;
+using Shared.TrackData;
+using Shared.Utilities;
+using System.Collections;
+using System.IO;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace CustomPortRifts.Patches;
 
 
-using P = RRPortraitUiController;
-
-[HarmonyPatch(typeof(P))]
+[HarmonyPatch(typeof(RRPortraitUiController))]
 internal static class RRPortraitUiControllerPatch {
-    [HarmonyPatch(nameof(P.Initialize))]
-    [HarmonyPostfix]
-    public static void Initialize(
-        ref IEnumerator __result
-    ) {
-        // since the original function is a coroutine, we need to wrap the output to properly postfix
-        var original = __result;
-        __result = Wrapper();
-
-        IEnumerator Wrapper() {
-            // prevents the portrait gameobjects from being loaded until we know whether we're using custom sprites
-            yield return new WaitUntil(() => !Portrait.Loading);
-            yield return original;
-        }
-    }
-
-
-    [HarmonyPatch(nameof(P.UpdateDisplay))]
-    [HarmonyPostfix]
-    public static void UpdateDisplay(
-        RRPerformanceLevel performanceLevel
-    ) {
-        Portrait.SetPerformanceLevel(performanceLevel);
-    }
-
-    //vanilla miss behaivour
-    [HarmonyPatch("MissRecorded")]
-    [HarmonyPrefix]
-    public static void MissRecorded(){
-        RRStageControllerPatch.lastVanillaMiss = RRStageControllerPatch.lastMiss;        
-    }
-
-    [HarmonyPatch("LoadCharacterPortrait")]
+    [HarmonyPatch(nameof(RRPortraitUiController.LoadCharacterPortrait))]
     [HarmonyPrefix]
     public static void LoadCharacterPortrait_Pre(
+        RRPortraitUiController __instance,
         bool isHeroPortrait,
-        ref string characterId
-    ) {
-        if(!Portrait.Counterpart.HasSprites || isHeroPortrait) {
-            return;
+        ref string characterId,
+        ref DataDrivenAnimator.Options portraitOptions,
+        ref ITrackPortrait portraitMetadata,
+        ref bool __state
+     ) {
+        Plugin.Log.LogMessage(characterId);
+        if(Config.Cadence.Crypt.Value && isHeroPortrait && characterId == __instance.CadenceDefaultPortraitCharacterId || characterId == DlcController.Instance.GetSupporterRRCharacterName()) {
+            characterId = "CadenceCrypt";
         }
-        characterId = "Dove"; // every character has different portraits and animations. dove's is probably the nicest to work with
+        var path = Path.Combine(Path.GetDirectoryName(Application.dataPath), Plugin.NAME, characterId);
+        Plugin.Log.LogMessage(path);
+        if(FileUtils.IsDirectory(path)) {
+            Plugin.Log.LogMessage("found!");
+            var portrait = LocalTrackPortrait.TryLoadCustomPortrait(path, isHeroPortrait ? "CustomHero" : "CustomCounterpart");
+            if(portrait != null) {
+                Plugin.Log.LogMessage("wahoo!");
+                characterId = portrait.PortraitId;
+                portraitMetadata = portrait;
+                portraitOptions = __instance.InitCustomPortrait(portrait);
+                if(isHeroPortrait) {
+                    __instance._heroPortraitId = characterId;
+                } else {
+                    __instance._counterpartPortraitId = characterId;
+                }
+                __state = true; // Indicate that a custom portrait was loaded
+            }
+        }
     }
 
-    [HarmonyPatch("LoadCharacterPortrait")]
+    [HarmonyPatch(nameof(RRPortraitUiController.LoadCharacterPortrait))]
     [HarmonyPostfix]
     public static void LoadCharacterPortrait_Post(
-        P __instance,
-        bool isHeroPortrait,
+        RRPortraitUiController __instance, 
+        DataDrivenAnimator.Options portraitOptions, 
+        bool __state,
         ref IEnumerator __result
     ) {
         // since the original function is a coroutine, we need to wrap the output to properly postfix
@@ -68,27 +59,11 @@ internal static class RRPortraitUiControllerPatch {
         __result = Wrapper();
 
         IEnumerator Wrapper() {
-            yield return original;
-            
-            var portrait = isHeroPortrait ? Portrait.Hero : Portrait.Counterpart;
-            if(!portrait.HasSprites) {
-                yield break;
+            if(__state) {
+                Plugin.Log.LogMessage("super wahoo!");
+                yield return __instance.PreloadCustomPortrait(portraitOptions);
             }
-
-            var portraitView = isHeroPortrait ? __instance._heroPortraitViewInstance : __instance._counterpartPortraitViewInstance;
-            Object.DestroyImmediate(portraitView._portraitAnimator);
-            portraitView._portraitAnimator = portraitView.gameObject.AddComponent<Animator>(); // dummy to prevent null reference exceptions
-
-            var image = portraitView.transform.Find("MaskImage").Find("CharacterImage").GetComponent<Image>();
-            image.sprite = portrait.NormalSprites[0];
-            image.preserveAspect = true;
-
-            var portraitState = State<RRPortraitView, PortraitData>.Of(portraitView);
-            portraitState.Portrait = portrait;
-
-            var beatmapState = State<BeatmapAnimatorController, BeatmapData>.Of(portraitView.BeatmapAnimatorController);
-            beatmapState.Portrait = portrait;
-            beatmapState.Image = image;
+            yield return original;
         }
     }
 }

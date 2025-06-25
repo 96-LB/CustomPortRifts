@@ -21,31 +21,22 @@ public static class Config {
         }
     }
 
-    public static class Custom {
-        public static ConfigEntry<bool> Portraits { get; private set; }
-        public static ConfigEntry<bool> Colors { get; private set; }
-        public static ConfigEntry<bool> Particles { get; private set; }
+    public static class Cadence {
+        public static ConfigEntry<bool> Crypt { get; private set; }
         public static void Initialize(ConfigGroup config) {
-            Portraits = config.Bind("Custom Portraits", true, "Enables custom portraits when a custom track supports them.");
-            Colors = config.Bind("Custom Colors", true, "Enables custom background colors when a custom track supports them.");
-            Particles = config.Bind("Custom Particles", true, "Enables custom visualizer particles when athe custom track supports them.");
+            Crypt = config.Bind("Crypt", false, "Enables the crypt costume for Cadence.");
         }
     }
 
-    public static class PracticeMode {
-        public static ConfigEntry<bool> Portraits { get; private set; }
-        public static ConfigEntry<bool> Colors { get; private set; }
-        public static ConfigEntry<bool> Particles { get; private set; }
+    public static class Characters {
+        public static ConfigEntry<bool> Crypt { get; private set; }
         public static void Initialize(ConfigGroup config) {
-            Portraits = config.Bind("Custom Portraits", false, "Enables custom portraits in practice mode.");
-            Colors = config.Bind("Custom Colors", false, "Enables custom background colors in practice mode.");
-            Particles = config.Bind("Custom Particles", false, "Enables custom particles in practice mode.");
+            Crypt = config.Bind("Crypt", false, "Enables the crypt costume for Cadence.");
         }
     }
-    
+
     public static void Initialize(ConfigFile config) {
         General.Initialize(new(config, "General"));
-        Custom.Initialize(new(config, "Custom Portraits"));
-        PracticeMode.Initialize(new(config, "Practice Mode"));
+        Cadence.Initialize(new(config, "Cadence"));
     }
 }

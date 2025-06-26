@@ -28,11 +28,15 @@ public static class PortraitPatch {
         ref bool __state
      ) {
         if(
-            Config.Cadence.Crypt
+            Config.Reskins.Crypt
             && isHeroPortrait
             && (characterId == __instance.CadenceDefaultPortraitCharacterId || characterId == DlcController.Instance.GetSupporterRRCharacterName())
         ) {
             characterId = "CadenceCrypt";
+        }
+
+        if(!Config.General.TrackOverrides && !Config.General.CharacterOverrides) {
+            return;
         }
 
         var basePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), Plugin.NAME);
@@ -45,45 +49,50 @@ public static class PortraitPatch {
         var state = PortraitState.Of(__instance);
         var dirName = isHeroPortrait ? "Hero" : "Counterpart";
         var portraitType = "Custom" + dirName;
-        Plugin.Log.LogInfo($"Loading custom {dirName.ToLowerInvariant()} portrait...");
 
         // load the track-specific override
-        var trackPath = Path.Combine(basePath, "Tracks");
-        if(!FileUtils.IsDirectory(trackPath)) {
-            Plugin.Log.LogInfo($"No track override directory found. The folder should be named 'Tracks' and located in '{Plugin.NAME}'. No track overrides will be applied.");
-        } else {
-            trackPath = Path.Combine(trackPath, state.LevelId, dirName);
+        if(Config.General.TrackOverrides) {
+            Plugin.Log.LogInfo($"Loading custom {dirName.ToLowerInvariant()} portrait...");
+
+            var trackPath = Path.Combine(basePath, "Tracks");
             if(!FileUtils.IsDirectory(trackPath)) {
-                Plugin.Log.LogInfo($"No track directory found using level ID. The folder should be named '{state.LevelId}/{dirName}' and located in '{Plugin.NAME}/Tracks'. No track overrides will be applied.");
+                Plugin.Log.LogInfo($"No track override directory found. The folder should be named 'Tracks' and located in '{Plugin.NAME}'. No track overrides will be applied.");
             } else {
-                var trackPortrait = LocalTrackPortrait.TryLoadCustomPortrait(trackPath, portraitType);
-                if(trackPortrait == null) {
-                    Plugin.Log.LogWarning($"Failed to load custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                trackPath = Path.Combine(trackPath, state.LevelId, dirName);
+                if(!FileUtils.IsDirectory(trackPath)) {
+                    Plugin.Log.LogInfo($"No track directory found using level ID. The folder should be named '{state.LevelId}/{dirName}' and located in '{Plugin.NAME}/Tracks'. No track overrides will be applied.");
                 } else {
-                    portrait = trackPortrait;
-                    Plugin.Log.LogInfo($"Loaded custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                    var trackPortrait = LocalTrackPortrait.TryLoadCustomPortrait(trackPath, portraitType);
+                    if(trackPortrait == null) {
+                        Plugin.Log.LogWarning($"Failed to load custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                    } else {
+                        portrait = trackPortrait;
+                        Plugin.Log.LogInfo($"Loaded custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                    }
                 }
             }
         }
 
-        var id = portrait?.PortraitId ?? characterId;
-        Plugin.Log.LogInfo($"Loading custom portrait for {id}...");
-        
         // load the character-specific override
-        var charPath = Path.Combine(basePath, "Characters");
-        if(!FileUtils.IsDirectory(charPath)) {
-            Plugin.Log.LogInfo($"No character override directory found. The folder should be named 'Characters' and located in '{Plugin.NAME}'. No character overrides will be applied.");
-        } else {
-            charPath = Path.Combine(charPath, id);
+        if(Config.General.CharacterOverrides) {
+            var id = portrait?.PortraitId ?? characterId;
+            Plugin.Log.LogInfo($"Loading custom portrait for {id}...");
+
+            var charPath = Path.Combine(basePath, "Characters");
             if(!FileUtils.IsDirectory(charPath)) {
-                Plugin.Log.LogInfo($"No character directory found using character ID. The folder should be named '{id}' and located in '{Plugin.NAME}/Characters'. No character overrides will be applied.");
+                Plugin.Log.LogInfo($"No character override directory found. The folder should be named 'Characters' and located in '{Plugin.NAME}'. No character overrides will be applied.");
             } else {
-                var charPortrait = LocalTrackPortrait.TryLoadCustomPortrait(charPath, portraitType);
-                if(charPortrait == null) {
-                    Plugin.Log.LogWarning($"Failed to load custom portrait for {id} from character override.");
+                charPath = Path.Combine(charPath, id);
+                if(!FileUtils.IsDirectory(charPath)) {
+                    Plugin.Log.LogInfo($"No character directory found using character ID. The folder should be named '{id}' and located in '{Plugin.NAME}/Characters'. No character overrides will be applied.");
                 } else {
-                    portrait = charPortrait;
-                    Plugin.Log.LogInfo($"Loaded custom portrait for {id} from character override.");
+                    var charPortrait = LocalTrackPortrait.TryLoadCustomPortrait(charPath, portraitType);
+                    if(charPortrait == null) {
+                        Plugin.Log.LogWarning($"Failed to load custom portrait for {id} from character override.");
+                    } else {
+                        portrait = charPortrait;
+                        Plugin.Log.LogInfo($"Loaded custom portrait for {id} from character override.");
+                    }
                 }
             }
         }
@@ -105,8 +114,8 @@ public static class PortraitPatch {
     [HarmonyPatch(nameof(RRPortraitUiController.LoadCharacterPortrait))]
     [HarmonyPostfix]
     public static void LoadCharacterPortrait_Post(
-        RRPortraitUiController __instance, 
-        DataDrivenAnimator.Options portraitOptions, 
+        RRPortraitUiController __instance,
+        DataDrivenAnimator.Options portraitOptions,
         bool __state,
         ref IEnumerator __result
     ) {

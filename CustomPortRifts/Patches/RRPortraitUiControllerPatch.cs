@@ -11,7 +11,7 @@ namespace CustomPortRifts.Patches;
 
 
 [HarmonyPatch(typeof(RRPortraitUiController))]
-internal static class RRPortraitUiControllerPatch {
+public static class RRPortraitUiControllerPatch {
     [HarmonyPatch(nameof(RRPortraitUiController.LoadCharacterPortrait))]
     [HarmonyPrefix]
     public static void LoadCharacterPortrait_Pre(
@@ -22,17 +22,25 @@ internal static class RRPortraitUiControllerPatch {
         ref ITrackPortrait portraitMetadata,
         ref bool __state
      ) {
-        Plugin.Log.LogMessage(characterId);
-        if(Config.Cadence.Crypt.Value && isHeroPortrait && characterId == __instance.CadenceDefaultPortraitCharacterId || characterId == DlcController.Instance.GetSupporterRRCharacterName()) {
+        if(
+            Config.Cadence.Crypt.Value
+            && isHeroPortrait
+            && (characterId == __instance.CadenceDefaultPortraitCharacterId || characterId == DlcController.Instance.GetSupporterRRCharacterName())
+        ) {
             characterId = "CadenceCrypt";
         }
-        var path = Path.Combine(Path.GetDirectoryName(Application.dataPath), Plugin.NAME, characterId);
-        Plugin.Log.LogMessage(path);
+
+        // TODO: use state instead of static variables here
+        var basePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), Plugin.NAME);
+        var portraitType = isHeroPortrait ? "Hero" : "Counterpart";
+        var path = Path.Combine(basePath, "Tracks", RRStageControllerPatch.levelId, portraitType);
+        if(!FileUtils.IsDirectory(path)) {
+            path = Path.Combine(basePath, "Tracks", RRStageControllerPatch.trackName, portraitType);
+        }
+        
         if(FileUtils.IsDirectory(path)) {
-            Plugin.Log.LogMessage("found!");
             var portrait = LocalTrackPortrait.TryLoadCustomPortrait(path, isHeroPortrait ? "CustomHero" : "CustomCounterpart");
             if(portrait != null) {
-                Plugin.Log.LogMessage("wahoo!");
                 characterId = portrait.PortraitId;
                 portraitMetadata = portrait;
                 portraitOptions = __instance.InitCustomPortrait(portrait);
@@ -41,7 +49,24 @@ internal static class RRPortraitUiControllerPatch {
                 } else {
                     __instance._counterpartPortraitId = characterId;
                 }
-                __state = true; // Indicate that a custom portrait was loaded
+                __state = true; // indicate that a custom portrait was loaded
+            }
+        }
+
+        path = Path.Combine(basePath, "Characters", characterId);
+        if(FileUtils.IsDirectory(path)) {
+            // TODO: remove redundancy
+            var portrait = LocalTrackPortrait.TryLoadCustomPortrait(path, isHeroPortrait ? "CustomHero" : "CustomCounterpart");
+            if(portrait != null) {
+                characterId = portrait.PortraitId;
+                portraitMetadata = portrait;
+                portraitOptions = __instance.InitCustomPortrait(portrait);
+                if(isHeroPortrait) {
+                    __instance._heroPortraitId = characterId;
+                } else {
+                    __instance._counterpartPortraitId = characterId;
+                }
+                __state = true; // indicate that a custom portrait was loaded
             }
         }
     }
@@ -60,7 +85,6 @@ internal static class RRPortraitUiControllerPatch {
 
         IEnumerator Wrapper() {
             if(__state) {
-                Plugin.Log.LogMessage("super wahoo!");
                 yield return __instance.PreloadCustomPortrait(portraitOptions);
             }
             yield return original;

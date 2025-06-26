@@ -7,16 +7,14 @@ namespace CustomPortRifts.Patches;
 
 [HarmonyPatch(typeof(RRStageController))]
 public static class RRStageControllerPatch {
-    public static string levelId = "";
-    public static string trackName = "";
-
     [HarmonyPatch(nameof(RRStageController.UnpackScenePayload))]
     [HarmonyPostfix]
-    public static void UnpackScenePayload(ScenePayload currentScenePayload) {
-        levelId = currentScenePayload.GetLevelId();
+    public static void UnpackScenePayload(RRStageController __instance, ScenePayload currentScenePayload) {
+        var portrait = PortraitState.Of(__instance._portraitUiController);
+        portrait.LevelId = currentScenePayload.GetLevelId();
         if(currentScenePayload is RhythmRiftScenePayload riftScene) {
-            trackName = riftScene.TrackName;
+            portrait.TrackName = riftScene.TrackName;
         }
-        Plugin.Log.LogMessage(levelId);
+        Plugin.Log.LogMessage(portrait.LevelId);
     }
 }

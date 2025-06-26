@@ -11,7 +11,7 @@ public class Plugin : BaseUnityPlugin {
     public const string NAME = "CustomPortRifts";
     public const string VERSION = "0.2.2";
 
-    internal static ManualLogSource Log;
+    internal static ManualLogSource Log { get; private set; } = new(NAME);
 
     internal void Awake() {
         Log = Logger;

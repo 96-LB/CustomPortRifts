@@ -3,13 +3,9 @@
 
 # Custom PortRifts
 
-This project is a mod for Rift of the NecroDancer which adds support for custom character portraits in custom levels. Level designers can add images to their track's directory before uploading to the workshop, and anyone with the mod installed will see the images loaded as sprites. Portraits can be animated, and up to four different portraits can be provided (Normal, DoingWell, DoingPoorly, VibePower). The mod is designed to be compatible with the vanilla game, so that users without the mod can still load and play the level without causing a crash.
+This project is a mod for Rift of the NecroDancer which adds support for customizing character portraits. Players can choose to replace the characters which appear in a specific tracks, or alternatively change the sprites for a specific character across all tracks (including a quick toggle to use Cadence's outfit from Crypt of the NecroDancer). The mod follows the same specification that the base game uses for custom portraits in custom levels.
 
 The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
-
-To preview the mod, check out the [mod showcase](https://steamcommunity.com/sharedfiles/filedetails/?id=3450077451) on the Steam workshop or view the video below.
-
-[![showcase video](https://github.com/user-attachments/assets/ca11a9de-9396-485e-87a5-575b5087b0f4)](https://www.youtube.com/watch?v=29wiIiOfLn4)
 
 
 ## Installation
@@ -47,11 +43,25 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 
    > ⚠️ Loading times will be longer than usual, as custom portraits are only loaded when you play the level for the first time.
 
+### Installing Rift of the NecroManager (highly recommended)
+
+In order to configure the mod to your liking, you are strongly encouraged to additionally install [Rift of the NecroManager](https://github.com/96-LB/RiftOfTheNecroManager), which adds an in-game settings menu for mods. If you already have a mod manager installed, or you prefer manually editing your configuration files, you can skip this step. Detailed installation instructions can be found [here](https://github.com/96-LB/RiftOfTheNecroManager), but the process is the same as in the previous subsection.
+
 ## Usage
 
-### Playing levels with custom portraits
-After installation, no additional action is needed to view custom portraits. If you play a custom level with properly configured portraits, the mod will automatically load them upon starting the level (this will cause increased load times). If you want to temporarily disable custom portraits, you can change the setting in `BepInEx/config/com.lalabuff.necrodancer.customportrifts.cfg` in your game folder and restart the game. Alternatively, if you have a mod configuration manager installed, you can disable the portraits in-game (changes will be applied upon level reload).
+### Basic Setup
+TODO
 
+### Reskins
+TODO
+
+### Track Overrides
+TODO
+
+### Character Overrides
+TODO
+
+> ⚠️ The below information is outdated information from an old version of the mod.
 ### Publishing levels with custom portraits
 To add custom portraits to your custom level, you do not need the mod installed, but it's recommended to have in order to test that you've done it right.
 

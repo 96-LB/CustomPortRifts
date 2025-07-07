@@ -68,9 +68,10 @@ CustomPortRifts comes with toggles to replace all instances of certain character
 
 To modify any of these settings, it's recommended to have [Rift of the NecroManager](https://github.com/96-LB/RiftOfTheNecroManager) installed. In this case, you can simply navigate to the in-game mod settings menu and easily set your preferences. Changes will take effect immediately. If you would rather change your settings manually, navigate to `BepInEx/config/com.lalabuff.necrodancer.customportrifts.cfg` in your game directory, modify the text file directly, and restart your game.
 
-Currently, the mod only supports one reskin.
+Currently, the mod only supports three reskins:
 - **Crypt Cadence**: Replaces all instances of Cadence with her costume from Crypt of the NecroDancer. Overrides the Supporter Upgrade skin.
-- (TODO: necrodancer reskins)
+- **Crypt NecroDancer**: Replaces all instances of cloaked NecroDancer with his costume from Crypt of the NecroDancer.
+- **Burger NecroDancer**: Replace all instances of cloaked NecroDancer with his costume from Magic Ham.
 
 ### Track Overrides
 TODO

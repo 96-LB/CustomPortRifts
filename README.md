@@ -74,7 +74,92 @@ Currently, the mod only supports three reskins:
 - **Burger NecroDancer**: Replace all instances of cloaked NecroDancer with his costume from Magic Ham.
 
 ### Track Overrides
-TODO
+Track overrides provide a way to replace the portraits for a specific level. To create a track override, create a folder in `CustomPortRifts/Tracks` with name equal to the ID of the track you would like to change the portraits for. Within it, add a `Counterpart` folder to replace the right character, and/or a `Hero` folder to replace the left character. Inside those folder, you can use the usual format for creating a custom portrait.
+
+A sample folder might look like the following:
+```
+CustomPortRifts/
+  Tracks/
+    DLCOG02/
+      Hero/
+        ...
+    RRDiscoDisaster/
+      CounterPart/
+        ...
+      Hero/
+        ...
+```
+
+Here's a full list of track IDs. Your folders should use the name in the second column. (on Windows, these are case-sensitive!)
+   > ⚠️ On Windows, these names are case-sensitive!
+
+| Track Name  | Track ID |
+| ------------- | ------------- |
+| Amalgamaniac | RRAmalgamaniac |
+| Baboosh | RRBaboosh |
+| Brave the Harvester | RRReaper |
+| Count Funkula | RRCountFunkula |
+| Cryp2que | RRCryp2que |
+| Disco Disaster | RRDiscoDisaster |
+| Eldritch House | RREldritchHouse |
+| Elusional | RRElusional |
+| Final Fugue | RRFinalFugue |
+| Glass Cages | RRGlassCages |
+| Hallow Queen | RRHallowQueen |
+| Hang Ten Heph | RRHangTenHeph |
+| Heph's Mess | RRHephsMess |
+| King's Ruse | RRDeepBlues |
+| Matriarch | RRMatriarch |
+| Morning Dove | RRMorningDove |
+| Necro Sonata | RRNecroSonatica |
+| Necropolis | RRNecropolis |
+| Nocturning | RRNocturning |
+| Om and On | RROmandOn |
+| Overthinker | RROverthinker |
+| Portamello | RRPortamello |
+| Progenitor | RRProgenitor |
+| RAVEVENGE | RRRavevenge |
+| Rift Within | RRRiftWithin |
+| She Banned | RRHarmonie |
+| Spookhouse Pop | RRSpookhousePop |
+| Suzu's Quest | RRSuzusQuest |
+| Twombtorial | RRTwombtorial |
+| Under the Thunder | RRThunder |
+| Visualize Yourself | RRVisualizeYourself |
+| What's In The Box? | RRMatron |
+| **Super Meatboy DLC** | |
+| Bootus Bleez | DLCApricot03 |
+| Got Danged | DLCApricot02 |
+| Slugger's Refrain | DLCApricot01 |
+| **Celeste DLC** |  |
+| Confronting Myself | DLCBanana04 |
+| Reach for the Summit | DLCBanana03 |
+| Resurrections | DLCBanana05 |
+| Resurrections (dannyBstyle Remix) | DLCBanana01 |
+| Scattered and Lost | DLCBanana02 |
+| **Pizza Tower DLC** | |
+| It's Pizza Time! | DLCCherry01 |
+| The Death That I Deservioli | DLCCherry02 |
+| Unexpectancy, Pt. 3 | DLCCherry03 |
+| World Wide Noise | DLCCherry04 |
+| **10th Anniversary Update** | |
+| Crypteque | DLCOG02 |
+| Fungal Funk | DLCOG07 |
+| Power Cords | DLCOG06 |
+| **Hatsune Miku DLC** | |
+| Intergalactic Bound | DLCKiwi03 |
+| Just 1dB Louder | DLCKiwi04 |
+| M@GICAL☆CURE! LOVE ♥ SHOT! | DLCKiwi02 |
+| MikuFiesta | DLCKiwi05 |
+| Radiant Revival | DLCKiwi06 |
+| Too Real | DLCKiwi01 |
+| **Hololive DLC** | |
+| Ahoy!! 我ら宝鐘海賊団☆ | DLCGuava04 |
+| Bibbidiba | DLCGuava01 |
+| Carbonated Love | DLCGuava05 |
+| Play Dice! | DLCGuava03 |
+| Reflect | DLCGuava02 |
+
 
 ### Character Overrides
 TODO

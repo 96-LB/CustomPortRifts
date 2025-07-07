@@ -5,8 +5,9 @@
 
 This project is a mod for Rift of the NecroDancer which adds support for customizing character portraits. Players can choose to replace the characters which appear in a specific tracks, or alternatively change the sprites for a specific character across all tracks (including a quick toggle to use Cadence's outfit from Crypt of the NecroDancer). The mod follows the same specification that the base game uses for custom portraits in custom levels.
 
-The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
+> ⚠️ BepInEx mods are <ins>**not officially supported**</ins> by Rift of the NecroDancer. If you encounter any issues with this mod, please open an issue on this GitHub repository, and do not submit reports to Brace Yourself Games! In order to prevent serious bugs, this mod will automatically disable itself when you update your game, and you will have to return here to download a new, compatible version.
 
+The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
 ## Installation
 
@@ -50,10 +51,26 @@ In order to configure the mod to your liking, you are strongly encouraged to add
 ## Usage
 
 ### Basic Setup
-TODO
+This mod works similarly to the game's official custom portrait feature. If you're not yet familiar with how to add custom portraits to workshop levels, you should first take a look at [this guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3487821958). CustomPortRifts uses the same format and folder structure as detailed in the guide, but portraits will be placed in your game directory instead of your custom track directory.
+
+To get started, navigate to the directory with your game executable (the same location where you created your BepInEx folder). Then, create a directory called `CustomPortRifts`. Within it, create two folders named `Tracks` and `Characters`. You should have the following structure:
+```
+RiftOfTheNecroDancer.exe
+CustomPortRifts/
+  Tracks/
+    ...
+  Characters/
+    ...
+```
 
 ### Reskins
-TODO
+CustomPortRifts comes with toggles to replace all instances of certain characters with variants. For instance, you can play with the 10th Anniversary Update portraits on all levels.
+
+To modify any of these settings, it's recommended to have [Rift of the NecroManager](https://github.com/96-LB/RiftOfTheNecroManager) installed. In this case, you can simply navigate to the in-game mod settings menu and easily set your preferences. Changes will take effect immediately. If you would rather change your settings manually, navigate to `BepInEx/config/com.lalabuff.necrodancer.customportrifts.cfg` in your game directory, modify the text file directly, and restart your game.
+
+Currently, the mod only supports one reskin.
+- **Crypt Cadence**: Replaces all instances of Cadence with her costume from Crypt of the NecroDancer. Overrides the Supporter Upgrade skin.
+- (TODO: necrodancer reskins)
 
 ### Track Overrides
 TODO

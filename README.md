@@ -51,7 +51,7 @@ In order to configure the mod to your liking, you are strongly encouraged to add
 ## Usage
 
 ### Basic Setup
-This mod works similarly to the game's official custom portrait feature. If you're not yet familiar with how to add custom portraits to workshop levels, you should first take a look at [this guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3487821958). CustomPortRifts uses the same format and folder structure as detailed in the guide, but portraits will be placed in your game directory instead of your custom track directory.
+This mod works similarly to the game's official custom portrait feature. If you're not yet familiar with how to add custom portraits to workshop levels, you should first take a look at [this guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3487821958). Custom PortRifts uses the same format and folder structure as detailed in the guide, but portraits will be placed in your game directory instead of your custom track directory.
 
 To get started, navigate to the directory with your game executable (the same location where you created your BepInEx folder). Then, create a directory called `CustomPortRifts`. Within it, create two folders named `Tracks` and `Characters`. You should have the following structure:
 ```
@@ -64,7 +64,7 @@ CustomPortRifts/
 ```
 
 ### Reskins
-CustomPortRifts comes with toggles to replace all instances of certain characters with variants. For instance, you can play with the 10th Anniversary Update portraits on all levels.
+Custom PortRifts comes with toggles to replace all instances of certain characters with variants. For instance, you can play with the 10th Anniversary Update portraits on all levels.
 
 To modify any of these settings, it's recommended to have [Rift of the NecroManager](https://github.com/96-LB/RiftOfTheNecroManager) installed. In this case, you can simply navigate to the in-game mod settings menu and easily set your preferences. Changes will take effect immediately. If you would rather change your settings manually, navigate to `BepInEx/config/com.lalabuff.necrodancer.customportrifts.cfg` in your game directory, modify the text file directly, and restart your game.
 

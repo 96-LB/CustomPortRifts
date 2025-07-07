@@ -27,13 +27,12 @@ public static class PortraitPatch {
         ref ITrackPortrait portraitMetadata,
         ref bool __state
      ) {
-        if(
-            Config.Reskins.Crypt
-            && isHeroPortrait
-            && (characterId == __instance.CadenceDefaultPortraitCharacterId || characterId == DlcController.Instance.GetSupporterRRCharacterName())
-        ) {
-            characterId = "CadenceCrypt";
-        }
+        characterId = characterId switch {
+            "Cadence" or "Cadence_Supporter" when Config.Reskins.CryptCadence => "CadenceCrypt",
+            "NecrodancerCloak" when Config.Reskins.CryptNecrodancer => "NecrodancerCrypt",
+            "NecrodancerCloak" when Config.Reskins.Necroburger => "NecrodancerBurger",
+            _ => characterId
+        };
 
         if(!Config.General.TrackOverrides && !Config.General.CharacterOverrides) {
             return;

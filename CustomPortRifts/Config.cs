@@ -30,9 +30,14 @@ public static class Config {
     public static class Reskins {
         const string GROUP = "Reskins";
 
-        public static Setting<bool> Crypt { get; } = new("Crypt Cadence", false, "Enables the crypt costume for Cadence on all tracks.");
+        public static Setting<bool> CryptCadence { get; } = new("Crypt Cadence", false, "Enables the Crypt of the NecroDancer costume for Cadence on all tracks.");
+        public static Setting<bool> CryptNecrodancer { get; } = new("Crypt NecroDancer", false, "Enables the Crypt of the NecroDancer costume for the NecroDancer on all tracks.");
+        public static Setting<bool> Necroburger { get; } = new("Burger NecroDancer", false, "Enables the burger costume for the NecroDancer on all tracks.");
+
         public static void Bind(ConfigFile config) {
-            Crypt.Bind(config, GROUP);
+            CryptCadence.Bind(config, GROUP);
+            CryptNecrodancer.Bind(config, GROUP);
+            Necroburger.Bind(config, GROUP);
         }
     }
 

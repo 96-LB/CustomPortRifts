@@ -41,6 +41,20 @@ public static class Config {
         }
     }
 
+    public static class ExtraModes {
+        const string GROUP = "Extra Modes";
+
+        public static Setting<bool> DisableBeastmaster { get; } = new("Disable Beastmaster", false, "Prevents Beastmaster from overriding the portrait when in Practice Mode.");
+        public static Setting<bool> DisableCoda { get; } = new("Disable Coda", false, "Prevents Coda from overriding the portrait in Remix Mode and Coda Mode.");
+        public static Setting<bool> DisableShopkeeper { get; } = new("Disable Shopkeeper", false, "Disables Freddie from overriding the portrait in Shopkeeper Mode.");
+
+        public static void Bind(ConfigFile config) {
+            DisableBeastmaster.Bind(config, GROUP);
+            DisableCoda.Bind(config, GROUP);
+            DisableShopkeeper.Bind(config, GROUP);
+        }
+    }
+
     public static class VersionControl {
         const string GROUP = "Version Control";
 
@@ -54,5 +68,7 @@ public static class Config {
     public static void Bind(ConfigFile config) {
         General.Bind(config);
         Reskins.Bind(config);
+        ExtraModes.Bind(config);
+        VersionControl.Bind(config);
     }
 }

@@ -4,7 +4,7 @@ This project is a mod for Rift of the NecroDancer which adds support for customi
 
 > ⚠️ BepInEx mods are <ins>**not officially supported**</ins> by Rift of the NecroDancer. If you encounter any issues with this mod, please open an issue on this GitHub repository, and do not submit reports to Brace Yourself Games! In order to prevent serious bugs, this mod will automatically disable itself when you update your game, and you will have to return here to download a new, compatible version.
 
-The current version is <ins>**v0.2.2**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
+The current version is <ins>**v1.0.0**</ins> and is compatible with Rift of the NecroDancer Patch 1.6.0 released on 25 June 2025. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
 ## Installation
 
@@ -29,7 +29,7 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 ### Installing Custom PortRifts
 1. Navigate to the latest release of Custom PortRifts [here](https://github.com/96-LB/CustomPortRifts/releases/latest).
    
-   > ⚠️ Do NOT download the source code using the button at the top of this page. If you're downloading a `.zip`, you are at the wrong place. 
+   > ⚠️ Do NOT download the source code using the button at the top of this page. If you're downloading a `.zip`, you are at the wrong place.
 
 2. Expand the 'Assets' tab at the bottom and download `CustomPortRifts.dll`.
 

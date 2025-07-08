@@ -1,5 +1,15 @@
 # Changelog
 
+## v1.0.0 - 7 July 2025
+⚠️ **This release contains breaking changes.**
+- ⚠️ Removes the mod's old functionality entirely in light of custom portraits now being supported by the base game.
+- Adds support for global overrides of portraits in base game levels, either on a per-character or per-track basis
+- Adds reskin toggles for Cadence (Crypt costume) and the NecroDancer (Crypt and Burger costumes).
+- Adds toggles to prevent Beastmaster, Coda, and Shopkeeper from overriding portraits in their respective extra modes.
+- Adds a version check which causes the mod to be automatically disabled when the game updates.
+
+Updated game version. Compatible with Patch 1.6.0.
+
 ## v0.2.2 - 22 March 2025
 - Disables the underlying portrait animators, which was sometimes causing custom hero portraits to have a jittery offset.
 - Removes stray white pixels appearing along the border of custom sprites.

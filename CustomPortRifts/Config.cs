@@ -46,7 +46,7 @@ public static class Config {
 
         public static Setting<bool> DisableBeastmaster { get; } = new("Disable Beastmaster", false, "Prevents Beastmaster from overriding the portrait when in Practice Mode.");
         public static Setting<bool> DisableCoda { get; } = new("Disable Coda", false, "Prevents Coda from overriding the portrait in Remix Mode and Coda Mode.");
-        public static Setting<bool> DisableShopkeeper { get; } = new("Disable Shopkeeper", false, "Disables Freddie from overriding the portrait in Shopkeeper Mode.");
+        public static Setting<bool> DisableShopkeeper { get; } = new("Disable Shopkeeper", false, "Prevents Freddie from overriding the portrait in Shopkeeper Mode.");
 
         public static void Bind(ConfigFile config) {
             DisableBeastmaster.Bind(config, GROUP);

@@ -1,9 +1,6 @@
-> ## ⚠️ As of 23 April 2025, this mod is no longer compatible with the game. Uninstall the mod if you're running into an infinite loading screen!
-> The base game now supports custom portraits, so this repository exists only as a historical record, unless this mod gets a new update in the future. The base game implementation is backwards compatible with the mod, but there are a few differences. It's recommended that you use [this guide](https://steamcommunity.com/sharedfiles/filedetails/?id=3487821958) for instructions, as some inaccuracies exist below. Enjoy!
-
 # Custom PortRifts
 
-This project is a mod for Rift of the NecroDancer which adds support for customizing character portraits. Players can choose to replace the characters which appear in a specific tracks, or alternatively change the sprites for a specific character across all tracks (including a quick toggle to use Cadence's outfit from Crypt of the NecroDancer). The mod follows the same specification that the base game uses for custom portraits in custom levels.
+This project is a mod for Rift of the NecroDancer which adds support for customizing character portraits. Players can choose to replace the characters which appear in a specific tracks, or alternatively change the sprites for a specific character across all tracks (including quick toggles to display certain variants of some characters). The mod follows the same specification that the base game uses for custom portraits in custom levels.
 
 > ⚠️ BepInEx mods are <ins>**not officially supported**</ins> by Rift of the NecroDancer. If you encounter any issues with this mod, please open an issue on this GitHub repository, and do not submit reports to Brace Yourself Games! In order to prevent serious bugs, this mod will automatically disable itself when you update your game, and you will have to return here to download a new, compatible version.
 

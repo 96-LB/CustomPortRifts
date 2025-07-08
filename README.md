@@ -37,9 +37,7 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 
    > ℹ️ You can find this folder by right clicking on the game in your Steam library and clicking 'Properties'. Then navigate to 'Installed Files' and click 'Browse'.
 
-4. Check that your mod is working by playing the [mod showcase](https://steamcommunity.com/sharedfiles/filedetails/?id=3450077451) level.
-
-   > ⚠️ Loading times will be longer than usual, as custom portraits are only loaded when you play the level for the first time.
+4. Check that your mod is working by launching the game and following the basic setup directions below!
 
 ### Installing Rift of the NecroManager (highly recommended)
 

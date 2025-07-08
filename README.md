@@ -16,7 +16,7 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
 ### Installing BepInEx
 1. Navigate to the latest release of BepInEx 5 [here](https://github.com/BepInEx/BepInEx/releases).
     > ⚠️ This mod is only tested for compatibility with BepInEx 5. If the above link takes you to a version of BepInEx 6, check out [the full list of releases](https://github.com/BepInEx/BepInEx/releases).
-2. Expand the "Assets" tab at the bottom and download the correct `.zip` file for your operating system.
+2. Expand the 'Assets' tab at the bottom and download the correct `.zip` file for your operating system.
    
     > ℹ️ For example, if you use 64-bit Windows, download `BepInEx_win_x64_5.X.Y.Z.zip`.
     
@@ -34,7 +34,7 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
    
    > ⚠️ Do NOT download the source code using the button at the top of this page. If you're downloading a `.zip`, you are at the wrong place. 
 
-2. Expand the "Assets" tab at the bottom and download `CustomPortRifts.dll`.
+2. Expand the 'Assets' tab at the bottom and download `CustomPortRifts.dll`.
 
 3. Place `CustomPortRifts.dll` in the `BepInEx/plugins` directory inside the Rift of the NecroDancer game folder.
 
@@ -74,7 +74,7 @@ Currently, the mod only supports three reskins:
 - **Burger NecroDancer**: Replace all instances of cloaked NecroDancer with his costume from Magic Ham.
 
 ### Track Overrides
-Track overrides provide a way to replace the portraits for a specific level. To create a track override, create a folder in `CustomPortRifts/Tracks` with name equal to the ID of the track you would like to change the portraits for. Within it, add a `Counterpart` folder to replace the right character, and/or a `Hero` folder to replace the left character. Inside those folder, you can use the usual format for creating a custom portrait.
+Track overrides provide a way to replace the portraits for a specific level. To create a track override, create a folder in `CustomPortRifts/Tracks` with name equal to the ID of the track you would like to change the portraits for. Within it, add a `Counterpart` folder to replace the right character, and/or a `Hero` folder to replace the left character. Inside those folders, you can use the usual format for creating a custom portrait.
 
 A sample folder might look like the following:
 ```
@@ -91,7 +91,7 @@ CustomPortRifts/
 ```
 
 Here's a full list of track IDs. Your folders should use the name in the second column. (on Windows, these are case-sensitive!)
-   > ⚠️ On Windows, these names are case-sensitive!
+> ⚠️ On Windows, these names are case-sensitive!
 
 | Track Name  | Track ID |
 | ------------- | ------------- |
@@ -160,64 +160,51 @@ Here's a full list of track IDs. Your folders should use the name in the second 
 | Play Dice! | DLCGuava03 |
 | Reflect | DLCGuava02 |
 
+To override the portraits for a workshop map, first find its Steam ID. You can identify this from the link to the workshop page (for example, the Tetoris map at https://steamcommunity.com/sharedfiles/filedetails/?id=3422450367 has ID `3422450367`). Then, prepend `ws` to it to get the name of the folder you should create (for example, Tetoris would use the folder `CustomPortRifts/Tracks/ws3422450367` for track overrides).
 
 ### Character Overrides
-TODO
+If you'd rather replace the portrait for a character across all tracks they appear in, you can instead use character overrides. To do this, create a new folder in `CustomPortRifts/Characters` with name equal to the ID of the character you would like to change the sprites for. Then use the usual custom portrait conventions to create your portrait inside of this folder.
+> ⚠️ Do not make `Counterpart` or `Hero` directories when using character overrides—just place your portraits directly in the character folder.
 
-> ⚠️ The below information is outdated information from an old version of the mod.
-### Publishing levels with custom portraits
-To add custom portraits to your custom level, you do not need the mod installed, but it's recommended to have in order to test that you've done it right.
+A sample folder might look like the following:
+```
+CustomPortRifts/
+  Characters/
+    Cadence/
+        ...
+    Cherry/
+        ...
+```
 
-1. Navigate to your custom track's folder in your file explorer.
-   > ℹ️ You can find this folder by opening the official level editor, pressing 'Open', and then scrolling down to 'Open track directory'.
+This feature can also be used to save storage space if you want to avoid duplicating portrait folders for many track overrides. In order to take advantage of this, make sure you have both the 'Track Override' and 'Character Override' configuration options turned on (this is the default). Then, anywhere you can add a portrait, instead create a file called `portrait.json` with the following contents:
+```
+{"PortraitId":"ID_GOES_HERE"}
+```
+In place of `ID_GOES_HERE`, you can write any character ID to load them in place of the regular portrait. You can also use IDs that don't actually exist in the game, as long as you have a folder in your character override directory with the same name. This way, you can link multiple tracks or characters to the same set of files instead of copying them around.
 
-2. Inside the folder for your level, create a new folder called `CustomPortRifts`.
+Here's a list of all the base game character IDs you can override:
+- Beastmaster
+- Cadence
+- Cadence_Supporter
+- Coda
+- Dove
+- Harmonie
+- Heph
+- Matron
+- Merlin
+- NecrodancerBurger
+- NecrodancerCloak
+- Nocturna
+- Queen
+- Reaper
+- Shopkeeper
+- Suzu
 
-3. Inside the new folder, create subfolders called `Hero` and/or `Counterpart` to add custom portraits for the left and right side, respectively.
+There are a few DLC characters you can also override:
+- Apricot (Meatboy)
+- Banana (Madeline)
+- Banana02 (Badeline)
+- Cherry (Pepino)
+- CadenceCrypt (10th Anniversary Cadence)
 
-4. Inside the counterpart and/or hero folders, create subfolders called `Normal`, `DoingPoorly`, `DoingWell`, `VibePower`, and/or `NormalMiss`.
-   > ℹ️ You don't need all of these, but at least one needs to have sprites inside of it for your custom portrait to load.
-
-5. Add your custom sprites as `.png` files inside the corresponding subfolders. To use an animation, upload each individual frame as a separate `.png` file.
-   > ℹ️ The frames should be in alphabetical order. See below for more details regarding animations.
-
-   > ℹ️ Here's an example of what your custom track directory could look like:
-   > ```
-   > info.json
-   > level_1.json
-   > CustomPortRifts/
-   >   Counterpart/
-   >     DoingPoorly/
-   >       angry00.png
-   >     DoingWell/
-   >       happy00.png
-   >     Normal/
-   >       stand00.png
-   >       stand01.png
-   >       stand02.png
-   >   Hero/
-   >     Normal/
-   >       heroic00.png
-   >     VibePower/
-   >       superheroic00.png
-   >     NormalMiss/
-   >       heroicmiss00.png
-   > ```
-
-6. Publish your track to the Steam workshop using the official editor. Your portraits will automatically be attached.
-
-That's it! If everything is properly configured, your track will have custom portraits for any players with the mod installed. Here are some important notes and caveats:
-
-- The character you choose in the editor is what all players without the mod will see. It also affects which background is displayed when custom portraits are active.
-- Every vanilla character's portrait is a little bit different in the codebase—the exact size, animation timings, and mask all vary. The mod uses Dove's portrait as a base for counterpart portraits because it has the most open mask—only the bottom of your sprite will be covered. This does mean that designing modified vanilla sprites isn't as simple as just drawing over the original sprites; the character might not look the same in Dove's portrait as they do in their own portrait. Future updates may make this more configurable.
-- Sprites are scaled up to fill the context box, so no specific resolution is needed. If your sprite is small, however, it might look blurry. Aspect ratio is preserved when scaling up. It's recommended that you test out how the sprite looks in-game and modify it accordingly because it's very hard to predict just from your image file.
-- Animations are created by loading the sprites in alphabetical order. The first sprite is the "resting" position which they'll hold for most of the beat. At the start of each beat, they quickly cycle through the rest of the sprites before returning to the first sprite. The second sprite lasts for 3/31ths of a beat, and all the remaining ones last for 2/31ths of a beat (these numbers were chosen to most closely match the vanilla portraits, which all vary a little bit). The exact timings may be configurable in future versions.
-- Not all four pose subfolders are necessary. When a folder is missing, the mod will use the other folders to generate the animation. The resolution order is as follows: 
-  - When vibe power is active: `VibePower`, `DoingWell`, `Normal`, `DoingPoorly`
-  - When the player has less than 3/10 HP: `DoingPoorly`, `Normal`, `DoingWell`, `VibePower`
-  - When the player has 80+ combo: `DoingWell`, `Normal`, `DoingPoorly`, `VibePower`
-  - All other times: `Normal`, `DoingWell`, `DoingPoorly`, `VibePower`
-- Missing overrides other animations for 1 beat whenever a note is missed.
-- Voicelines are silenced when custom portraits are active. Future versions may provide the ability to add custom voicelines.
-- To reduce load times, custom portraits are not reloaded when the map is replayed using the retry feature. If you modified your portrait, to see the changes you must first exit to the track selection menu and reopen the map.
-- To update (or delete) your portrait on the workshop, just edit (or delete) the contents of the `CustomPortRifts` folder and re-upload your track to the workshop.
+Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits.

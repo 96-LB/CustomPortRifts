@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.0.1 - 14 August 2025
+Updated game version. Compatible with Patch 1.7.0.
+
 ## v1.0.0 - 7 July 2025
 ⚠️ **This release contains breaking changes.**
 - ⚠️ Removes the mod's old functionality entirely in light of custom portraits now being supported by the base game.

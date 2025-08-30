@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using RhythmRift;
-using Shared.DLC;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections;

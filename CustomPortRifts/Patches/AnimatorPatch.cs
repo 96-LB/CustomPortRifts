@@ -3,6 +3,7 @@ using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections.Generic;
 using System.IO;
+using System.Threading.Tasks;
 
 namespace CustomPortRifts.Patches;
 
@@ -10,15 +11,13 @@ namespace CustomPortRifts.Patches;
 public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
     public Dictionary<string, Dictionary<string, DataDrivenAnimator.AnimationType>> Portraits { get; } = [];
     
-    public void AddPortrait(string baseDir, string name) {
-        Plugin.Log.LogMessage($"[{Instance.name}] AddPortrait: {name}");
+    public async Task AddPortrait(string baseDir, string name) {
         if(Portraits.ContainsKey(name)) {
-            Plugin.Log.LogInfo("Portrait already loaded, skipping.");
             return;
         }
         var portrait = LocalTrackPortrait.TryLoadCustomPortrait(Path.Combine(baseDir, name), "CustomCounterpart");
         if(portrait == null) {
-            Plugin.Log.LogWarning($"Failed to load custom portrait '{name}' from '{baseDir}'.");
+            Plugin.Log.LogWarning($"Failed to load portrait '{name}' from '{baseDir}'.");
             return;
         }
         var options = new DataDrivenAnimator.Options {
@@ -28,20 +27,24 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         };
         var temp = Instance._animations;
         Instance.Configure(options);
+        Plugin.Log.LogInfo($"Preloading portrait '{name}'...");
+        foreach(var animation in Instance._animations.Values) {
+            foreach(var frame in animation.Frames) {
+                await frame.SpriteTask; // preload all sprites
+            }
+        }
         Portraits[name] = Instance._animations;
-        Plugin.Log.LogMessage($"[{Instance.name}] Loaded portrait '{name}' with {Portraits[name].Count} animations.");
-        Plugin.Log.LogInfo(string.Join(' ', Portraits.Keys));
+        Plugin.Log.LogInfo($"Preloaded portrait '{name}'.");
         Instance._animations = temp;
     }
 
     public void SwitchPortrait(string name) {
-        Plugin.Log.LogMessage($"[{Instance.name}] SwitchPortrait: {name}");
         if(!Portraits.TryGetValue(name, out var animations)) {
             Plugin.Log.LogWarning($"Portrait '{name}' not found.");
-            Plugin.Log.LogInfo(string.Join(' ', Portraits.Keys));
             return;
         }
         Instance._animations = animations;
+        // TODO: portrait.json isn't being reset here
     }
 }
 

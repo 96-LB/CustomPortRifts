@@ -4,7 +4,9 @@ using Shared.SceneLoading.Payloads;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections;
+using System.Collections.Generic;
 using System.IO;
+using System.Security.Cryptography;
 
 namespace CustomPortRifts.Patches;
 
@@ -53,7 +55,6 @@ public static class StagePatch {
         __result = Wrapper();
 
         IEnumerator Wrapper() {
-            Plugin.Log.LogMessage("StageInitialize Postfix");
             yield return original;
             
             var state = StageState.Of(__instance);
@@ -67,22 +68,22 @@ public static class StagePatch {
             var beatmapPlayer = BeatmapState.Of(__instance.BeatmapPlayer);
             beatmapPlayer.Counterpart = counterpart;
             beatmapPlayer.Hero = hero;
+
+            var tasks = new List<IEnumerator>();
             
             foreach(var beatmap in __instance._beatmaps) {
                 foreach(var beatmapEvent in beatmap.BeatmapEvents) {
-                    Plugin.Log.LogInfo(beatmapEvent.type);
-                    if(beatmapEvent.type == Constants.EVENT_SETPORTRAIT) { // TODO: abstract this
-                        Plugin.Log.LogMessage("Loading custom portrait from beatmap event...");
-                        var name = beatmapEvent.GetFirstEventDataAsString(Constants.KEY_PORTRAITNAME);
-                        if(name == null) {
-                            Plugin.Log.LogWarning("Portrait name was null, skipping...");
-                            continue;
-                        }
-                        var isHero = beatmapEvent.GetFirstEventDataAsBool(Constants.KEY_ISHERO) ?? false;
-                        var animator = isHero ? hero : counterpart;
-                        animator?.AddPortrait(state.BasePortraitPath, name);
+                    if(SetPortraitEvent.TryParse(beatmapEvent, out var setPortraitEvent)) {
+                        var animator = setPortraitEvent.IsHero ? hero : counterpart;
+                        animator?.AddPortrait(state.BasePortraitPath, setPortraitEvent.Name)
+                            .Pipe(AsyncUtils.WaitForTask)
+                            .Pipe(tasks.Add);
                     }
                 }
+            }
+
+            foreach(var task in tasks) {
+                yield return task;
             }
         }
     }       

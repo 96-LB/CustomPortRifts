@@ -27,15 +27,16 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         };
         var temp = Instance._animations;
         Instance.Configure(options);
+        Portraits[name] = Instance._animations;
+        Instance._animations = temp;
+
         Plugin.Log.LogInfo($"Preloading portrait '{name}'...");
-        foreach(var animation in Instance._animations.Values) {
+        foreach(var animation in Portraits[name].Values) {
             foreach(var frame in animation.Frames) {
                 await frame.SpriteTask; // preload all sprites
             }
         }
-        Portraits[name] = Instance._animations;
         Plugin.Log.LogInfo($"Preloaded portrait '{name}'.");
-        Instance._animations = temp;
     }
 
     public void SwitchPortrait(string name) {

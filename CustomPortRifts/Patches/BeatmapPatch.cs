@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CustomPortRifts.BeatmapEvents;
+using HarmonyLib;
 using RhythmRift;
 using Shared.RhythmEngine;
 
@@ -16,7 +17,7 @@ public static class BeatmapPatch {
     [HarmonyPostfix]
     public static void ProcessBeatEvent(RRBeatmapPlayer __instance, BeatmapEvent beatEvent) {
         var state = BeatmapState.Of(__instance);
-        if(SetPortraitEvent.TryParse(beatEvent, out var setPortraitEvent)) {
+        if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
             var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
             animator?.SwitchPortrait(setPortraitEvent.Name);
         }

@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CustomPortRifts.BeatmapEvents;
+using HarmonyLib;
 using RhythmRift;
 using Shared.SceneLoading.Payloads;
 using Shared.TrackData;
@@ -55,8 +56,10 @@ public static class StagePatch {
         __result = Wrapper();
 
         IEnumerator Wrapper() {
+            CustomEvent.FlagAllForProcessing(__instance._beatmaps);
+
             yield return original;
-            
+
             var state = StageState.Of(__instance);
 
             var ui = __instance._portraitUiController;
@@ -71,15 +74,11 @@ public static class StagePatch {
 
             var tasks = new List<IEnumerator>();
             
-            foreach(var beatmap in __instance._beatmaps) {
-                foreach(var beatmapEvent in beatmap.BeatmapEvents) {
-                    if(SetPortraitEvent.TryParse(beatmapEvent, out var setPortraitEvent)) {
-                        var animator = setPortraitEvent.IsHero ? hero : counterpart;
-                        animator?.AddPortrait(state.BasePortraitPath, setPortraitEvent.Name)
-                            .Pipe(AsyncUtils.WaitForTask)
-                            .Pipe(tasks.Add);
-                    }
-                }
+            foreach(var setPortraitEvent in CustomEvent.Enumerate<SetPortraitEvent>(__instance._beatmaps)) {
+                var animator = setPortraitEvent.IsHero ? hero : counterpart;
+                animator?.AddPortrait(state.BasePortraitPath, setPortraitEvent.Name)
+                    .Pipe(AsyncUtils.WaitForTask)
+                    .Pipe(tasks.Add);
             }
 
             foreach(var task in tasks) {

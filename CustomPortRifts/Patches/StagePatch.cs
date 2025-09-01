@@ -62,10 +62,8 @@ public static class StagePatch {
             var state = StageState.Of(__instance);
 
             var ui = __instance._portraitUiController;
-            var counterpartAnimator = ui._counterpartPortraitParent.GetComponentInChildren<DataDrivenAnimator>();
-            var counterpart = counterpartAnimator ? PortraitViewState.Of(counterpartAnimator) : null;
-            var heroAnimator = ui._heroPortraitParent.GetComponentInChildren<DataDrivenAnimator>();
-            var hero = heroAnimator ? PortraitViewState.Of(heroAnimator) : null;
+            var counterpart = PortraitViewState.Of(ui._counterpartPortraitViewInstance);
+            var hero = PortraitViewState.Of(ui._heroPortraitViewInstance);
 
             var beatmapPlayer = BeatmapState.Of(__instance.BeatmapPlayer);
             beatmapPlayer.Counterpart = counterpart;

@@ -1,6 +1,4 @@
-﻿using Shared.RhythmEngine;
-
-namespace CustomPortRifts.BeatmapEvents;
+﻿namespace CustomPortRifts.BeatmapEvents;
 
 
 public class SetPortraitEvent : CustomEvent {

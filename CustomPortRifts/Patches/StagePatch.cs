@@ -7,7 +7,6 @@ using Shared.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Security.Cryptography;
 
 namespace CustomPortRifts.Patches;
 
@@ -64,9 +63,9 @@ public static class StagePatch {
 
             var ui = __instance._portraitUiController;
             var counterpartAnimator = ui._counterpartPortraitParent.GetComponentInChildren<DataDrivenAnimator>();
-            var counterpart = counterpartAnimator ? AnimatorState.Of(counterpartAnimator) : null;
+            var counterpart = counterpartAnimator ? PortraitViewState.Of(counterpartAnimator) : null;
             var heroAnimator = ui._heroPortraitParent.GetComponentInChildren<DataDrivenAnimator>();
-            var hero = heroAnimator ? AnimatorState.Of(heroAnimator) : null;
+            var hero = heroAnimator ? PortraitViewState.Of(heroAnimator) : null;
 
             var beatmapPlayer = BeatmapState.Of(__instance.BeatmapPlayer);
             beatmapPlayer.Counterpart = counterpart;
@@ -76,7 +75,7 @@ public static class StagePatch {
             
             foreach(var setPortraitEvent in CustomEvent.Enumerate<SetPortraitEvent>(__instance._beatmaps)) {
                 var animator = setPortraitEvent.IsHero ? hero : counterpart;
-                animator?.AddPortrait(state.BasePortraitPath, setPortraitEvent.Name)
+                animator?.PreloadPortrait(state.BasePortraitPath, setPortraitEvent.Name)
                     .Pipe(AsyncUtils.WaitForTask)
                     .Pipe(tasks.Add);
             }

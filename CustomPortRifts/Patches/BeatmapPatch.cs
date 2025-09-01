@@ -7,8 +7,8 @@ namespace CustomPortRifts.Patches;
 
 
 public class BeatmapState : State<RRBeatmapPlayer, BeatmapState> {
-    public AnimatorState? Counterpart { get; set; }
-    public AnimatorState? Hero { get; set; }
+    public PortraitViewState? Counterpart { get; set; }
+    public PortraitViewState? Hero { get; set; }
 }
 
 [HarmonyPatch(typeof(RRBeatmapPlayer))]
@@ -19,7 +19,7 @@ public static class BeatmapPatch {
         var state = BeatmapState.Of(__instance);
         if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
             var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
-            animator?.SwitchPortrait(setPortraitEvent.Name);
+            animator?.SetPortrait(setPortraitEvent.Name);
         }
     }
 }

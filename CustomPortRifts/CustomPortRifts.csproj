@@ -43,5 +43,11 @@
     <Reference Include="Assembly-CSharp">
       <HintPath>lib\RiftOfTheNecroDancer.dll</HintPath>
     </Reference>
+    <Reference Include="Coffee.SoftMaskForUGUI">
+      <HintPath>lib\Coffee.SoftMaskForUGUI.dll</HintPath>
+    </Reference>
+    <Reference Include="UnityEngine.UI">
+      <HintPath>lib\UnityEngine.UI.dll</HintPath>
+    </Reference>
   </ItemGroup>
 </Project>

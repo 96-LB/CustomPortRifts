@@ -15,7 +15,7 @@ public class PortraitState : State<RRPortraitUiController, PortraitState> {
 
 
 [HarmonyPatch(typeof(RRPortraitUiController))]
-public static class PortraitPatch {
+public static class PortraitControllerPatch {
     [HarmonyPatch(nameof(RRPortraitUiController.LoadCharacterPortrait))]
     [HarmonyPrefix]
     public static void LoadCharacterPortrait_Pre(

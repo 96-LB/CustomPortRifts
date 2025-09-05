@@ -1,19 +1,68 @@
 ﻿using CustomPortRifts.BeatmapEvents;
 using HarmonyLib;
+using Newtonsoft.Json;
 using RhythmRift;
+using Shared.PlayerData;
 using Shared.SceneLoading.Payloads;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections;
 using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 
 namespace CustomPortRifts.Patches;
 
 
 public class StageState : State<RRStageController, StageState> {
-    public string BasePortraitPath { get; set; } = "";
+    public const string CUSTOMPORTRIFTS = "CustomPortRifts";
+    public const string VFX_JSON = "vfx.json";
+
+    public string BasePath { get; set; } = "";
+    public string BasePortraitPath => Path.Combine(BasePath, CUSTOMPORTRIFTS);
+    public string VfxPath => Path.Combine(BasePortraitPath, VFX_JSON);
+    public Dictionary<string, LocalTrackVfxConfig> VfxConfigs { get; set; } = [];
+
+    public void TryLoadVfxConfigs() {
+        if(!FileUtils.Exists(VfxPath)) {
+            Plugin.Log.LogInfo($"No custom {VFX_JSON} file found in {CUSTOMPORTRIFTS} directory. No extra VFX will be loaded.");
+            return;
+        }
+        var text = FileUtils.ReadCompressedString(VfxPath);
+        if(text != null) {
+            var configs = JsonConvert.DeserializeObject<Dictionary<string, LocalTrackVfxConfig>>(text);
+            if(configs != null) {
+                foreach(var config in configs.Values) {
+                    if(config.CustomParticleImagePath != null) {
+                        config.CustomParticleImagePath = Path.Combine(BasePath, config.CustomParticleImagePath);
+                    }
+                }
+                VfxConfigs = configs;
+                Plugin.Log.LogInfo($"Loaded {VfxConfigs.Count} VFX configs.");
+                return;
+            }
+        }
+        Plugin.Log.LogWarning($"Failed to load VFX configs from {VfxPath}.");
+    }
+
+    public bool SetVfxConfig(string name) {
+        Plugin.Log.LogFatal($"Setting VFX config to '{name}'!");
+        if(!VfxConfigs.TryGetValue(name, out var customConfig)) {
+            Plugin.Log.LogWarning($"VFX config '{name}' not found.");
+            return false;
+        }
+
+        var fxConfig = Instance._riftFXConfig;
+        var fxController = Instance._rhythmRiftBackgroundFx;
+        var vfxConfig = fxConfig.CharacterRiftColorConfig;
+        if(!vfxConfig) {
+            vfxConfig = fxController.DefaultRiftFXColorConfig;
+        }
+
+        var bgDetail = PlayerSaveController.Instance.GetBackgroundDetailLevel();
+        fxConfig.CharacterRiftColorConfig = vfxConfig?.ApplyVfxConfigOverride(customConfig);
+        fxController.SetConfig(fxConfig, Instance.BeatmapPlayer, bgDetail == BackgroundDetailLevel.NoBackground);
+        return true;
+    }
 }
 
 [HarmonyPatch(typeof(RRStageController))]
@@ -22,10 +71,10 @@ public static class StagePatch {
     [HarmonyPostfix]
     public static void UnpackScenePayload(RRStageController __instance, ScenePayload currentScenePayload) {
         var portrait = PortraitState.Of(__instance._portraitUiController);
-        portrait.LevelId = currentScenePayload.GetLevelId();
         if(currentScenePayload is RhythmRiftScenePayload rrPayload && rrPayload.TrackMetadata is LocalTrackMetadata metadata) {
             var state = StageState.Of(__instance);
-            state.BasePortraitPath = Path.Combine(metadata.BasePath, LocalTrackPortrait.DefaultDirectory);
+            state.BasePath = metadata.BasePath ?? "";
+            state.TryLoadVfxConfigs();
         }
     }
 
@@ -67,6 +116,7 @@ public static class StagePatch {
             var hero = PortraitViewState.Of(ui._heroPortraitViewInstance);
 
             var beatmapPlayer = BeatmapState.Of(__instance.BeatmapPlayer);
+            beatmapPlayer.Stage = state;
             beatmapPlayer.Counterpart = counterpart;
             beatmapPlayer.Hero = hero;
 

@@ -1,4 +1,5 @@
 ﻿using RhythmRift;
+using Shared;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections.Generic;
@@ -71,9 +72,8 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         Instance._hasVibePowerAnimation = Animator.IsValidAnimation("VibePower");
         Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
         Instance._characterTransform.anchoredPosition = new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY);
-        
+
         return true;
     }
-    // TODO: portrait.json isn't being reset here
 }
 

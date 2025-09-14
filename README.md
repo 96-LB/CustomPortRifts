@@ -199,7 +199,7 @@ There are a few DLC characters you can also override:
 - Apricot (Meatboy)
 - Banana (Madeline)
 - Banana02 (Badeline)
-- Cherry (Pepino)
+- Cherry (Peppino)
 - CadenceCrypt (10th Anniversary Cadence)
 
 Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits.

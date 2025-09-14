@@ -1,5 +1,4 @@
 ﻿using RhythmRift;
-using Shared;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections.Generic;
@@ -68,12 +67,13 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             return false;
         }
 
+        // TODO: these portrait.json settings don't quite work
         Animator._animations = portrait.Animations;
         Instance._hasVibePowerAnimation = Animator.IsValidAnimation("VibePower");
         Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
         Instance._characterTransform.anchoredPosition = new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY);
+        Animator.Refresh();
 
         return true;
     }
 }
-

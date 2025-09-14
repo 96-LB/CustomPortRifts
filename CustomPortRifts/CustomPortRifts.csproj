@@ -46,6 +46,9 @@
     <Reference Include="Coffee.SoftMaskForUGUI">
       <HintPath>lib\Coffee.SoftMaskForUGUI.dll</HintPath>
     </Reference>
+    <Reference Include="Unity.Mathematics">
+      <HintPath>lib\Unity.Mathematics.dll</HintPath>
+    </Reference>
     <Reference Include="UnityEngine.UI">
       <HintPath>lib\UnityEngine.UI.dll</HintPath>
     </Reference>

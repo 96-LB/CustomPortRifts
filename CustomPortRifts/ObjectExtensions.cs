@@ -12,7 +12,7 @@ internal static class ObjectExtensions {
         return func(value);
     }
 
-    public static ref T Set<T>(this T value, ref T var) {
+    public static ref T Pipe<T>(this T value, ref T var) {
         var = value;
         return ref var;
     }

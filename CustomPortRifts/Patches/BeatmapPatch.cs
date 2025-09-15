@@ -21,8 +21,10 @@ public static class BeatmapPatch {
         if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
             var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
             animator?.SetPortrait(setPortraitEvent.Name);
-        } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent clearPortraitEvent)) {
-            state.Stage?.SetVfxConfig(clearPortraitEvent.Name);
+        } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent setVfxEvent)) {
+            var start = (float)beatEvent.endBeatNumber;
+            var duration = setVfxEvent.TransitionDuration;
+            state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration);
         }
     }
 }

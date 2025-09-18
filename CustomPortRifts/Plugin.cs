@@ -12,9 +12,9 @@ namespace CustomPortRifts;
 public class Plugin : BaseUnityPlugin {
     public const string GUID = "com.lalabuff.necrodancer.customportrifts";
     public const string NAME = "CustomPortRifts";
-    public const string VERSION = "1.0.1";
+    public const string VERSION = "1.0.2";
 
-    public const string ALLOWED_VERSIONS = "1.7.0 1.6.0";
+    public const string ALLOWED_VERSIONS = "1.8.0 1.7.1 1.7.0 1.6.0";
     public static string[] AllowedVersions => ALLOWED_VERSIONS.Split(' ');
 
     internal static ManualLogSource Log { get; private set; } = new(NAME);

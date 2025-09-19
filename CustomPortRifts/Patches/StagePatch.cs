@@ -24,21 +24,21 @@ public class VfxData(LocalTrackVfxConfig config, Texture2D? particleTexture) {
 public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration, float particleFadeTime)
      : FadeTransition<RiftFXColorConfig>(startBeat, duration, particleFadeTime) {
     public override RiftFXColorConfig Interpolate(float t) {
-        Plugin.Log.LogMessage(t);
-
         var vfx = Object.Instantiate(oldVfx);
         var newVfx = vfxData.Config;
-        vfx.CoreStartColor1 = newVfx.CoreStartColor1.Lerp(oldVfx.CoreStartColor1, t);
-        vfx.CoreStartColor2 = newVfx.CoreStartColor2.Lerp(oldVfx.CoreStartColor2, t);
-        vfx.SpeedlinesStartColor = newVfx.SpeedlinesStartColor.Lerp(oldVfx.SpeedlinesStartColor, t);
-        vfx.CoreColorOverLifetime = newVfx.CoreColorOverLifetime.Lerp(oldVfx.CoreColorOverLifetime, t);
-        vfx.SpeedlinesColorOverLifetime = newVfx.SpeedlinesColorOverLifetime.Lerp(oldVfx.SpeedlinesColorOverLifetime, t);
-        vfx.RiftGlowColor = Color.Lerp(newVfx.RiftGlowColor ?? oldVfx.RiftGlowColor, oldVfx.RiftGlowColor, t);
-        vfx.StrobeColor1 = Color.Lerp(newVfx.StrobeColor1 ?? oldVfx.StrobeColor1, oldVfx.StrobeColor1, t);
-        vfx.StrobeColor2 = Color.Lerp(newVfx.StrobeColor2 ?? oldVfx.StrobeColor2, oldVfx.StrobeColor2, t);
-        vfx.CustomParticleColor1 = newVfx.CustomParticleColor1.Lerp(oldVfx.CustomParticleColor1, t);
-        vfx.CustomParticleColor2 = newVfx.CustomParticleColor2.Lerp(oldVfx.CustomParticleColor2, t);
-        vfx.CustomParticleColorOverLifetime = newVfx.CustomParticleColorOverLifetime.Lerp(oldVfx.CustomParticleColorOverLifetime, t);
+        vfx.CoreStartColor1 = oldVfx.CoreStartColor1.Lerp(newVfx.CoreStartColor1, t);
+        vfx.CoreStartColor2 = oldVfx.CoreStartColor2.Lerp(newVfx.CoreStartColor2, t);
+        vfx.SpeedlinesStartColor = oldVfx.SpeedlinesStartColor.Lerp(newVfx.SpeedlinesStartColor, t);
+        vfx.CoreColorOverLifetime = oldVfx.CoreColorOverLifetime.Lerp(newVfx.CoreColorOverLifetime, t);
+        vfx.SpeedlinesColorOverLifetime = oldVfx.SpeedlinesColorOverLifetime.Lerp(newVfx.SpeedlinesColorOverLifetime, t);
+        
+        vfx.RiftGlowColor = Color.Lerp(oldVfx.RiftGlowColor, newVfx.RiftGlowColor ?? oldVfx.RiftGlowColor, t);
+        vfx.StrobeColor1 = Color.Lerp(oldVfx.StrobeColor1, newVfx.StrobeColor1 ?? oldVfx.StrobeColor1, t);
+        vfx.StrobeColor2 = Color.Lerp(oldVfx.StrobeColor2, newVfx.StrobeColor2 ?? oldVfx.StrobeColor2, t);
+
+        vfx.CustomParticleColor1 = oldVfx.CustomParticleColor1.Lerp(newVfx.CustomParticleColor1, t);
+        vfx.CustomParticleColor2 = oldVfx.CustomParticleColor2.Lerp(newVfx.CustomParticleColor2, t);
+        vfx.CustomParticleColorOverLifetime = oldVfx.CustomParticleColorOverLifetime.Lerp(newVfx.CustomParticleColorOverLifetime, t);
         vfx.BackgroundMaterial = oldVfx.BackgroundMaterial;
         vfx.CustomParticleMaterial = oldVfx.CustomParticleMaterial;
         vfx.CustomParticleSheetSize = oldVfx.CustomParticleSheetSize;
@@ -57,11 +57,12 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
             if(t >= 0.5f) {
                 vfx.CustomParticleMaterial = new Material(vfx.CustomParticleMaterial);
                 vfx.CustomParticleMaterial.SetTexture("_Texture2D", vfxData.ParticleTexture);
-                vfx.CustomParticleSheetSize = new(newVfx.CustomParticleSheetWidth ?? 2, newVfx.CustomParticleSheetHeight ?? 2);
+                var x = newVfx.CustomParticleSheetWidth ?? oldVfx.CustomParticleSheetSize?.x ?? 2;
+                var y = newVfx.CustomParticleSheetHeight ?? oldVfx.CustomParticleSheetSize?.y ?? 2;
+                vfx.CustomParticleSheetSize = new(x, y);
             }
 
-            vfx.CustomParticleColor1 = vfx.CustomParticleColor1.Lerp(Color.clear, FadeAmount(t));
-            vfx.CustomParticleColor2 = vfx.CustomParticleColor2.Lerp(Color.clear, FadeAmount(t));
+            vfx.CustomParticleColorOverLifetime = vfx.CustomParticleColorOverLifetime.Lerp(new Color(1, 1, 1, 0), FadeAmount(t));
         }
 
         return vfx;
@@ -102,7 +103,7 @@ public class StageState : State<RRStageController, StageState> {
         try {
             text = FileUtils.ReadCompressedString(VfxPath);
         } catch(JsonReaderException e) {
-            Plugin.Log.LogError($"Failed to parse custom {VFX_JSON} file: {e.Message}");
+            Plugin.Log.LogWarning($"Failed to parse custom {VFX_JSON} file: {e.Message}");
             return false;
         }
 
@@ -138,7 +139,6 @@ public class StageState : State<RRStageController, StageState> {
         if(!oldVfx) {
             oldVfx = Instance._rhythmRiftBackgroundFx.DefaultRiftFXColorConfig;
         }
-        Plugin.Log.LogError($"{startBeat} {endBeat}");
         Transition = new(oldVfx!, vfxData, startBeat, endBeat, particleFadeTime);
 
         return true;
@@ -150,11 +150,72 @@ public class StageState : State<RRStageController, StageState> {
         }
 
         var fx = Instance._riftFXConfig;
-        Plugin.Log.LogError(beat);
-        fx.CharacterRiftColorConfig = Transition.Evaluate(beat);
+        var vfx = Transition.Evaluate(beat);
+        fx.CharacterRiftColorConfig = vfx;
+        
+        var background = Instance._rhythmRiftBackgroundFx;
+        if(background) {
+            var coreParticles = background._coreParticleSystem;
+            if(coreParticles) {
+                var main = coreParticles.main;
+                main.startColor = new(vfx.CoreStartColor1, vfx.CoreStartColor2);
 
-        var bgDetail = PlayerSaveController.Instance.GetBackgroundDetailLevel();
-        Instance._rhythmRiftBackgroundFx.SetConfig(fx, Instance.BeatmapPlayer, bgDetail == BackgroundDetailLevel.NoBackground);
+                var colorOverLifetime = coreParticles.colorOverLifetime;
+                colorOverLifetime.color = vfx.CoreColorOverLifetime;
+            }
+
+            var speedlines = background._speedLines;
+            if(speedlines) {
+                var main = speedlines.main;
+                main.startColor = vfx.SpeedlinesStartColor;
+
+                var colorOverLifetime = speedlines.colorOverLifetime;
+                colorOverLifetime.color = vfx.SpeedlinesColorOverLifetime;
+            }
+
+            var backgroundMaterial = vfx.BackgroundMaterial;
+            background._currentBGMaterial = backgroundMaterial;
+            background._background.material = backgroundMaterial;
+            background._riftGlowColor = vfx.RiftGlowColor;
+
+            var characterParticles = background._customCharacterParticles;
+            if(characterParticles) {
+                var main = characterParticles.main;
+                main.startColor = new(vfx.CustomParticleColor1, vfx.CustomParticleColor2);
+                
+                var colorOverLifetime = characterParticles.colorOverLifetime;
+                colorOverLifetime.color = vfx.CustomParticleColorOverLifetime;
+                background._customParRend.material = vfx.CustomParticleMaterial;
+
+                // TODO: implement rotation
+
+                var textureSheetAnimation = characterParticles.textureSheetAnimation;
+                textureSheetAnimation.numTilesX = vfx.CustomParticleSheetSize?.x ?? 2;
+                textureSheetAnimation.numTilesY = vfx.CustomParticleSheetSize?.y ?? 2;
+            }
+
+            var particleVfx = background._particleVFX;
+            if(particleVfx != null) {
+                foreach(var particleSystem in particleVfx) {
+                    if(particleSystem) {
+                        var main = particleSystem.main;
+                        main.startColor = vfx.StrobeColor1; // this is how the game does it...
+                    }
+                }
+            }
+
+            var particleGradientVfx = background._particleGradientVFX;
+            if(particleGradientVfx != null) {
+                foreach(var particleSystem in particleGradientVfx) {
+                    if(particleSystem) {
+                        var main = particleSystem.main;
+                        main.startColor = new(vfx.StrobeColor1, vfx.StrobeColor2);
+                    }
+                }
+            }
+            
+            background.RefreshRiftMaterialProperties();
+        }
 
         if(Transition.BeatToProgress(beat) >= 1) {
             Transition = null;

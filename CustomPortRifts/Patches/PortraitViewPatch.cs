@@ -103,7 +103,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         var (fade, portrait) = Transition.Evaluate(beat);
         if(HasAnimator) {
             if(Animator._targetImage != null) {
-                Animator._targetImage.color = new(1, 1, 1, fade);
+                Animator._targetImage.color = new(1, 1, 1, 1 - fade);
             }
             if(portrait != null && !HasSwappedPortrait) {
                 // TODO: these portrait.json settings don't quite work

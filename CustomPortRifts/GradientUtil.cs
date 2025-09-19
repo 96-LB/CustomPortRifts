@@ -1,11 +1,16 @@
-﻿using Shared;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using UnityEngine;
 
 namespace CustomPortRifts;
 
 public static class GradientUtil {
-    public static Gradient Lerp(Gradient a, Gradient b, float t) {
+    [return: NotNullIfNotNull(nameof(a)), NotNullIfNotNull(nameof(b))]
+    public static Gradient? Lerp(Gradient? a, Gradient? b, float t) {
+        if(a == null) return b;
+        if(b == null) return a;
+        if(t <= 0) return a;
+        if(t >= 1) return b;
         return new Gradient {
             colorKeys = [.. a.colorKeys.Concat(b.colorKeys)
                 .Select(x => x.time)

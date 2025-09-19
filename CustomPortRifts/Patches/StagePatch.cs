@@ -29,43 +29,30 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
     public RiftFXColorConfig InterpolateVfx(float t) {
         Plugin.Log.LogMessage(t);
 
-        // TODO: remove code dupe
         var vfx = Object.Instantiate(oldVfx);
-        vfx.CoreStartColor1 = oldVfx.CoreStartColor1;
-        vfx.CoreStartColor2 = oldVfx.CoreStartColor2;
-        vfx.SpeedlinesStartColor = oldVfx.SpeedlinesStartColor;
-        vfx.CoreColorOverLifetime = oldVfx.CoreColorOverLifetime;
-        vfx.SpeedlinesColorOverLifetime = oldVfx.SpeedlinesColorOverLifetime;
-        vfx.RiftGlowColor = oldVfx.RiftGlowColor;
-        vfx.StrobeColor1 = oldVfx.StrobeColor1;
-        vfx.StrobeColor2 = oldVfx.StrobeColor2;
-        vfx.CustomParticleColor1 = oldVfx.CustomParticleColor1;
-        vfx.CustomParticleColor2 = oldVfx.CustomParticleColor2;
-        vfx.CustomParticleColorOverLifetime = oldVfx.CustomParticleColorOverLifetime;
+        var newVfx = vfxData.Config;
+        vfx.CoreStartColor1 = GradientUtil.Lerp(newVfx.CoreStartColor1, oldVfx.CoreStartColor1, t);
+        vfx.CoreStartColor2 = GradientUtil.Lerp(newVfx.CoreStartColor2, oldVfx.CoreStartColor2, t);
+        vfx.SpeedlinesStartColor = GradientUtil.Lerp(newVfx.SpeedlinesStartColor, oldVfx.SpeedlinesStartColor, t);
+        vfx.CoreColorOverLifetime = GradientUtil.Lerp(newVfx.CoreColorOverLifetime, oldVfx.CoreColorOverLifetime, t);
+        vfx.SpeedlinesColorOverLifetime = GradientUtil.Lerp(newVfx.SpeedlinesColorOverLifetime, oldVfx.SpeedlinesColorOverLifetime, t);
+        vfx.RiftGlowColor = Color.Lerp(newVfx.RiftGlowColor ?? oldVfx.RiftGlowColor, oldVfx.RiftGlowColor, t);
+        vfx.StrobeColor1 = Color.Lerp(newVfx.StrobeColor1 ?? oldVfx.StrobeColor1, oldVfx.StrobeColor1, t);
+        vfx.StrobeColor2 = Color.Lerp(newVfx.StrobeColor2 ?? oldVfx.StrobeColor2, oldVfx.StrobeColor2, t);
+        vfx.CustomParticleColor1 = GradientUtil.Lerp(newVfx.CustomParticleColor1, oldVfx.CustomParticleColor1, t);
+        vfx.CustomParticleColor2 = GradientUtil.Lerp(newVfx.CustomParticleColor2, oldVfx.CustomParticleColor2, t);
+        vfx.CustomParticleColorOverLifetime = GradientUtil.Lerp(newVfx.CustomParticleColorOverLifetime, oldVfx.CustomParticleColorOverLifetime, t);
         vfx.BackgroundMaterial = oldVfx.BackgroundMaterial;
         vfx.CustomParticleMaterial = oldVfx.CustomParticleMaterial;
         vfx.CustomParticleSheetSize = oldVfx.CustomParticleSheetSize;
 
-        var newVfx = vfxData.Config;
-        newVfx.CoreStartColor1?.Pipe(x => vfx.CoreStartColor1 = GradientUtil.Lerp(vfx.CoreStartColor1, x, t));
-        newVfx.CoreStartColor2?.Pipe(x => vfx.CoreStartColor2 = GradientUtil.Lerp(vfx.CoreStartColor2, x, t));
-        newVfx.SpeedlinesStartColor?.Pipe(x => vfx.SpeedlinesStartColor = GradientUtil.Lerp(vfx.SpeedlinesStartColor, x, t));
-        newVfx.CoreColorOverLifetime?.Pipe(x => vfx.CoreColorOverLifetime = GradientUtil.Lerp(vfx.CoreColorOverLifetime, x, t));
-        newVfx.SpeedlinesColorOverLifetime?.Pipe(x => vfx.SpeedlinesColorOverLifetime = GradientUtil.Lerp(vfx.SpeedlinesColorOverLifetime, x, t));
-        newVfx.RiftGlowColor?.Pipe(x => vfx.RiftGlowColor = Color.Lerp(vfx.RiftGlowColor, x, t));
-        newVfx.StrobeColor1?.Pipe(x => vfx.StrobeColor1 = Color.Lerp(vfx.StrobeColor1, x, t));
-        newVfx.StrobeColor2?.Pipe(x => vfx.StrobeColor2 = Color.Lerp(vfx.StrobeColor2, x, t));
-        newVfx.CustomParticleColor1?.Pipe(x => vfx.CustomParticleColor1 = GradientUtil.Lerp(vfx.CustomParticleColor1, x, t));
-        newVfx.CustomParticleColor2?.Pipe(x => vfx.CustomParticleColor2 = GradientUtil.Lerp(vfx.CustomParticleColor2, x, t));
-        newVfx.CustomParticleColorOverLifetime?.Pipe(x => vfx.CustomParticleColorOverLifetime = GradientUtil.Lerp(vfx.CustomParticleColorOverLifetime, x, t));
-
-        var mat = vfx.BackgroundMaterial;
-        if(mat) {
-            var newMat = new Material(mat);
-            newVfx.BackgroundColor1?.Pipe(x => newMat.SetColor("_TopColor", Color.Lerp(mat.GetColor("_TopColor"), x, t)));
-            newVfx.BackgroundColor2?.Pipe(x => newMat.SetColor("_BottomColor", Color.Lerp(mat.GetColor("_BottomColor"), x, t)));
-            newVfx.BackgroundGradientIntensity?.Pipe(x => newMat.SetFloat("_GradientIntensity", Mathf.Lerp(mat.GetFloat("_GradientIntensity"), x, t)));
-            newVfx.BackgroundAdditiveIntensity?.Pipe(x => newMat.SetFloat("_AdditiveIntensity", Mathf.Lerp(mat.GetFloat("_AdditiveIntensity"), x, t)));
+        var oldMat = vfx.BackgroundMaterial;
+        if(oldMat) {
+            var newMat = new Material(oldMat);
+            newVfx.BackgroundColor1?.Pipe(x => newMat.SetColor("_TopColor", Color.Lerp(oldMat.GetColor("_TopColor"), x, t)));
+            newVfx.BackgroundColor2?.Pipe(x => newMat.SetColor("_BottomColor", Color.Lerp(oldMat.GetColor("_BottomColor"), x, t)));
+            newVfx.BackgroundGradientIntensity?.Pipe(x => newMat.SetFloat("_GradientIntensity", Mathf.Lerp(oldMat.GetFloat("_GradientIntensity"), x, t)));
+            newVfx.BackgroundAdditiveIntensity?.Pipe(x => newMat.SetFloat("_AdditiveIntensity", Mathf.Lerp(oldMat.GetFloat("_AdditiveIntensity"), x, t)));
             vfx.BackgroundMaterial = newMat;
         }
 

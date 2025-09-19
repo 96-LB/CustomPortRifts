@@ -21,7 +21,7 @@ public class VfxData(LocalTrackVfxConfig config, Texture2D? particleTexture) {
     public bool HasCustomParticles => ParticleTexture;
 }
 
-public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration) {
+public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration, float particleFadeTime) {
     public RiftFXColorConfig NewVfx => InterpolateVfx(1);
 
     public float BeatToProgress(float beat) => duration <= 0 ? 1 : Mathf.Clamp01((beat - startBeat) / duration);
@@ -31,17 +31,17 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
 
         var vfx = Object.Instantiate(oldVfx);
         var newVfx = vfxData.Config;
-        vfx.CoreStartColor1 = GradientUtil.Lerp(newVfx.CoreStartColor1, oldVfx.CoreStartColor1, t);
-        vfx.CoreStartColor2 = GradientUtil.Lerp(newVfx.CoreStartColor2, oldVfx.CoreStartColor2, t);
-        vfx.SpeedlinesStartColor = GradientUtil.Lerp(newVfx.SpeedlinesStartColor, oldVfx.SpeedlinesStartColor, t);
-        vfx.CoreColorOverLifetime = GradientUtil.Lerp(newVfx.CoreColorOverLifetime, oldVfx.CoreColorOverLifetime, t);
-        vfx.SpeedlinesColorOverLifetime = GradientUtil.Lerp(newVfx.SpeedlinesColorOverLifetime, oldVfx.SpeedlinesColorOverLifetime, t);
+        vfx.CoreStartColor1 = newVfx.CoreStartColor1.Lerp(oldVfx.CoreStartColor1, t);
+        vfx.CoreStartColor2 = newVfx.CoreStartColor2.Lerp(oldVfx.CoreStartColor2, t);
+        vfx.SpeedlinesStartColor = newVfx.SpeedlinesStartColor.Lerp(oldVfx.SpeedlinesStartColor, t);
+        vfx.CoreColorOverLifetime = newVfx.CoreColorOverLifetime.Lerp(oldVfx.CoreColorOverLifetime, t);
+        vfx.SpeedlinesColorOverLifetime = newVfx.SpeedlinesColorOverLifetime.Lerp(oldVfx.SpeedlinesColorOverLifetime, t);
         vfx.RiftGlowColor = Color.Lerp(newVfx.RiftGlowColor ?? oldVfx.RiftGlowColor, oldVfx.RiftGlowColor, t);
         vfx.StrobeColor1 = Color.Lerp(newVfx.StrobeColor1 ?? oldVfx.StrobeColor1, oldVfx.StrobeColor1, t);
         vfx.StrobeColor2 = Color.Lerp(newVfx.StrobeColor2 ?? oldVfx.StrobeColor2, oldVfx.StrobeColor2, t);
-        vfx.CustomParticleColor1 = GradientUtil.Lerp(newVfx.CustomParticleColor1, oldVfx.CustomParticleColor1, t);
-        vfx.CustomParticleColor2 = GradientUtil.Lerp(newVfx.CustomParticleColor2, oldVfx.CustomParticleColor2, t);
-        vfx.CustomParticleColorOverLifetime = GradientUtil.Lerp(newVfx.CustomParticleColorOverLifetime, oldVfx.CustomParticleColorOverLifetime, t);
+        vfx.CustomParticleColor1 = newVfx.CustomParticleColor1.Lerp(oldVfx.CustomParticleColor1, t);
+        vfx.CustomParticleColor2 = newVfx.CustomParticleColor2.Lerp(oldVfx.CustomParticleColor2, t);
+        vfx.CustomParticleColorOverLifetime = newVfx.CustomParticleColorOverLifetime.Lerp(oldVfx.CustomParticleColorOverLifetime, t);
         vfx.BackgroundMaterial = oldVfx.BackgroundMaterial;
         vfx.CustomParticleMaterial = oldVfx.CustomParticleMaterial;
         vfx.CustomParticleSheetSize = oldVfx.CustomParticleSheetSize;
@@ -56,10 +56,18 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
             vfx.BackgroundMaterial = newMat;
         }
 
-        if(vfxData.ParticleTexture && t >= 0.5f) {
-            vfx.CustomParticleMaterial = new Material(vfx.CustomParticleMaterial);
-            vfx.CustomParticleMaterial.SetTexture("_Texture2D", vfxData.ParticleTexture);
-            vfx.CustomParticleSheetSize = new(newVfx.CustomParticleSheetWidth ?? 2, newVfx.CustomParticleSheetHeight ?? 2);
+        if(vfxData.ParticleTexture) {
+            if(t >= 0.5f) {
+                vfx.CustomParticleMaterial = new Material(vfx.CustomParticleMaterial);
+                vfx.CustomParticleMaterial.SetTexture("_Texture2D", vfxData.ParticleTexture);
+                vfx.CustomParticleSheetSize = new(newVfx.CustomParticleSheetWidth ?? 2, newVfx.CustomParticleSheetHeight ?? 2);
+            }
+
+            if(particleFadeTime > 0) {
+                var fadeAmount = 1 - Mathf.Clamp01((t - 0.5f) * 2 * particleFadeTime);
+                vfx.CustomParticleColor1 = vfx.CustomParticleColor1.Lerp(Color.clear, fadeAmount);
+                vfx.CustomParticleColor2 = vfx.CustomParticleColor2.Lerp(Color.clear, fadeAmount);
+            }
         }
 
         return vfx;
@@ -123,7 +131,7 @@ public class StageState : State<RRStageController, StageState> {
         return false;
     }
 
-    public bool SetVfxConfig(string name, float startBeat, float endBeat) {
+    public bool SetVfxConfig(string name, float startBeat, float endBeat, float particleFadeTime) {
         if(!VfxData.TryGetValue(name, out var vfxData)) {
             Plugin.Log.LogWarning($"VFX config '{name}' not found.");
             return false;
@@ -137,7 +145,7 @@ public class StageState : State<RRStageController, StageState> {
             oldVfx = Instance._rhythmRiftBackgroundFx.DefaultRiftFXColorConfig;
         }
         Plugin.Log.LogError($"{startBeat} {endBeat}");
-        Transition = new(oldVfx!, vfxData, startBeat, endBeat);
+        Transition = new(oldVfx!, vfxData, startBeat, endBeat, particleFadeTime);
 
         return true;
     }

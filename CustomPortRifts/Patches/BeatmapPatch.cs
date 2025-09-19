@@ -24,7 +24,8 @@ public static class BeatmapPatch {
         } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent setVfxEvent)) {
             var start = (float)beatEvent.endBeatNumber;
             var duration = setVfxEvent.TransitionDuration;
-            state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration);
+            var particleFade = setVfxEvent.ParticleFade;
+            state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration, particleFade);
         }
     }
 }

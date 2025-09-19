@@ -21,12 +21,9 @@ public class VfxData(LocalTrackVfxConfig config, Texture2D? particleTexture) {
     public bool HasCustomParticles => ParticleTexture;
 }
 
-public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration, float particleFadeTime) {
-    public RiftFXColorConfig NewVfx => InterpolateVfx(1);
-
-    public float BeatToProgress(float beat) => duration <= 0 ? 1 : Mathf.Clamp01((beat - startBeat) / duration);
-    public RiftFXColorConfig Evaluate(float beat) => InterpolateVfx(BeatToProgress(beat));
-    public RiftFXColorConfig InterpolateVfx(float t) {
+public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration, float particleFadeTime)
+     : FadeTransition<RiftFXColorConfig>(startBeat, duration, particleFadeTime) {
+    public override RiftFXColorConfig Interpolate(float t) {
         Plugin.Log.LogMessage(t);
 
         var vfx = Object.Instantiate(oldVfx);
@@ -63,11 +60,8 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
                 vfx.CustomParticleSheetSize = new(newVfx.CustomParticleSheetWidth ?? 2, newVfx.CustomParticleSheetHeight ?? 2);
             }
 
-            if(particleFadeTime > 0) {
-                var fadeAmount = 1 - Mathf.Clamp01((t - 0.5f) * 2 * particleFadeTime);
-                vfx.CustomParticleColor1 = vfx.CustomParticleColor1.Lerp(Color.clear, fadeAmount);
-                vfx.CustomParticleColor2 = vfx.CustomParticleColor2.Lerp(Color.clear, fadeAmount);
-            }
+            vfx.CustomParticleColor1 = vfx.CustomParticleColor1.Lerp(Color.clear, FadeAmount(t));
+            vfx.CustomParticleColor2 = vfx.CustomParticleColor2.Lerp(Color.clear, FadeAmount(t));
         }
 
         return vfx;
@@ -137,7 +131,7 @@ public class StageState : State<RRStageController, StageState> {
             return false;
         }
 
-        var oldVfx = Transition?.NewVfx;
+        var oldVfx = Transition?.EndState;
         if(!oldVfx) {
             oldVfx = Instance._riftFXConfig.CharacterRiftColorConfig;
         }

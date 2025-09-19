@@ -18,13 +18,14 @@ public static class BeatmapPatch {
     [HarmonyPostfix]
     public static void ProcessBeatEvent(RRBeatmapPlayer __instance, BeatmapEvent beatEvent) {
         var state = BeatmapState.Of(__instance);
+        var start = (float)beatEvent.endBeatNumber; // not a typo
         if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
             var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
-            animator?.SetPortrait(setPortraitEvent.Name);
+            var duration = setPortraitEvent.FadeTime;
+            animator?.SetPortrait(setPortraitEvent.Name, start, duration);
         } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent setVfxEvent)) {
-            var start = (float)beatEvent.endBeatNumber;
             var duration = setVfxEvent.TransitionDuration;
-            var particleFade = setVfxEvent.ParticleFade;
+            var particleFade = setVfxEvent.ParticleFadeTime;
             state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration, particleFade);
         }
     }

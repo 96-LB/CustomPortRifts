@@ -7,6 +7,7 @@ using Shared.Utilities;
 using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
+using UnityEngine;
 using UnityEngine.UI;
 using static UnityEngine.UI.Selectable;
 
@@ -35,6 +36,8 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
     public PortraitTransition? Transition { get; set; }
     public bool HasSwappedPortrait { get; set; } = false;
+
+    public Vector2 Offset { get; set; } = Vector2.zero;
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
         if(Portraits.ContainsKey(name)) {
@@ -110,7 +113,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
                 Animator._animations = portrait.Animations;
                 Instance._hasVibePowerAnimation = Animator.IsValidAnimation("VibePower");
                 Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
-                Instance._characterTransform.anchoredPosition = new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY);
+                UpdateOffset(portrait.Metadata.OffsetX, portrait.Metadata.OffsetY);
                 Animator.Refresh();
                 HasSwappedPortrait = true;
             }
@@ -121,6 +124,14 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             Transition = null;
         }
     }
+
+    public void UpdateOffset(double x, double y, bool update = true) {
+        var offset = new Vector2((float)x, (float)y);
+        if(update && Instance._characterTransform) {
+            Instance._characterTransform.anchoredPosition += offset - Offset;
+        }
+        Offset = offset;
+    }
 }
 
 [HarmonyPatch(typeof(RRPortraitView))]
@@ -130,5 +141,15 @@ public static class PortraitViewPatch {
     public static void UpdateSystem(RRPortraitView __instance, FmodTimeCapsule fmodTimeCapsule) {
         var state = PortraitViewState.Of(__instance);
         state.UpdatePortrait(fmodTimeCapsule.TrueBeatNumber);
+    }
+
+    [HarmonyPatch(nameof(RRPortraitView.ApplyCustomPortrait))]
+    [HarmonyPostfix]
+    public static void ApplyCustomPortrait(RRPortraitView __instance, ITrackPortrait portraitMetadata) {
+        var state = PortraitViewState.Of(__instance);
+        if(portraitMetadata != null) {
+            // set update to false because the base method already applied the offset
+            state.UpdateOffset(portraitMetadata.OffsetX, portraitMetadata.OffsetY, update: false);
+        }
     }
 }

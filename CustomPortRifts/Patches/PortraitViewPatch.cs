@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using RhythmRift;
-using Shared.PlayerData;
 using Shared.RhythmEngine;
 using Shared.TrackData;
 using Shared.Utilities;
@@ -8,8 +7,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
-using UnityEngine.UI;
-using static UnityEngine.UI.Selectable;
 
 namespace CustomPortRifts.Patches;
 
@@ -19,23 +16,13 @@ public class PortraitData(Dictionary<string, DataDrivenAnimator.AnimationType> a
     public ITrackPortrait Metadata { get; } = metadata;
 }
 
-
-public class PortraitTransition(float startBeat, float duration, PortraitData portrait)
-     : FadeTransition<(float, PortraitData?)>(startBeat, duration, 1) {
-
-    public override (float, PortraitData?) Interpolate(float t) {
-        return (FadeAmount(t), t < 0.5f ? null : portrait);
-    }
-}
-
 public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     public Dictionary<string, PortraitData> Portraits { get; } = [];
 
     public DataDrivenAnimator Animator => Instance._dataDrivenAnimator;
-    public bool HasAnimator => Instance._dataDrivenAnimator != null;
 
-    public PortraitTransition? Transition { get; set; }
-    public bool HasSwappedPortrait { get; set; } = false;
+    public TransitionManager<float> FadeTransition { get; } = new();
+    public TransitionManager<PortraitData> PortraitTransition { get; } = new();
 
     public Vector2 Offset { get; set; } = Vector2.zero;
 
@@ -45,7 +32,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             return false;
         }
         
-        if(!HasAnimator) {
+        if(!Animator) {
             Plugin.Log.LogWarning($"Failed to preload portrait '{name}' because no data driven animator was found.");
             return false;
         }
@@ -77,7 +64,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 
     public bool SetPortrait(string name, float startBeat, float duration) {
-        if(!HasAnimator) {
+        if(!Animator) {
             Plugin.Log.LogWarning($"Failed to set portrait '{name}' because no data driven animator was found.");
             return false;
         }
@@ -87,42 +74,28 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             return false;
         }
 
-        UpdatePortrait(float.PositiveInfinity); // immediately apply any pending transition
-        Transition = new(startBeat, duration, portrait);
-        HasSwappedPortrait = false;
+        FadeTransition.StartTransition(new FadeTransition(startBeat, duration), UpdateFade);
+        PortraitTransition.StartTransition(new StaticTransition<PortraitData>(startBeat + duration / 2, portrait), UpdatePortrait);
 
         return true;
     }
 
-    public void UpdatePortrait(float beat) {
-        if(Transition == null) {
+    public void UpdateFade(float fade) {
+        if(Animator && Animator._targetImage != null) {
+            Animator._targetImage.color = new (1, 1, 1, 1 - fade);
+        }
+    }
+        
+    public void UpdatePortrait(PortraitData portrait) {
+        if(!Animator) {
             return;
         }
-
-        if(!HasAnimator) {
-            return;
-        }
-
-        var (fade, portrait) = Transition.Evaluate(beat);
-        if(HasAnimator) {
-            if(Animator._targetImage != null) {
-                Animator._targetImage.color = new(1, 1, 1, 1 - fade);
-            }
-            if(portrait != null && !HasSwappedPortrait) {
-                // TODO: these portrait.json settings don't quite work
-                Animator._animations = portrait.Animations;
-                Instance._hasVibePowerAnimation = Animator.IsValidAnimation("VibePower");
-                Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
-                UpdateOffset(portrait.Metadata.OffsetX, portrait.Metadata.OffsetY);
-                Animator.Refresh();
-                HasSwappedPortrait = true;
-            }
-        }
-
-        // TODO: pull this out into a transition manager?
-        if(Transition.BeatToProgress(beat) >= 1) {
-            Transition = null;
-        }
+        
+        Animator._animations = portrait.Animations;
+        Instance._hasVibePowerAnimation = Animator.IsValidAnimation("VibePower");
+        Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
+        UpdateOffset(portrait.Metadata.OffsetX, portrait.Metadata.OffsetY);
+        Animator.Refresh();
     }
 
     public void UpdateOffset(double x, double y, bool update = true) {
@@ -132,6 +105,11 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         }
         Offset = offset;
     }
+
+    public void UpdateTransitions(float beat) {
+        FadeTransition.Update(beat);
+        PortraitTransition.Update(beat);
+    }
 }
 
 [HarmonyPatch(typeof(RRPortraitView))]
@@ -140,7 +118,7 @@ public static class PortraitViewPatch {
     [HarmonyPostfix]
     public static void UpdateSystem(RRPortraitView __instance, FmodTimeCapsule fmodTimeCapsule) {
         var state = PortraitViewState.Of(__instance);
-        state.UpdatePortrait(fmodTimeCapsule.TrueBeatNumber);
+        state.UpdateTransitions(fmodTimeCapsule.TrueBeatNumber);
     }
 
     [HarmonyPatch(nameof(RRPortraitView.ApplyCustomPortrait))]

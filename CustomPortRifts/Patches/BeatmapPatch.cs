@@ -21,12 +21,11 @@ public static class BeatmapPatch {
         var start = (float)beatEvent.endBeatNumber; // not a typo
         if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
             var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
-            var duration = setPortraitEvent.FadeTime;
+            var duration = setPortraitEvent.TransitionDuration;
             animator?.SetPortrait(setPortraitEvent.Name, start, duration);
         } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent setVfxEvent)) {
             var duration = setVfxEvent.TransitionDuration;
-            var particleFade = setVfxEvent.ParticleFadeTime;
-            state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration, particleFade);
+            state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration);
         }
     }
 }

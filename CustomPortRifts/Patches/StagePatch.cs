@@ -18,11 +18,11 @@ namespace CustomPortRifts.Patches;
 public class VfxData(LocalTrackVfxConfig config, Texture2D? particleTexture) {
     public LocalTrackVfxConfig Config { get; } = config;
     public Texture2D? ParticleTexture { get; } = particleTexture;
-    public bool HasCustomParticles => ParticleTexture;
 }
 
-public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration, float particleFadeTime)
-     : FadeTransition<RiftFXColorConfig>(startBeat, duration, particleFadeTime) {
+public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration)
+     : Transition<RiftFXColorConfig>(startBeat, duration) {
+    FadeTransition Fade { get; } = new(startBeat, duration);
     public override RiftFXColorConfig Interpolate(float t) {
         var vfx = Object.Instantiate(oldVfx);
         var newVfx = vfxData.Config;
@@ -62,7 +62,7 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
                 vfx.CustomParticleSheetSize = new(x, y);
             }
 
-            vfx.CustomParticleColorOverLifetime = vfx.CustomParticleColorOverLifetime.Lerp(new Color(1, 1, 1, 0), FadeAmount(t));
+            vfx.CustomParticleColorOverLifetime = vfx.CustomParticleColorOverLifetime.Lerp(new Color(1, 1, 1, 0), Fade.Interpolate(t));
         }
 
         return vfx;
@@ -78,7 +78,7 @@ public class StageState : State<RRStageController, StageState> {
     public string VfxPath => Path.Combine(BasePortraitPath, VFX_JSON);
     public Dictionary<string, VfxData> VfxData { get; } = [];
 
-    public VfxTransition? Transition { get; set; }
+    public TransitionManager<RiftFXColorConfig> Transition { get; } = new();
 
     public Texture2D? TryLoadParticleTexture(LocalTrackVfxConfig config) {
         if(config.CustomParticleImagePath != null) {
@@ -126,31 +126,30 @@ public class StageState : State<RRStageController, StageState> {
         return false;
     }
 
-    public bool SetVfxConfig(string name, float startBeat, float endBeat, float particleFadeTime) {
+    public bool SetVfxConfig(string name, float startBeat, float endBeat) {
         if(!VfxData.TryGetValue(name, out var vfxData)) {
             Plugin.Log.LogWarning($"VFX config '{name}' not found.");
             return false;
         }
 
-        var oldVfx = Transition?.EndState;
+        var oldVfx = Transition.Transition?.Transition.EndState; // lol
         if(!oldVfx) {
             oldVfx = Instance._riftFXConfig.CharacterRiftColorConfig;
         }
         if(!oldVfx) {
             oldVfx = Instance._rhythmRiftBackgroundFx.DefaultRiftFXColorConfig;
         }
-        Transition = new(oldVfx!, vfxData, startBeat, endBeat, particleFadeTime);
+        Transition.StartTransition(new VfxTransition(oldVfx!, vfxData, startBeat, endBeat), UpdateVfx);
 
         return true;
     }
 
-    public void UpdateVfx(float beat) {
+    public void UpdateVfx(RiftFXColorConfig vfx) {
         if(Transition == null) {
             return;
         }
 
         var fx = Instance._riftFXConfig;
-        var vfx = Transition.Evaluate(beat);
         fx.CharacterRiftColorConfig = vfx;
         
         var background = Instance._rhythmRiftBackgroundFx;
@@ -215,10 +214,6 @@ public class StageState : State<RRStageController, StageState> {
             }
             
             background.RefreshRiftMaterialProperties();
-        }
-
-        if(Transition.BeatToProgress(beat) >= 1) {
-            Transition = null;
         }
     }
 }
@@ -300,7 +295,7 @@ public static class StagePatch {
         if(__instance.BeatmapPlayer.IsPlaying()) {
             var state = StageState.Of(__instance);
             var beat = __instance.BeatmapPlayer.FmodTimeCapsule.TrueBeatNumber;
-            state.UpdateVfx(beat);
+            state.Transition.Update(beat);
         }
     }
 }

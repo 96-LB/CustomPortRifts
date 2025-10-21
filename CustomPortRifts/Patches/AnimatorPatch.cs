@@ -46,7 +46,6 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
     }
 
     public void UpdateOffset(Vector2 offset, bool update = true) {
-        Plugin.Log.LogMessage($"Updating offset to {offset}, update={update}");
         if(update && Image != null) {
             Image.rectTransform.anchoredPosition += offset - Offset;
         }
@@ -92,7 +91,7 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
             if(animationFrame != null) {
                 if(animationFrame.Offset.HasValue) {
                     var offset = animationFrame.Offset.Value - Position + Offset;
-                    UpdateOffset(offset, true);
+                    UpdateOffset(offset);
                 }
             }
         }

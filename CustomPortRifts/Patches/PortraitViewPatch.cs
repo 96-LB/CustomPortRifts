@@ -28,7 +28,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
         if(Portraits.ContainsKey(name)) {
-            Plugin.Log.LogInfo($"Portrait '{name}' is already preloaded.");
+            Plugin.Log.LogInfo($"Portrait '{name}' is already being preloaded.");
             return false;
         }
 
@@ -101,7 +101,8 @@ public static class PortraitViewPatch {
 
         var state = AnimatorState.Of(animator);
         if(portraitMetadata != null) {
-            state.UpdateOffset(new((float)portraitMetadata.OffsetX, (float)portraitMetadata.OffsetY));
+            // set update to false because the base method already applied the offset
+            state.UpdateOffset(new((float)portraitMetadata.OffsetX, (float)portraitMetadata.OffsetY), update: false);
         }
     }
 }

@@ -24,7 +24,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     public TransitionManager<PortraitData> PortraitTransition { get; } = new();
     public TransitionManager<Color> ColorTransition { get; } = new();
 
-    public Dictionary<string, PortraitData> Portraits { get; } = [];
+    public static Dictionary<string, PortraitData> Portraits { get; } = [];
     public Vector2 Offset { get; set; } = Vector2.zero;
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {

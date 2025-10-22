@@ -154,6 +154,19 @@ Here's a full list of track IDs. Your folders should use the name in the second 
 | Carbonated Love | DLCGuava05 |
 | Play Dice! | DLCGuava03 |
 | Reflect | DLCGuava02 |
+| **Everhood DLC** | |
+| Feisty Flowers | Eggplant02 |
+| Powers Of Destruction | Eggplant05 |
+| Revenge | Eggplant03 |
+| The Final Battle | Eggplant01 |
+| Why Oh You Are LOVE | Eggplant04 |
+| **Monstercat DLC** | |
+| Crab Rave | Mango03 |
+| Final Boss | Mango01 |
+| New Game | Mango02 |
+| PLAY | Mango04 |
+| Waiting For You | Mango05 |
+
 
 To override the portraits for a workshop map, first find its Steam ID. You can identify this from the link to the workshop page (for example, the Tetoris map at [https://steamcommunity.com/sharedfiles/filedetails/?id=**3422450367**](https://steamcommunity.com/sharedfiles/filedetails/?id=3422450367) has ID `3422450367`). Then, prepend `ws` to it to get the name of the folder you should create (for example, Tetoris would use the folder `CustomPortRifts/Tracks/ws3422450367` for track overrides).
 

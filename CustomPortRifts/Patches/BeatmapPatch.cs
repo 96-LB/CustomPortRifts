@@ -20,12 +20,17 @@ public static class BeatmapPatch {
         var state = BeatmapState.Of(__instance);
         var start = (float)beatEvent.endBeatNumber; // not a typo
         if(CustomEvent.TryParse(beatEvent, out SetPortraitEvent setPortraitEvent)) {
-            var animator = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
+            var portrait = setPortraitEvent.IsHero ? state.Hero : state.Counterpart;
             var duration = setPortraitEvent.TransitionDuration;
-            animator?.SetPortrait(setPortraitEvent.Name, start, duration);
+            portrait?.SetPortrait(setPortraitEvent.Name, start, duration);
         } else if(CustomEvent.TryParse(beatEvent, out SetVfxEvent setVfxEvent)) {
             var duration = setVfxEvent.TransitionDuration;
             state.Stage?.SetVfxConfig(setVfxEvent.Name, start, duration);
+        } else if(CustomEvent.TryParse(beatEvent, out SetPortraitColorEvent setPortraitColorEvent)) {
+            var portrait = setPortraitColorEvent.IsHero ? state.Hero : state.Counterpart;
+            var color = setPortraitColorEvent.Color ?? default;
+            var duration = setPortraitColorEvent.TransitionDuration;
+            portrait?.SetPortraitColor(color, start, duration);
         }
     }
 }

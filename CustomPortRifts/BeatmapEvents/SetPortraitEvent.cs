@@ -6,7 +6,6 @@ public class SetPortraitEvent : CustomEvent {
     public string Name => GetString("PortraitName");
     public bool IsHero => GetBool("IsHero") ?? false;
     public float TransitionDuration => GetFloat("TransitionDuration") ?? 0;
-
-
+    
     public override bool IsValid() => base.IsValid() && !string.IsNullOrWhiteSpace(Name);
 }

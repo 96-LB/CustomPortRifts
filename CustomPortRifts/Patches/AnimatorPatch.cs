@@ -50,7 +50,7 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
 
     public void UpdateFade(float fade) {
         if(Image != null) {
-            Image.color = Color.AlphaMultiplied(fade);
+            Image.color = Color.AlphaMultiplied(1 - fade);
         }
     }
 

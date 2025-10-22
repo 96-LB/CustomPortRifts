@@ -39,6 +39,8 @@ public class StageState : State<RRStageController, StageState> {
         ? Instance._practiceModeEndBeatNumber
         : float.MaxValue;
 
+    public bool ShouldUseCustomGraphics => Instance.CounterpartPortraitOverride == null;
+
     public Dictionary<string, VfxData> VfxData { get; } = [];
 
     public TransitionManager<RiftFXColorConfig> Transition { get; } = new();
@@ -183,14 +185,15 @@ public class StageState : State<RRStageController, StageState> {
     }
 
     public async Task Preload() {
-        var ui = Instance._portraitUiController;
-
         var beatmapPlayer = BeatmapState.Of(Instance.BeatmapPlayer);
         Beatmap.Stage = this;
-        
-        var portraitEvents = CustomEvent.Enumerate<SetPortraitEvent>(Instance._beatmaps).ToList();
 
+        if(!ShouldUseCustomGraphics) {
+            return;
+        }
+                
         // list all events which happen before the start beat
+        var portraitEvents = CustomEvent.Enumerate<SetPortraitEvent>(Instance._beatmaps).ToList();
         var heroEvents = portraitEvents.Where(e => e.IsHero && e.Beat <= StartBeat).OrderByDescending(e => e.Beat).ToList();
         var counterpartEvents = portraitEvents.Where(e => !e.IsHero && e.Beat <= StartBeat).OrderByDescending(e => e.Beat).ToList();
 
@@ -282,11 +285,10 @@ public static class StagePatch {
         IEnumerator Wrapper() {
             CustomEvent.FlagAllForProcessing(__instance._beatmaps);
 
-            // TODO initialization flag finishes too early
             yield return original;
 
             var state = StageState.Of(__instance);
-            AsyncUtils.WaitForTask(state.Preload());
+            yield return AsyncUtils.WaitForTask(state.Preload());
         }
     }
 

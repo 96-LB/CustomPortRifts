@@ -18,22 +18,25 @@ public class PortraitData(Dictionary<string, DataDrivenAnimator.AnimationType> a
 }
 
 public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
-    public Dictionary<string, PortraitData> Portraits { get; } = [];
-
-    public AnimatorState Animator => AnimatorState.Of(Instance._dataDrivenAnimator);
+    public AnimatorState? Animator => Instance._dataDrivenAnimator?.Pipe(AnimatorState.Of);
 
     public TransitionManager<float> FadeTransition { get; } = new();
     public TransitionManager<PortraitData> PortraitTransition { get; } = new();
     public TransitionManager<Color> ColorTransition { get; } = new();
 
+    public Dictionary<string, PortraitData> Portraits { get; } = [];
     public Vector2 Offset { get; set; } = Vector2.zero;
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
+        if(Animator == null) {
+            Plugin.Log.LogWarning($"Failed to preload portrait '{name}' because no custom portrait animator exists.");
+            return false;
+        }
+
         if(Portraits.ContainsKey(name)) {
             Plugin.Log.LogInfo($"Portrait '{name}' is already being preloaded.");
             return false;
         }
-
 
         var portrait = LocalTrackPortrait.TryLoadCustomPortrait(Path.Combine(baseDir, name), "CustomCounterpart");
         if(portrait == null) {
@@ -62,6 +65,11 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 
     public bool SetPortrait(string name, float startBeat, float duration) {
+        if(Animator == null) {
+            Plugin.Log.LogWarning($"Failed to set portrait '{name}' because no custom portrait animator exists.");
+            return false;
+        }
+
         if(!Portraits.TryGetValue(name, out var portrait)) {
             Plugin.Log.LogWarning($"Portrait '{name}' not found.");
             return false;
@@ -75,6 +83,11 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
     
     public bool SetPortraitColor(Color color, float startBeat, float duration) {
+        if(Animator == null) {
+            Plugin.Log.LogWarning($"Failed to set portrait color because no custom portrait animator exists.");
+            return false;
+        }
+
         Plugin.Log.LogMessage($"Setting portrait color to {color} at beat {startBeat} with a transition duration of {duration} beats.");
         var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : Animator.Color;
         ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), Animator.UpdateColor);
@@ -82,6 +95,9 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 
     public void UpdatePortrait(PortraitData portrait) {
+        if(Animator == null) {
+            return;
+        }
         Instance._hasVibePowerAnimation = Animator.HasVibe;
         Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
         Animator.UpdateOffset(new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY));

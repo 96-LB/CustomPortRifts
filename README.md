@@ -155,7 +155,7 @@ Here's a full list of track IDs. Your folders should use the name in the second 
 | Play Dice! | DLCGuava03 |
 | Reflect | DLCGuava02 |
 
-To override the portraits for a workshop map, first find its Steam ID. You can identify this from the link to the workshop page (for example, the Tetoris map at https://steamcommunity.com/sharedfiles/filedetails/?id=3422450367 has ID `3422450367`). Then, prepend `ws` to it to get the name of the folder you should create (for example, Tetoris would use the folder `CustomPortRifts/Tracks/ws3422450367` for track overrides).
+To override the portraits for a workshop map, first find its Steam ID. You can identify this from the link to the workshop page (for example, the Tetoris map at [https://steamcommunity.com/sharedfiles/filedetails/?id=**3422450367**](https://steamcommunity.com/sharedfiles/filedetails/?id=3422450367) has ID `3422450367`). Then, prepend `ws` to it to get the name of the folder you should create (for example, Tetoris would use the folder `CustomPortRifts/Tracks/ws3422450367` for track overrides).
 
 ### Character Overrides
 If you'd rather replace the portrait for a character across all tracks they appear in, you can instead use character overrides. To do this, create a new folder in `CustomPortRifts/Characters` with name equal to the ID of the character you would like to change the sprites for. Then use the usual custom portrait conventions to create your portrait inside of this folder.
@@ -170,12 +170,6 @@ CustomPortRifts/
     Cherry/
         ...
 ```
-
-This feature can also be used to save storage space if you want to avoid duplicating portrait folders for many track overrides. In order to take advantage of this, make sure you have both the 'Track Override' and 'Character Override' configuration options turned on (this is the default). Then, anywhere you can add a portrait, instead create a file called `portrait.json` with the following contents:
-```
-{"PortraitId":"ID_GOES_HERE"}
-```
-In place of `ID_GOES_HERE`, you can write any character ID to load them in place of the regular portrait. You can also use IDs that don't actually exist in the game, as long as you have a folder in your character override directory with the same name. This way, you can link multiple tracks or characters to the same set of files instead of copying them around.
 
 Here's a list of all the base game character IDs you can override:
 - Beastmaster
@@ -202,4 +196,32 @@ There are a few DLC characters you can also override:
 - Cherry (Peppino)
 - CadenceCrypt (10th Anniversary Cadence)
 
-Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits.
+> ⚠️ Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits. Use track overrides instead, and take a look at the following section for further tips.
+
+### Combining Track and Character Overrides
+
+If you want to use the same character in many track (or character) overrides, you can use the character override feature to avoid duplicating your image files and wasting storage space. In order to take advantage of this, make sure you have both the 'Track Override' and 'Character Override' configuration options turned on (this is the default). Then, anywhere you can add a portrait, instead create a file called `portrait.json` with the following contents:
+```
+{"PortraitId": "ID_GOES_HERE"}
+```
+In place of `ID_GOES_HERE`, you can write any character ID to load them in place of the regular portrait. This can be either a character ID from the base game, or a new character ID you create yourself. To create a new character ID, just add a folder in your character override directory with the same name. This way, you can link multiple tracks or characters to the same set of files instead of copying them around. For example, consider the following directory structure:
+```
+CustomPortRifts/
+  Characters/
+    Teto/
+        ...
+    Tracks/
+      DLCKiwi01/
+        portrait.json    <=  {"PortraitID": "Teto"}
+      DLCKiwi02/
+        portrait.json
+      DLCKiwi03/
+        portrait.json
+      DLCKiwi04/
+        portrait.json
+      DLCKiwi05/
+        portrait.json
+      DLCKiwi06/
+        portrait.json
+```
+This allows you to replace Hatsune Miku with Kasane Teto in all of the Miku DLC tracks without needing six copies of Teto's portrait on your hard drive.

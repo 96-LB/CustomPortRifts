@@ -8,7 +8,5 @@ public class SetPortraitEvent : CustomEvent {
     public float TransitionDuration => GetFloat("TransitionDuration") ?? 0;
 
 
-    public override bool IsValid() {
-        return base.IsValid() && !string.IsNullOrWhiteSpace(Name);
-    }
+    public override bool IsValid() => base.IsValid() && !string.IsNullOrWhiteSpace(Name);
 }

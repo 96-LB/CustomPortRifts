@@ -8,7 +8,5 @@ public class SetPortraitColorEvent : CustomEvent {
     public Color? Color => GetColor("Color");
     public float TransitionDuration => GetFloat("TransitionDuration") ?? 0;
 
-    public override bool IsValid() {
-        return base.IsValid() && Color != null;
-    }
+    public override bool IsValid() => base.IsValid() && Color != null;
 }

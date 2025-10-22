@@ -1,0 +1,14 @@
+﻿using UnityEngine;
+
+namespace CustomPortRifts.BeatmapEvents;
+
+
+public class SetPortraitColorEvent : CustomEvent {
+    public override string Type => "SetPortraitColor";
+    public Color? Color => GetColor("Color");
+    public float TransitionDuration => GetFloat("TransitionDuration") ?? 0;
+
+    public override bool IsValid() {
+        return base.IsValid() && Color != null;
+    }
+}

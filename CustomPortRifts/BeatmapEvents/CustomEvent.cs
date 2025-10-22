@@ -1,6 +1,8 @@
 ﻿using Shared.RhythmEngine;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using UnityEngine;
 
 namespace CustomPortRifts.BeatmapEvents;
 
@@ -21,9 +23,10 @@ public abstract class CustomEvent {
         } 
         return BeatmapEvent.GetFirstEventDataAsString(key);
     }
-    public bool? GetBool(string key) => BeatmapEvent.GetFirstEventDataAsBool(key);
-    public int? GetInt(string key) => BeatmapEvent.GetFirstEventDataAsInt(key);
-    public float? GetFloat(string key) => BeatmapEvent.GetFirstEventDataAsFloat(key);
+    public bool? GetBool(string key) => bool.TryParse(GetString(key), out var result) ? result : null;
+    public int? GetInt(string key) => int.TryParse(GetString(key), out var result) ? result : null;
+    public float? GetFloat(string key) => float.TryParse(GetString(key), NumberStyles.Float | NumberStyles.AllowThousands, CultureInfo.InvariantCulture, out var result) ? result : null;
+    public Color? GetColor(string key) => ColorUtility.TryParseHtmlString(GetString(key), out var color) ? color : null;
 
     public string GetMatchingType() {
         var typeSegments = $"{PREFIX}.{Type}".ToLowerInvariant().Split('.');

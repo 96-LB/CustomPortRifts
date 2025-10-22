@@ -1,4 +1,5 @@
-﻿using HarmonyLib;
+﻿using CustomPortRifts.Transitions;
+using HarmonyLib;
 using RhythmRift;
 using Shared.RhythmEngine;
 using Shared.TrackData;
@@ -23,6 +24,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
     public TransitionManager<float> FadeTransition { get; } = new();
     public TransitionManager<PortraitData> PortraitTransition { get; } = new();
+    public TransitionManager<Color> ColorTransition { get; } = new();
 
     public Vector2 Offset { get; set; } = Vector2.zero;
 
@@ -68,7 +70,13 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
         return true;
     }
-        
+    
+    public bool SetPortraitColor(Color color, float startBeat, float duration) {
+        var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : Animator.Color;
+        ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), Animator.UpdateColor);
+        return true;
+    }
+
     public void UpdatePortrait(PortraitData portrait) {
         Instance._hasVibePowerAnimation = Animator.HasVibe;
         Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
@@ -79,6 +87,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     public void UpdateTransitions(float beat) {
         FadeTransition.Update(beat);
         PortraitTransition.Update(beat);
+        ColorTransition.Update(beat);
     }
 }
 

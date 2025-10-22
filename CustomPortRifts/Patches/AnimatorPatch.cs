@@ -24,6 +24,8 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
     public Vector2 Offset { get; private set; } = Vector2.zero;
     public Vector2 OriginalSize { get; private set; } = Vector2.zero;
 
+    public Color Color { get; private set; } = Color.white;
+
     public async Task<Dictionary<string, AnimationType>?> PreloadPortrait(Options options) {
         var temp = Instance._animations;
         Instance.Configure(options);
@@ -39,9 +41,16 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         return animations;
     }
     
+    public void UpdateColor(Color color) {
+        Color = color;
+        if(Image != null) {
+            Image.color = Color;
+        }
+    }
+
     public void UpdateFade(float fade) {
         if(Image != null) {
-            Image.color = new(1, 1, 1, 1 - fade);
+            Image.color = Color.AlphaMultiplied(fade);
         }
     }
 

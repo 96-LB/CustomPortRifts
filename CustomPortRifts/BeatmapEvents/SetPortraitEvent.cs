@@ -7,5 +7,7 @@ public class SetPortraitEvent : CustomEvent {
     public bool IsHero => GetBool("IsHero") ?? false;
     public float TransitionDuration => GetFloat("TransitionDuration") ?? 0;
     
+    public float PortraitChangeBeat => Beat + TransitionDuration / 2;
+
     public override bool IsValid() => base.IsValid() && !string.IsNullOrWhiteSpace(Name);
 }

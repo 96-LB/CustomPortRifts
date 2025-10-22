@@ -11,7 +11,9 @@ public abstract class CustomEvent {
     const string PREFIX = Plugin.NAME;
     const string GUID = Plugin.GUID;
 
-    public BeatmapEvent BeatmapEvent { get; private set; } = default;
+    public BeatmapEvent BeatmapEvent { get; private set; }
+    public float Beat => (float)BeatmapEvent.startBeatNumber;
+
     public abstract string Type { get; }
     
     public string GetString(string key) {
@@ -71,6 +73,17 @@ public abstract class CustomEvent {
         if(IsValid()) {
             BeatmapEvent.AddEventData($"__MODS__.{GetMatchingType()}", GUID);
         }
+    }
+
+    public void FlagAsProcessed() {
+        FlagForProcessing();
+        if(IsValid()) {
+            BeatmapEvent.AddEventData("__MODS__.__PROCESSED__", GUID);
+        }
+    }
+
+    public bool HasBeenProcessed() {
+        return !string.IsNullOrEmpty(GetString("__MODS__.__PROCESSED__"));
     }
 
     public static bool TryParse<T>(BeatmapEvent beatmapEvent, out T setPortraitEvent) where T : CustomEvent, new() {

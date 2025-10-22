@@ -34,6 +34,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             return false;
         }
 
+
         var portrait = LocalTrackPortrait.TryLoadCustomPortrait(Path.Combine(baseDir, name), "CustomCounterpart");
         if(portrait == null) {
             Plugin.Log.LogWarning($"Failed to load portrait '{name}' from '{baseDir}'.");
@@ -47,6 +48,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         };
 
         Portraits[name] = new([], portrait); // reserve spot
+        Plugin.Log.LogMessage($"Preloading portrait '{name}'...");
         var animations = await Animator.PreloadPortrait(options);
         if(animations == null) {
             Plugin.Log.LogWarning($"Failed to preload animations for portrait '{name}'.");
@@ -55,7 +57,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
         Portraits[name] = new(animations, portrait);
 
-        Plugin.Log.LogInfo($"Preloaded portrait '{name}'.");
+        Plugin.Log.LogMessage($"Finished preloading portrait '{name}'.");
         return true;
     }
 
@@ -65,6 +67,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
             return false;
         }
 
+        Plugin.Log.LogMessage($"Setting portrait to '{name}' at beat {startBeat} with a transition duration of {duration} beats.");
         FadeTransition.StartTransition(new FadeTransition(startBeat, duration), Animator.UpdateFade);
         PortraitTransition.StartTransition(new StaticTransition<PortraitData>(startBeat + duration / 2, portrait), UpdatePortrait);
 
@@ -72,6 +75,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
     
     public bool SetPortraitColor(Color color, float startBeat, float duration) {
+        Plugin.Log.LogMessage($"Setting portrait color to {color} at beat {startBeat} with a transition duration of {duration} beats.");
         var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : Animator.Color;
         ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), Animator.UpdateColor);
         return true;
@@ -97,7 +101,8 @@ public static class PortraitViewPatch {
     [HarmonyPostfix]
     public static void UpdateSystem(RRPortraitView __instance, FmodTimeCapsule fmodTimeCapsule) {
         var state = PortraitViewState.Of(__instance);
-        state.UpdateTransitions(fmodTimeCapsule.TrueBeatNumber);
+        var beat = fmodTimeCapsule.TrueBeatNumber - 1;
+        state.UpdateTransitions(beat);
     }
 
     [HarmonyPatch(nameof(RRPortraitView.ApplyCustomPortrait))]

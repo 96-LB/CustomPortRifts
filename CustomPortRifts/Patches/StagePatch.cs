@@ -1,6 +1,5 @@
 ﻿using HarmonyLib;
 using RhythmRift;
-using Shared.Pins;
 using Shared.SceneLoading.Payloads;
 
 namespace CustomPortRifts.Patches;

@@ -2,8 +2,6 @@
 using HarmonyLib;
 using RhythmRift;
 using Shared.RhythmEngine;
-using System;
-using System.Collections.Generic;
 
 namespace CustomPortRifts.Patches;
 

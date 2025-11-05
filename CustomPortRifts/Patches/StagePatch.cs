@@ -301,4 +301,23 @@ public static class StagePatch {
             state.Transition.Update(beat);
         }
     }
+
+    [HarmonyPatch(nameof(RRStageController.InitBackgroundVideo))]
+    [HarmonyPostfix]
+    public static void InitBackgroundVideo(RRStageController __instance, ref IEnumerator __result) {
+        // since the original function is a coroutine, we need to wrap the output to properly postfix
+        var original = __result;
+        __result = Wrapper();
+
+        IEnumerator Wrapper() {
+            // we pretend practice mode is off when disable beastmaster is true so that the background video gets loaded
+            var temp = __instance._isPracticeMode;
+            __instance._isPracticeMode &= !Config.ExtraModes.DisableBeastmaster;
+
+            yield return original;
+            
+            __instance._isPracticeMode = temp;
+        }
+
+    }
 }

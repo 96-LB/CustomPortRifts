@@ -12,7 +12,8 @@ public class VfxData(LocalTrackVfxConfig config, Texture2D? particleTexture) {
 }
 
 public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float startBeat, float duration) : Transition<RiftFXColorConfig>(startBeat, duration) {
-    FadeTransition Fade { get; } = new(startBeat, duration);
+    public bool HasNewTexture { get; } = vfxData.ParticleTexture != null && vfxData.ParticleTexture != oldVfx.CustomParticleMaterial.GetTexture("_Texture2D");
+    public FadeTransition Fade { get; } = new(startBeat, duration);
     public override RiftFXColorConfig Interpolate(float t) {
         var vfx = Object.Instantiate(oldVfx);
         var newVfx = vfxData.Config;
@@ -43,7 +44,7 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
             vfx.BackgroundMaterial = newMat;
         }
 
-        if(vfxData.ParticleTexture) {
+        if(HasNewTexture) {
             if(t >= 0.5f) {
                 vfx.CustomParticleMaterial = new Material(vfx.CustomParticleMaterial);
                 vfx.CustomParticleMaterial.SetTexture("_Texture2D", vfxData.ParticleTexture);
@@ -52,6 +53,7 @@ public class VfxTransition(RiftFXColorConfig oldVfx, VfxData vfxData, float star
                 vfx.CustomParticleSheetSize = new(x, y);
             }
 
+            // fade out particles during transition
             vfx.CustomParticleColorOverLifetime = vfx.CustomParticleColorOverLifetime.Lerp(new Color(1, 1, 1, 0), Fade.Interpolate(t));
         }
 

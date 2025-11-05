@@ -1,4 +1,5 @@
-﻿using CustomPortRifts.BeatmapEvents;
+﻿using BepInEx;
+using CustomPortRifts.BeatmapEvents;
 using CustomPortRifts.Transitions;
 using HarmonyLib;
 using Newtonsoft.Json;
@@ -21,6 +22,10 @@ public class StageState : State<RRStageController, StageState> {
     public const string CUSTOMPORTRIFTS = "CustomPortRifts";
     public const string VFX_JSON = "vfx.json";
 
+    public Dictionary<string, Texture2D> TextureCache { get; } = [];
+    public Dictionary<string, VfxData> VfxData { get; } = [];
+    public TransitionManager<RiftFXColorConfig> Transition { get; } = new();
+
     public string BasePath { get; set; } = "";
     public string BasePortraitPath => Path.Combine(BasePath, CUSTOMPORTRIFTS);
     public string VfxPath => Path.Combine(BasePortraitPath, VFX_JSON);
@@ -40,22 +45,27 @@ public class StageState : State<RRStageController, StageState> {
         : float.MaxValue;
 
     public bool ShouldUseCustomGraphics => Instance.CounterpartPortraitOverride == null;
-
-    public Dictionary<string, VfxData> VfxData { get; } = [];
-
-    public TransitionManager<RiftFXColorConfig> Transition { get; } = new();
-
+    
     public Texture2D? TryLoadParticleTexture(LocalTrackVfxConfig config) {
-        if(config.CustomParticleImagePath != null) {
-            var bytes = FileUtils.ReadBytes(config.CustomParticleImagePath);
-            if(bytes != null) {
-                var texture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false);
-                if(texture.LoadImage(bytes)) {
-                    return texture;
-                }
-            }
+        var path = config.CustomParticleImagePath ?? "";
+        if(path.IsNullOrWhiteSpace()) {
+            return null;
         }
-        return null;
+        if(TextureCache.TryGetValue(path, out var cachedTexture)) {
+            return cachedTexture;
+        }
+        var bytes = FileUtils.ReadBytes(path);
+        if(bytes == null) {
+            return null;
+        }
+
+        var texture = new Texture2D(2, 2, TextureFormat.ARGB32, mipChain: false);
+        if(!texture.LoadImage(bytes)) {
+            return null;
+        }
+
+        TextureCache[path] = texture;
+        return texture;
     }
 
     public bool TryLoadVfxConfigs() {

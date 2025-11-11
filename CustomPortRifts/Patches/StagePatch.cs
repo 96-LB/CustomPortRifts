@@ -22,6 +22,8 @@ public class StageState : State<RRStageController, StageState> {
     public const string CUSTOMPORTRIFTS = "CustomPortRifts";
     public const string VFX_JSON = "vfx.json";
 
+    public static bool IsVfxSwitchingEnabled { get; private set; }
+
     public Dictionary<string, Texture2D> TextureCache { get; } = [];
     public Dictionary<string, VfxData> VfxData { get; } = [];
     public TransitionManager<RiftFXColorConfig> Transition { get; } = new();
@@ -46,6 +48,8 @@ public class StageState : State<RRStageController, StageState> {
 
     public bool ShouldUseCustomGraphics => Instance.CounterpartPortraitOverride == null;
     
+    public static bool UpdateVfxSwitching() => IsVfxSwitchingEnabled = Config.General.VfxSwitching;
+
     public Texture2D? TryLoadParticleTexture(LocalTrackVfxConfig config) {
         var path = config.CustomParticleImagePath ?? "";
         if(path.IsNullOrWhiteSpace()) {
@@ -69,6 +73,11 @@ public class StageState : State<RRStageController, StageState> {
     }
 
     public bool TryLoadVfxConfigs() {
+        if(!IsVfxSwitchingEnabled) {
+            Plugin.Log.LogInfo("Skipping VFX loading because VFX switching is disabled.");
+            return false;
+        }
+
         if(!FileUtils.Exists(VfxPath)) {
             Plugin.Log.LogInfo($"No custom {VFX_JSON} file found in {CUSTOMPORTRIFTS} directory. No extra VFX will be loaded.");
             return false;
@@ -102,6 +111,11 @@ public class StageState : State<RRStageController, StageState> {
     }
 
     public bool SetVfxConfig(string name, float startBeat, float duration) {
+        if(!IsVfxSwitchingEnabled) {
+            Plugin.Log.LogInfo($"Skipping VFX change to '{name}' because VFX switching is disabled.");
+            return false;
+        }
+
         if(!VfxData.TryGetValue(name, out var vfxData)) {
             Plugin.Log.LogWarning($"VFX config '{name}' not found.");
             return false;
@@ -260,6 +274,9 @@ public static class StagePatch {
         var portrait = PortraitState.Of(__instance._portraitUiController);
         portrait.LevelId = currentScenePayload.GetLevelId();
         if(currentScenePayload is RhythmRiftScenePayload rrPayload && rrPayload.TrackMetadata is LocalTrackMetadata metadata) {
+            StageState.UpdateVfxSwitching();
+            PortraitViewState.UpdatePortraitSwitching(); // TODO: better solution than static variable
+
             var state = StageState.Of(__instance);
             state.BasePath = metadata.BasePath ?? "";
             state.TryLoadVfxConfigs();

@@ -15,10 +15,11 @@ public static class SceneLoadingPatch {
         __result = Wrapper();
 
         IEnumerator Wrapper() {
-            if(!isReloading) {
+            if(!isReloading || !Config.General.PortraitSwitching) {
                 // clear the portrait cache
                 PortraitViewState.Portraits.Clear();
             }
+            
             yield return original;
         }
     }

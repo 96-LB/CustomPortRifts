@@ -19,7 +19,9 @@ public class PortraitData(Dictionary<string, DataDrivenAnimator.AnimationType> a
 }
 
 public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
-    public Vector2 Offset { get; set; } = Vector2.zero;
+    public static bool IsPortraitSwitchingEnabled { get; private set; }
+    public static Dictionary<string, PortraitData> Portraits { get; } = [];
+
     public Image? BackupImage { get; private set; }
     public Color BackupColor { get; private set; } = Color.white;
 
@@ -27,10 +29,10 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     public TransitionManager<float> FadeTransition { get; } = new();
     public TransitionManager<PortraitData> PortraitTransition { get; } = new();
     public TransitionManager<Color> ColorTransition { get; } = new();
-
-    public static Dictionary<string, PortraitData> Portraits { get; } = [];
-
+    
     public AnimatorState? Animator => Instance._dataDrivenAnimator?.Pipe(AnimatorState.Of);
+
+    public static bool UpdatePortraitSwitching() => IsPortraitSwitchingEnabled = Config.General.PortraitSwitching;
 
     public void SetBackupImage() {
         if(BackupImage == null) {
@@ -39,6 +41,11 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
+        if(!IsPortraitSwitchingEnabled) {
+            Plugin.Log.LogInfo($"Skipping preload of portrait '{name}' because portrait switching is disabled.");
+            return false;
+        }
+
         if(Animator == null) {
             Plugin.Log.LogWarning($"Failed to preload portrait '{name}' because no custom portrait animator exists.");
             return false;
@@ -76,6 +83,11 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 
     public bool SetPortrait(string name, float startBeat, float duration) {
+        if(!IsPortraitSwitchingEnabled) {
+            Plugin.Log.LogInfo($"Skipping portrait change to '{name}' because portrait switching is disabled.");
+            return false;
+        }
+
         if(Animator == null) {
             Plugin.Log.LogWarning($"Failed to set portrait '{name}' because no custom portrait animator exists.");
             return false;
@@ -94,8 +106,13 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
     
     public bool SetPortraitColor(Color color, float startBeat, float duration) {
+        if(!IsPortraitSwitchingEnabled) {
+            Plugin.Log.LogInfo($"Skipping portrait color change to {color} because portrait switching is disabled.");
+            return false;
+        }
+
         if(Animator == null && !BackupImage) {
-            Plugin.Log.LogWarning($"Failed to set portrait color because no custom portrait animator exists and the portrait image could not be found.");
+            Plugin.Log.LogWarning($"Failed to set portrait color to {color} because no custom portrait animator exists and the portrait image could not be found.");
             return false;
         }
 

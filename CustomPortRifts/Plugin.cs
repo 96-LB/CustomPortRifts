@@ -35,9 +35,6 @@ public class Plugin : BaseUnityPlugin {
 
             Harmony harmony = new(GUID);
             harmony.PatchAll();
-            foreach(var x in harmony.GetPatchedMethods()) {
-                Log.LogInfo($"Patched {x}.");
-            }
             Log.LogMessage($"{NAME} v{VERSION} ({GUID}) has been loaded!");
         } catch(Exception e) {
             Log.LogFatal("Encountered error while trying to initialize plugin.");

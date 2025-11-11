@@ -36,7 +36,7 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
 
         foreach(var animation in animations.Values) {
             foreach(var frame in animation.Frames) {
-                await frame.SpriteTask; // preload all sprites
+                await frame.SpriteTask;
             }
         }
 

@@ -21,9 +21,15 @@ public static class Config {
 
         public static Setting<bool> TrackOverrides { get; } = new("Track Overrides", true, "Enables track-specific portrait overrides.");
         public static Setting<bool> CharacterOverrides { get; } = new("Character Overrides", true, "Enables character-specific portrait overrides.");
+        public static Setting<bool> PortraitSwitching { get; } = new("Portrait Switching", true, "Allows custom tracks to switch character portraits in the middle of the level.");
+        public static Setting<bool> VfxSwitching { get; } = new("VFX Switching", true, "Allows custom tracks to switch background visual effects in the middle of the level.");
+
+
         public static void Bind(ConfigFile config) {
             TrackOverrides.Bind(config, GROUP);
             CharacterOverrides.Bind(config, GROUP);
+            PortraitSwitching.Bind(config, GROUP);
+            VfxSwitching.Bind(config, GROUP);
         }
     }
 
@@ -54,7 +60,7 @@ public static class Config {
             DisableShopkeeper.Bind(config, GROUP);
         }
     }
-
+    
     public static class VersionControl {
         const string GROUP = "Version Control";
 

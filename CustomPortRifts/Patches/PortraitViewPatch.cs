@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace CustomPortRifts.Patches;
 
@@ -18,14 +19,24 @@ public class PortraitData(Dictionary<string, DataDrivenAnimator.AnimationType> a
 }
 
 public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
-    public AnimatorState? Animator => Instance._dataDrivenAnimator?.Pipe(AnimatorState.Of);
+    public Vector2 Offset { get; set; } = Vector2.zero;
+    public Image? BackupImage { get; private set; }
+    public Color BackupColor { get; private set; } = Color.white;
+
 
     public TransitionManager<float> FadeTransition { get; } = new();
     public TransitionManager<PortraitData> PortraitTransition { get; } = new();
     public TransitionManager<Color> ColorTransition { get; } = new();
 
     public static Dictionary<string, PortraitData> Portraits { get; } = [];
-    public Vector2 Offset { get; set; } = Vector2.zero;
+
+    public AnimatorState? Animator => Instance._dataDrivenAnimator?.Pipe(AnimatorState.Of);
+
+    public void SetBackupImage() {
+        if(BackupImage == null) {
+            BackupImage = Instance.transform.Find("MaskImage")?.Find("CharacterImage")?.GetComponent<Image>();
+        }
+    }
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
         if(Animator == null) {
@@ -83,14 +94,14 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
     
     public bool SetPortraitColor(Color color, float startBeat, float duration) {
-        if(Animator == null) {
-            Plugin.Log.LogWarning($"Failed to set portrait color because no custom portrait animator exists.");
+        if(Animator == null && !BackupImage) {
+            Plugin.Log.LogWarning($"Failed to set portrait color because no custom portrait animator exists and the portrait image could not be found.");
             return false;
         }
 
         Plugin.Log.LogMessage($"Setting portrait color to {color} at beat {startBeat} with a transition duration of {duration} beats.");
-        var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : Animator.Color;
-        ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), Animator.UpdateColor);
+        var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : (Animator?.Color ?? BackupColor);
+        ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), UpdateColor);
         return true;
     }
 
@@ -103,16 +114,33 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         Animator.UpdateOffset(new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY));
         Animator.UpdatePortrait(portrait.Animations);
     }
+    public void UpdateColor(Color color) {
+        if(Animator != null) {
+            Animator.UpdateColor(color);
+        } else {
+            BackupColor = color;
+        }
+    }
 
     public void UpdateTransitions(float beat) {
         FadeTransition.Update(beat);
         PortraitTransition.Update(beat);
         ColorTransition.Update(beat);
+        if(Animator == null && BackupImage != null) {
+            BackupImage.color = BackupColor;
+        }
     }
 }
 
 [HarmonyPatch(typeof(RRPortraitView))]
 public static class PortraitViewPatch {
+    [HarmonyPatch(nameof(RRPortraitView.Start))]
+    [HarmonyPostfix]
+    public static void Start(RRPortraitView __instance) {
+        var state = PortraitViewState.Of(__instance);
+        state.SetBackupImage();
+    }
+
     [HarmonyPatch(nameof(RRPortraitView.UpdateSystem))]
     [HarmonyPostfix]
     public static void UpdateSystem(RRPortraitView __instance, FmodTimeCapsule fmodTimeCapsule) {

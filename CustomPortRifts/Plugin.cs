@@ -26,7 +26,7 @@ public class Plugin : BaseUnityPlugin {
             CustomPortRifts.Config.Bind(Config);
 
             var gameVersion = BuildInfoHelper.Instance.BuildId.Split('-')[0];
-            if(AllowedVersions.Contains(gameVersion) || !CustomPortRifts.Config.VersionControl.DisableVersionCheck) {
+            if(!AllowedVersions.Contains(gameVersion) && !CustomPortRifts.Config.VersionControl.DisableVersionCheck) {
                 Log.LogFatal($"The current version of the game is not compatible with this plugin. Please update the game or the mod to the correct version. The current mod version is v{VERSION} and the current game version is {gameVersion}. Allowed game versions: {string.Join(", ", AllowedVersions)}");
                 return;
             }

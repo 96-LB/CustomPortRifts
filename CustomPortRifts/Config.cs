@@ -64,10 +64,10 @@ public static class Config {
     public static class VersionControl {
         const string GROUP = "Version Control";
 
-        public static Setting<string> VersionOverride { get; } = new("Version Override", "", "Input the current build version or '*' to override the version check.");
+        public static Setting<bool> DisableVersionCheck { get; } = new("Disable Version Check", false, "[WARNING] Turning this on may cause bugs or crashes when the game updates.");
 
         public static void Bind(ConfigFile config) {
-            VersionOverride.Bind(config, GROUP);
+            DisableVersionCheck.Bind(config, GROUP);
         }
     }
 

@@ -4,6 +4,7 @@ using UnityEngine;
 
 namespace CustomPortRifts;
 
+
 public static class GradientUtil {
     [return: NotNullIfNotNull(nameof(a)), NotNullIfNotNull(nameof(b))]
     public static Gradient? Lerp(this Gradient? a, Gradient? b, float t) {

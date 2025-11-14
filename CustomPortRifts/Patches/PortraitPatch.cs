@@ -5,7 +5,6 @@ using System.Linq;
 namespace CustomPortRifts.Patches;
 
 
-
 [HarmonyPatch(typeof(LocalTrackPortrait))]
 public static class PortraitPatch {
     [HarmonyPatch(nameof(LocalTrackPortrait.TryLoadCustomPortrait))]

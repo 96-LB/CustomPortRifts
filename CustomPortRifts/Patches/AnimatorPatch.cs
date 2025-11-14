@@ -113,6 +113,7 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
     }
 }
 
+
 [HarmonyPatch(typeof(DataDrivenAnimator))]
 public static class AnimatorPatch {
     [HarmonyPatch(nameof(DataDrivenAnimator.Refresh))]

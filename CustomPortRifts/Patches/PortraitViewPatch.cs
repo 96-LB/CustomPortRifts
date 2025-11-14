@@ -149,6 +149,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     }
 }
 
+
 [HarmonyPatch(typeof(RRPortraitView))]
 public static class PortraitViewPatch {
     [HarmonyPatch(nameof(RRPortraitView.Start))]

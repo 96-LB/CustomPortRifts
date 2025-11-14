@@ -3,6 +3,7 @@ using UnityEngine;
 
 namespace CustomPortRifts;
 
+
 public static class DebugUtil {
     private static void PrintAllComponents(GameObject gameObject, int depth = 1) {
         foreach(var component in gameObject.GetComponents<Component>()) {

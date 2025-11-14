@@ -1,5 +1,4 @@
-﻿
-using Shared;
+﻿using Shared;
 using Shared.TrackData;
 using UnityEngine;
 

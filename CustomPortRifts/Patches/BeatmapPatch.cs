@@ -10,8 +10,7 @@ public class BeatmapState : State<RRBeatmapPlayer, BeatmapState> {
     public StageState? Stage { get; set; }
     public PortraitViewState? Counterpart => Stage?.Counterpart;
     public PortraitViewState? Hero => Stage?.Hero;
-
-
+    
     public void ProcessBeatEvent(BeatmapEvent beatEvent) {
         var start = (float)beatEvent.startBeatNumber;
         
@@ -50,6 +49,7 @@ public class BeatmapState : State<RRBeatmapPlayer, BeatmapState> {
         ProcessBeatEvent(customEvent.BeatmapEvent);
     }
 }
+
 
 [HarmonyPatch(typeof(RRBeatmapPlayer))]
 public static class BeatmapPatch {

@@ -266,6 +266,7 @@ public class StageState : State<RRStageController, StageState> {
     }
 }
 
+
 [HarmonyPatch(typeof(RRStageController))]
 public static class StagePatch {
     [HarmonyPatch(nameof(RRStageController.UnpackScenePayload))]

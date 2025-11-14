@@ -4,7 +4,7 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>CustomPortRifts</AssemblyName>
     <Product>Custom PortRifts</Product>
-    <Version>1.0.3</Version>
+    <Version>1.1.0</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
 	<Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
@@ -15,7 +15,7 @@
     </RestoreAdditionalProjectSources>
     <RootNamespace>CustomPortRifts</RootNamespace>
     <Authors>96 LB</Authors>
-    <Description>Rift of the NecroDancer mod for adding custom character portraits to custom levels</Description>
+    <Description>Rift of the NecroDancer mod for customizing in-game character portraits</Description>
     <PackageProjectUrl></PackageProjectUrl>
     <RepositoryUrl>https://github.com/96-LB/CustomPortRifts</RepositoryUrl>
     <PackageReadmeFile>README.md</PackageReadmeFile>

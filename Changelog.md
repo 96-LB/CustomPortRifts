@@ -1,5 +1,14 @@
 # Changelog
 
+## v1.1.0 - 14 October 2025
+⚠️ **This release contains breaking changes.**
+- Adds support for beatmap events to change portraits, portrait color, or background VFX in the middle of a custom chart.
+- Significantly decreases memory usage and load times of all images loaded from the filesystem by the game (custom portraits, particles, and album arts).
+- Fixes a bug where background videos would not display in practice mode when the Beastmaster was disabed.
+- ⚠️ Changed the 'Disable Version Check' configuration option to be a checkbox toggle.
+
+Compatible with Patch 1.10.0.
+
 ## v1.0.3 - 30 October 2025
 Updated game version. Compatible with Patch 1.10.0.
 

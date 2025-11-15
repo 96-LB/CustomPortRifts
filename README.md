@@ -21,7 +21,8 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
    
     > ℹ️ You can find this folder by right clicking on the game in your Steam library and clicking 'Properties'. Then navigate to 'Installed Files' and click 'Browse'.
 
-6. If you're on Mac or Linux, configure Steam to run BepInEx when you launch your game. Follow the guide [here](https://docs.bepinex.dev/articles/advanced/steam_interop.html).
+6. If you're on Mac or Linux, you need to configure Steam to run BepInEx when you launch your game. 
+    > ℹ️ Follow the guide [here](https://docs.bepinex.dev/articles/advanced/proton_wine.html), or add `WINEDLLOVERRIDES="winhttp=n,b" %command%` to your launch options located in the game's properties.
 
 7. Run Rift of the NecroDancer to set up BepInEx.
     > ℹ️ If done correctly, your `BepInEx` folder should now contain several subfolders, such as `BepInEx/plugins`.

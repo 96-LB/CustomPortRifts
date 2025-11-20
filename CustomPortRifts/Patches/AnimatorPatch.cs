@@ -1,6 +1,7 @@
 ﻿using HarmonyLib;
 using Shared.Utilities;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
@@ -95,21 +96,26 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         }
 
         var sprite = animationFrame?.Sprite;
-        if(sprite != null) {
-            if(OriginalSize == Vector2.zero) {
-                OriginalSize = Image.rectTransform.sizeDelta;
-            } else {
-                Image.rectTransform.sizeDelta = OriginalSize;
-            }
-
-            if(animationFrame != null) {
-                if(animationFrame.Offset.HasValue) {
-                    var offset = animationFrame.Offset.Value - Position + Offset;
-                    UpdateOffset(offset);
-                }
-            }
+        if(sprite == null) {
+            return;
         }
 
+        if(OriginalSize == Vector2.zero) {
+            OriginalSize = Image.rectTransform.sizeDelta;
+        }
+
+        if(animationFrame == null) {
+            return;
+        }
+
+        if(animationFrame.Offset.HasValue) {
+            var offset = animationFrame.Offset.Value - Position + Offset;
+            UpdateOffset(offset);
+        }
+
+        if(frames.Frames.All(x => !x.Scale.HasValue)) {
+            Image.rectTransform.sizeDelta = OriginalSize;
+        }
     }
 }
 

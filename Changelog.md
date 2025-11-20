@@ -1,6 +1,12 @@
 # Changelog
 
-## v1.1.0 - 14 October 2025
+## v1.2.0 - 20 November 2025
+- Fixes a bug where custom portraits which used manual scaling on some frames could display incorrectly.
+- Fixes a bug where VFX and portrait color events would trigger in practice mode even when Beastmaster was active.
+
+Compatible with Patch 1.10.0.
+
+## v1.1.0 - 14 November 2025
 ⚠️ **This release contains breaking changes.**
 - Adds support for beatmap events to change portraits, portrait color, or background VFX in the middle of a custom chart.
 - Significantly decreases memory usage and load times of all images loaded from the filesystem by the game (custom portraits, particles, and album arts).

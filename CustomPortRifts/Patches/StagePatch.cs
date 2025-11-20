@@ -48,7 +48,7 @@ public class StageState : State<RRStageController, StageState> {
 
     public bool ShouldUseCustomGraphics => Instance.CounterpartPortraitOverride == null;
     
-    public static bool UpdateVfxSwitching() => IsVfxSwitchingEnabled = Config.General.VfxSwitching;
+    public static bool UpdateVfxSwitching(bool isEnabled) => IsVfxSwitchingEnabled = Config.General.VfxSwitching && isEnabled;
 
     public Texture2D? TryLoadParticleTexture(LocalTrackVfxConfig config) {
         var path = config.CustomParticleImagePath ?? "";
@@ -275,8 +275,8 @@ public static class StagePatch {
         var portrait = PortraitState.Of(__instance._portraitUiController);
         portrait.LevelId = currentScenePayload.GetLevelId();
         if(currentScenePayload is RhythmRiftScenePayload rrPayload && rrPayload.TrackMetadata is LocalTrackMetadata metadata) {
-            StageState.UpdateVfxSwitching();
-            PortraitViewState.UpdatePortraitSwitching(); // TODO: better solution than static variable
+            StageState.UpdateVfxSwitching(__instance.CounterpartPortraitOverride == null);
+            PortraitViewState.UpdatePortraitSwitching(__instance.CounterpartPortraitOverride == null); // TODO: better solution than static variable
 
             var state = StageState.Of(__instance);
             state.BasePath = metadata.BasePath ?? "";

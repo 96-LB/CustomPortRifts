@@ -32,7 +32,7 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     
     public AnimatorState? Animator => Instance._dataDrivenAnimator?.Pipe(AnimatorState.Of);
 
-    public static bool UpdatePortraitSwitching() => IsPortraitSwitchingEnabled = Config.General.PortraitSwitching;
+    public static bool UpdatePortraitSwitching(bool isEnabled) => IsPortraitSwitchingEnabled = Config.General.PortraitSwitching && isEnabled;
 
     public void SetBackupImage() {
         if(BackupImage == null) {

@@ -1,5 +1,8 @@
 # Changelog
 
+## v1.2.1 - 10 December 2025
+Updated game version. Compatible with Patch 1.11.1.
+
 ## v1.2.0 - 20 November 2025
 - Fixes a bug where custom portraits which used manual scaling on some frames could display incorrectly.
 - Fixes a bug where VFX and portrait color events would trigger in practice mode even when Beastmaster was active.

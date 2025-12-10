@@ -4,7 +4,7 @@ This project is a mod for Rift of the NecroDancer which adds support for customi
 
 > ⚠️ BepInEx mods are <ins>**not officially supported**</ins> by Rift of the NecroDancer. If you encounter any issues with this mod, please open an issue on this GitHub repository, and do not submit reports to Brace Yourself Games! In order to prevent serious bugs, this mod will automatically disable itself when you update your game, and you will have to return here to download a new, compatible version.
 
-The current version is <ins>**v1.2.0**</ins> and is compatible with Rift of the NecroDancer Patch 1.10.0 released on 30 October 2025. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
+The current version is <ins>**v1.2.1**</ins> and is compatible with Rift of the NecroDancer Patch 1.11.1 released on 10 December 2025. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
 ## Installation
 
@@ -21,7 +21,7 @@ Custom PortRifts runs on BepInEx 5. In order to use this mod, you must first ins
    
     > ℹ️ You can find this folder by right clicking on the game in your Steam library and clicking 'Properties'. Then navigate to 'Installed Files' and click 'Browse'.
 
-6. If you're on Mac or Linux, you need to configure Steam to run BepInEx when you launch your game. 
+6. If you're on Mac or Linux, you need to configure Steam to run BepInEx when you launch your game.
     > ℹ️ Follow the guide [here](https://docs.bepinex.dev/articles/advanced/proton_wine.html), or add `WINEDLLOVERRIDES="winhttp=n,b" %command%` to your launch options located in the game's properties.
 
 7. Run Rift of the NecroDancer to set up BepInEx.

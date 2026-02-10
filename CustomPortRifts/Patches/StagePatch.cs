@@ -4,6 +4,7 @@ using CustomPortRifts.Transitions;
 using HarmonyLib;
 using Newtonsoft.Json;
 using RhythmRift;
+using RiftOfTheNecroManager;
 using Shared;
 using Shared.SceneLoading.Payloads;
 using Shared.TrackData;
@@ -12,7 +13,6 @@ using System.Collections;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Threading.Tasks;
 using UnityEngine;
 
 namespace CustomPortRifts.Patches;
@@ -34,18 +34,7 @@ public class StageState : State<RRStageController, StageState> {
 
     public PortraitViewState Counterpart => PortraitViewState.Of(Instance._portraitUiController._counterpartPortraitViewInstance);
     public PortraitViewState Hero => PortraitViewState.Of(Instance._portraitUiController._heroPortraitViewInstance);
-    public BeatmapState Beatmap => BeatmapState.Of(Instance.BeatmapPlayer);
-
-    public float StartBeat => Mathf.Max(0,
-        Instance._isPracticeMode
-        ? Instance._practiceModeStartBeatNumber - Instance._practiceModeTotalBeatsSkippedBeforeStartBeatmap - Instance._microRiftMusicFadeInDurationInBeats
-        : 0
-    );
-
-    public float EndBeat => Instance._isPracticeMode
-        ? Instance._practiceModeEndBeatNumber
-        : float.MaxValue;
-
+    
     public bool ShouldUseCustomGraphics => Instance.CounterpartPortraitOverride == null;
     
     public static bool UpdateVfxSwitching(bool isEnabled) => IsVfxSwitchingEnabled = Config.General.VfxSwitching && isEnabled;
@@ -74,12 +63,12 @@ public class StageState : State<RRStageController, StageState> {
 
     public bool TryLoadVfxConfigs() {
         if(!IsVfxSwitchingEnabled) {
-            Plugin.Log.LogInfo("Skipping VFX loading because VFX switching is disabled.");
+            Log.Info("Skipping VFX loading because VFX switching is disabled.");
             return false;
         }
 
         if(!FileUtils.Exists(VfxPath)) {
-            Plugin.Log.LogInfo($"No custom {VFX_JSON} file found in {CUSTOMPORTRIFTS} directory. No extra VFX will be loaded.");
+            Log.Info($"No custom {VFX_JSON} file found in {CUSTOMPORTRIFTS} directory. No extra VFX will be loaded.");
             return false;
         }
         
@@ -87,7 +76,7 @@ public class StageState : State<RRStageController, StageState> {
         try {
             text = FileUtils.ReadCompressedString(VfxPath);
         } catch(JsonReaderException e) {
-            Plugin.Log.LogWarning($"Failed to parse custom {VFX_JSON} file: {e.Message}");
+            Log.Warning($"Failed to parse custom {VFX_JSON} file: {e.Message}");
             return false;
         }
 
@@ -102,22 +91,22 @@ public class StageState : State<RRStageController, StageState> {
                     var particleTexture = TryLoadParticleTexture(config);
                     VfxData[key] = new(config, particleTexture);
                 }
-                Plugin.Log.LogInfo($"Loaded {VfxData.Count} VFX configs.");
+                Log.Info($"Loaded {VfxData.Count} VFX configs.");
                 return true;
             }
         }
-        Plugin.Log.LogWarning($"Failed to load VFX configs from {VfxPath}."); // TODO: more descriptive guard clauses/errors?
+        Log.Warning($"Failed to load VFX configs from {VfxPath}."); // TODO: more descriptive guard clauses/errors?
         return false;
     }
 
     public bool SetVfxConfig(string name, float startBeat, float duration) {
         if(!IsVfxSwitchingEnabled) {
-            Plugin.Log.LogInfo($"Skipping VFX change to '{name}' because VFX switching is disabled.");
+            Log.Info($"Skipping VFX change to '{name}' because VFX switching is disabled.");
             return false;
         }
 
         if(!VfxData.TryGetValue(name, out var vfxData)) {
-            Plugin.Log.LogWarning($"VFX config '{name}' not found.");
+            Log.Warning($"VFX config '{name}' not found.");
             return false;
         }
 
@@ -129,7 +118,7 @@ public class StageState : State<RRStageController, StageState> {
             oldVfx = Instance._rhythmRiftBackgroundFx.DefaultRiftFXColorConfig;
         }
 
-        Plugin.Log.LogMessage($"Setting VFX config to '{name}' at beat {startBeat} with a transition duration of {duration} beats.");
+        Log.Message($"Setting VFX config to '{name}' at beat {startBeat} with a transition duration of {duration} beats.");
         Transition.StartTransition(new VfxTransition(oldVfx!, vfxData, startBeat, duration), UpdateVfx);
 
         return true;
@@ -207,62 +196,29 @@ public class StageState : State<RRStageController, StageState> {
             background.RefreshRiftMaterialProperties();
         }
     }
-
-    public async Task Preload() {
-        var beatmapPlayer = BeatmapState.Of(Instance.BeatmapPlayer);
-        Beatmap.Stage = this;
-
-        if(!ShouldUseCustomGraphics) {
-            return;
+    
+    
+    private SetPortraitEvent[]? PortraitEventsToPreload { get; set; } = null;
+    public bool ShouldPreload(SetPortraitEvent setPortraitEvent) {
+        if(PortraitEventsToPreload == null) {
+            var state = RiftOfTheNecroManager.Patches.StageState.Of(Instance);
+            
+            // list all events which happen before the start beat
+            var portraitEvents = state.Beatmap.CustomEvents.OfType<SetPortraitEvent>().ToList();
+            var heroEvents = portraitEvents.Where(e => e.IsHero && e.Beat <= state.StartBeat).OrderByDescending(e => e.Beat).ToList();
+            var counterpartEvents = portraitEvents.Where(e => !e.IsHero && e.Beat <= state.StartBeat).OrderByDescending(e => e.Beat).ToList();
+            
+            // we need to simulate the last event to set the correct portrait
+            var lastHeroEvent = heroEvents.FirstOrDefault();
+            var lastCounterpartEvent = counterpartEvents.FirstOrDefault();
+            
+            // if the last event is mid-fade, we also need to preload the event before it
+            var lastHeroFadeEvent = lastHeroEvent?.PortraitChangeBeat > state.StartBeat ? heroEvents.Skip(1).FirstOrDefault() : null;
+            var lastCounterpartFadeEvent = lastCounterpartEvent?.PortraitChangeBeat > state.StartBeat ? counterpartEvents.Skip(1).FirstOrDefault() : null;
+            
+            PortraitEventsToPreload = new[] { lastHeroEvent, lastCounterpartEvent, lastHeroFadeEvent, lastCounterpartFadeEvent }.Where(e => e != null).ToArray()!;
         }
-                
-        // list all events which happen before the start beat
-        var portraitEvents = CustomEvent.Enumerate<SetPortraitEvent>(Instance._beatmaps).ToList();
-        var heroEvents = portraitEvents.Where(e => e.IsHero && e.Beat <= StartBeat).OrderByDescending(e => e.Beat).ToList();
-        var counterpartEvents = portraitEvents.Where(e => !e.IsHero && e.Beat <= StartBeat).OrderByDescending(e => e.Beat).ToList();
-
-        // we need to simulate the last event to set the correct portrait
-        var lastHeroEvent = heroEvents.FirstOrDefault();
-        var lastCounterpartEvent = counterpartEvents.FirstOrDefault();
-        
-        // if the last event is mid-fade, we also need to preload the event before it
-        var lastHeroFadeEvent = lastHeroEvent?.PortraitChangeBeat > StartBeat ? heroEvents.Skip(1).FirstOrDefault() : null;
-        var lastCounterpartFadeEvent = lastCounterpartEvent?.PortraitChangeBeat > StartBeat ? counterpartEvents.Skip(1).FirstOrDefault() : null;
-
-        var portraitEventsToPreload = new[] { lastHeroEvent, lastCounterpartEvent, lastHeroFadeEvent, lastCounterpartFadeEvent };
-
-        var tasks = new List<Task>();
-        foreach(var setPortraitEvent in portraitEvents) {
-            var beat = setPortraitEvent.Beat;
-            if((StartBeat < beat && beat < EndBeat) || portraitEventsToPreload.Contains(setPortraitEvent)) {
-                var animator = setPortraitEvent.IsHero ? Hero : Counterpart;
-                animator.PreloadPortrait(BasePortraitPath, setPortraitEvent.Name).Pipe(tasks.Add);
-            }
-        }
-        
-        // color and vfx events are cheap enough to just process them all
-        // in fact, we need to process all vfx events since they can combine nontrivially
-        var colorEvents = CustomEvent.Enumerate<SetPortraitColorEvent>(Instance._beatmaps);
-        var vfxEvents = CustomEvent.Enumerate<SetVfxEvent>(Instance._beatmaps);
-        var eventsToProcess = colorEvents.Cast<CustomEvent>().Concat(vfxEvents);
-        foreach(var customEvent in eventsToProcess) {
-            if(StartBeat >= customEvent.Beat) {
-                Beatmap.ProcessBeatEvent(customEvent);
-            }
-        }
-
-        foreach(var task in tasks) {
-            await task; // finish preloading all portraits
-        }
-
-        lastHeroFadeEvent?.Pipe(Beatmap.ProcessBeatEvent);
-        lastCounterpartFadeEvent?.Pipe(Beatmap.ProcessBeatEvent);
-        lastHeroEvent?.Pipe(Beatmap.ProcessBeatEvent);
-        lastCounterpartEvent?.Pipe(Beatmap.ProcessBeatEvent);
-
-        Hero.UpdateTransitions(StartBeat);
-        Counterpart.UpdateTransitions(StartBeat);
-        Transition.Update(StartBeat);
+        return PortraitEventsToPreload.Contains(setPortraitEvent);
     }
 }
 
@@ -302,24 +258,7 @@ public static class StagePatch {
             }
         }
     }
-
-    [HarmonyPatch(nameof(RRStageController.StageInitialize))]
-    [HarmonyPostfix]
-    public static void StageInitialize(RRStageController __instance, ref IEnumerator __result) {
-        // since the original function is a coroutine, we need to wrap the output to properly postfix
-        var original = __result;
-        __result = Wrapper();
-
-        IEnumerator Wrapper() {
-            CustomEvent.FlagAllForProcessing(__instance._beatmaps);
-
-            yield return original;
-
-            var state = StageState.Of(__instance);
-            yield return AsyncUtils.WaitForTask(state.Preload());
-        }
-    }
-
+    
     [HarmonyPatch(nameof(RRStageController.Update))]
     [HarmonyPostfix]
     public static void Update(RRStageController __instance) {
@@ -329,7 +268,7 @@ public static class StagePatch {
             state.Transition.Update(beat);
         }
     }
-
+    
     [HarmonyPatch(nameof(RRStageController.InitBackgroundVideo))]
     [HarmonyPostfix]
     public static void InitBackgroundVideo(RRStageController __instance, ref IEnumerator __result) {

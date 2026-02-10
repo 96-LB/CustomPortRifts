@@ -26,7 +26,7 @@ public static class PortraitPatch {
         }
 
         // fill in any missing poses with copies of existing poses
-        var fallback = animations.TryGetValue(NORM, out var norm) ? norm : 
+        var fallback = animations.TryGetValue(NORM, out var norm) ? norm :
             animations.TryGetValue(WELL, out var well) ? well :
             animations.TryGetValue(POOR, out var poor) ? poor :
             animations[VIBE];

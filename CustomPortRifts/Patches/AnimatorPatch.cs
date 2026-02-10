@@ -1,4 +1,5 @@
 ﻿using HarmonyLib;
+using RiftOfTheNecroManager;
 using Shared.Utilities;
 using System.Collections.Generic;
 using System.Linq;

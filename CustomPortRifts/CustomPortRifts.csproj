@@ -4,9 +4,9 @@
     <TargetFramework>netstandard2.1</TargetFramework>
     <AssemblyName>CustomPortRifts</AssemblyName>
     <Product>Custom PortRifts</Product>
-    <Version>1.2.1</Version>
+    <Version>2.0.0-beta</Version>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
-	<Nullable>enable</Nullable>
+    <Nullable>enable</Nullable>
     <LangVersion>latest</LangVersion>
     <RestoreAdditionalProjectSources>
       https://api.nuget.org/v3/index.json;
@@ -45,6 +45,9 @@
     </Reference>
     <Reference Include="Coffee.SoftMaskForUGUI">
       <HintPath>lib\Coffee.SoftMaskForUGUI.dll</HintPath>
+    </Reference>
+    <Reference Include="RiftOfTheNecroManager">
+      <HintPath>..\..\ShadowsReanimated\ShadowsReanimated\lib\RiftOfTheNecroManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
       <HintPath>lib\Unity.Mathematics.dll</HintPath>

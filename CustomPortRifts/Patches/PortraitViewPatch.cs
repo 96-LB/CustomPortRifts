@@ -1,6 +1,7 @@
 ﻿using CustomPortRifts.Transitions;
 using HarmonyLib;
 using RhythmRift;
+using RiftOfTheNecroManager;
 using Shared.RhythmEngine;
 using Shared.TrackData;
 using Shared.Utilities;
@@ -42,23 +43,23 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
 
     public async Task<bool> PreloadPortrait(string baseDir, string name) {
         if(!IsPortraitSwitchingEnabled) {
-            Plugin.Log.LogInfo($"Skipping preload of portrait '{name}' because portrait switching is disabled.");
+            Log.Info($"Skipping preload of portrait '{name}' because portrait switching is disabled.");
             return false;
         }
 
         if(Animator == null) {
-            Plugin.Log.LogWarning($"Failed to preload portrait '{name}' because no custom portrait animator exists.");
+            Log.Warning($"Failed to preload portrait '{name}' because no custom portrait animator exists.");
             return false;
         }
 
         if(Portraits.ContainsKey(name)) {
-            Plugin.Log.LogInfo($"Portrait '{name}' is already being preloaded.");
+            Log.Info($"Portrait '{name}' is already being preloaded.");
             return false;
         }
 
         var portrait = LocalTrackPortrait.TryLoadCustomPortrait(Path.Combine(baseDir, name), "CustomCounterpart");
         if(portrait == null) {
-            Plugin.Log.LogWarning($"Failed to load portrait '{name}' from '{baseDir}'.");
+            Log.Warning($"Failed to load portrait '{name}' from '{baseDir}'.");
             return false;
         }
 
@@ -69,36 +70,36 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         };
 
         Portraits[name] = new([], portrait); // reserve spot
-        Plugin.Log.LogMessage($"Preloading portrait '{name}'...");
+        Log.Message($"Preloading portrait '{name}'...");
         var animations = await Animator.PreloadPortrait(options);
         if(animations == null) {
-            Plugin.Log.LogWarning($"Failed to preload animations for portrait '{name}'.");
+            Log.Warning($"Failed to preload animations for portrait '{name}'.");
             return false;
         }
 
         Portraits[name] = new(animations, portrait);
 
-        Plugin.Log.LogMessage($"Finished preloading portrait '{name}'.");
+        Log.Message($"Finished preloading portrait '{name}'.");
         return true;
     }
 
     public bool SetPortrait(string name, float startBeat, float duration) {
         if(!IsPortraitSwitchingEnabled) {
-            Plugin.Log.LogInfo($"Skipping portrait change to '{name}' because portrait switching is disabled.");
+            Log.Info($"Skipping portrait change to '{name}' because portrait switching is disabled.");
             return false;
         }
 
         if(Animator == null) {
-            Plugin.Log.LogWarning($"Failed to set portrait '{name}' because no custom portrait animator exists.");
+            Log.Warning($"Failed to set portrait '{name}' because no custom portrait animator exists.");
             return false;
         }
 
         if(!Portraits.TryGetValue(name, out var portrait)) {
-            Plugin.Log.LogWarning($"Portrait '{name}' not found.");
+            Log.Warning($"Portrait '{name}' not found.");
             return false;
         }
 
-        Plugin.Log.LogMessage($"Setting portrait to '{name}' at beat {startBeat} with a transition duration of {duration} beats.");
+        Log.Message($"Setting portrait to '{name}' at beat {startBeat} with a transition duration of {duration} beats.");
         FadeTransition.StartTransition(new FadeTransition(startBeat, duration), Animator.UpdateFade);
         PortraitTransition.StartTransition(new StaticTransition<PortraitData>(startBeat + duration / 2, portrait), UpdatePortrait);
 
@@ -107,16 +108,16 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
     
     public bool SetPortraitColor(Color color, float startBeat, float duration) {
         if(!IsPortraitSwitchingEnabled) {
-            Plugin.Log.LogInfo($"Skipping portrait color change to {color} because portrait switching is disabled.");
+            Log.Info($"Skipping portrait color change to {color} because portrait switching is disabled.");
             return false;
         }
 
         if(Animator == null && !BackupImage) {
-            Plugin.Log.LogWarning($"Failed to set portrait color to {color} because no custom portrait animator exists and the portrait image could not be found.");
+            Log.Warning($"Failed to set portrait color to {color} because no custom portrait animator exists and the portrait image could not be found.");
             return false;
         }
 
-        Plugin.Log.LogMessage($"Setting portrait color to {color} at beat {startBeat} with a transition duration of {duration} beats.");
+        Log.Message($"Setting portrait color to {color} at beat {startBeat} with a transition duration of {duration} beats.");
         var startColor = ColorTransition.IsTransitioning ? ColorTransition.EndState : (Animator?.Color ?? BackupColor);
         ColorTransition.StartTransition(new ColorTransition(startColor, color, startBeat, duration), UpdateColor);
         return true;
@@ -126,8 +127,12 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         if(Animator == null) {
             return;
         }
+        Log.Message(Instance);
+        Log.Message(Instance._characterMask);
+        Log.Message(Instance._characterMaskImage);
         Instance._hasVibePowerAnimation = Animator.HasVibe;
-        Instance._characterMaskImage.enabled = Instance._characterMask.enabled = !portrait.Metadata.DisableMask;
+        Instance._characterMask?.Pipe(x => x.enabled = !portrait.Metadata.DisableMask);
+        Instance._characterMaskImage?.Pipe(x => x.enabled = !portrait.Metadata.DisableMask);
         Animator.UpdateOffset(new((float)portrait.Metadata.OffsetX, (float)portrait.Metadata.OffsetY));
         Animator.UpdatePortrait(portrait.Animations);
     }

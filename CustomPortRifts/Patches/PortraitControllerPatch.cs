@@ -1,5 +1,6 @@
 ﻿using HarmonyLib;
 using RhythmRift;
+using RiftOfTheNecroManager;
 using Shared.TrackData;
 using Shared.Utilities;
 using System.Collections;
@@ -37,9 +38,9 @@ public static class PortraitControllerPatch {
             return;
         }
 
-        var basePath = Path.Combine(Path.GetDirectoryName(Application.dataPath), Plugin.NAME);
+        var basePath = PluginData.DataPath;
         if(!FileUtils.IsDirectory(basePath)) {
-            Plugin.Log.LogInfo($"No custom portrait directory found. The folder should be named '{Plugin.NAME}' and located in the same directory as the game executable. No custom portraits will be loaded.");
+            Log.Info($"No custom portrait directory found. The folder should be named '{PluginData.Name}' and located in the same directory as the game executable. No custom portraits will be loaded.");
             return;
         }
 
@@ -50,22 +51,22 @@ public static class PortraitControllerPatch {
 
         // load the track-specific override
         if(Config.General.TrackOverrides) {
-            Plugin.Log.LogInfo($"Loading custom {dirName.ToLowerInvariant()} portrait...");
+            Log.Info($"Loading custom {dirName.ToLowerInvariant()} portrait...");
 
             var trackPath = Path.Combine(basePath, "Tracks");
             if(!FileUtils.IsDirectory(trackPath)) {
-                Plugin.Log.LogInfo($"No track override directory found. The folder should be named 'Tracks' and located in '{Plugin.NAME}'. No track overrides will be applied.");
+                Log.Info($"No track override directory found. The folder should be named 'Tracks' and located in '{PluginData.Name}'. No track overrides will be applied.");
             } else {
                 trackPath = Path.Combine(trackPath, state.LevelId, dirName);
                 if(!FileUtils.IsDirectory(trackPath)) {
-                    Plugin.Log.LogInfo($"No track directory found using level ID. The folder should be named '{state.LevelId}/{dirName}' and located in '{Plugin.NAME}/Tracks'. No track overrides will be applied.");
+                    Log.Info($"No track directory found using level ID. The folder should be named '{state.LevelId}/{dirName}' and located in '{PluginData.Name}/Tracks'. No track overrides will be applied.");
                 } else {
                     var trackPortrait = LocalTrackPortrait.TryLoadCustomPortrait(trackPath, portraitType);
                     if(trackPortrait == null) {
-                        Plugin.Log.LogWarning($"Failed to load custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                        Log.Warning($"Failed to load custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
                     } else {
                         portrait = trackPortrait;
-                        Plugin.Log.LogInfo($"Loaded custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
+                        Log.Info($"Loaded custom {dirName.ToLowerInvariant()} portrait for {state.LevelId} from track override.");
                     }
                 }
             }
@@ -74,22 +75,22 @@ public static class PortraitControllerPatch {
         // load the character-specific override
         if(Config.General.CharacterOverrides) {
             var id = portrait?.PortraitId ?? characterId;
-            Plugin.Log.LogInfo($"Loading custom portrait for {id}...");
+            Log.Info($"Loading custom portrait for {id}...");
 
             var charPath = Path.Combine(basePath, "Characters");
             if(!FileUtils.IsDirectory(charPath)) {
-                Plugin.Log.LogInfo($"No character override directory found. The folder should be named 'Characters' and located in '{Plugin.NAME}'. No character overrides will be applied.");
+                Log.Info($"No character override directory found. The folder should be named 'Characters' and located in '{PluginData.Name}'. No character overrides will be applied.");
             } else {
                 charPath = Path.Combine(charPath, id);
                 if(!FileUtils.IsDirectory(charPath)) {
-                    Plugin.Log.LogInfo($"No character directory found using character ID. The folder should be named '{id}' and located in '{Plugin.NAME}/Characters'. No character overrides will be applied.");
+                    Log.Info($"No character directory found using character ID. The folder should be named '{id}' and located in '{PluginData.Name}/Characters'. No character overrides will be applied.");
                 } else {
                     var charPortrait = LocalTrackPortrait.TryLoadCustomPortrait(charPath, portraitType);
                     if(charPortrait == null) {
-                        Plugin.Log.LogWarning($"Failed to load custom portrait for {id} from character override.");
+                        Log.Warning($"Failed to load custom portrait for {id} from character override.");
                     } else {
                         portrait = charPortrait;
-                        Plugin.Log.LogInfo($"Loaded custom portrait for {id} from character override.");
+                        Log.Info($"Loaded custom portrait for {id} from character override.");
                     }
                 }
             }

@@ -5,7 +5,7 @@ namespace CustomPortRifts;
 
 
 [BepInPlugin(GUID, NAME, VERSION)]
-[NecroManagerInfo(menuNameOverride: "Custom PortRifts", isBeta: true)]
+[NecroManagerInfo(menuNameOverride: "Custom PortRifts")]
 public class Plugin : RiftPlugin {
     public const string GUID = "com.lalabuff.necrodancer.customportrifts";
     public const string NAME = "CustomPortRifts";

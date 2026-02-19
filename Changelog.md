@@ -1,24 +1,25 @@
 # Changelog
 
-## 🧪 v2.0.0-beta - 10 February 2026
+## v2.0.0 - 19 February 2026
 ⚠️ **This release contains breaking changes.**
 - Removed the hardcoded version check in favor of an automated version control system.
 - ⚠️ Added Rift of the NecroManager as a dependency.
+- Fixed a bug which caused portrait events to not work properly when using the CustomCounterpartNative portrait.
 
 ## v1.2.1 - 10 December 2025
 Updated game version. Compatible with Patch 1.11.1.
 
 ## v1.2.0 - 20 November 2025
-- Fixes a bug where custom portraits which used manual scaling on some frames could display incorrectly.
-- Fixes a bug where VFX and portrait color events would trigger in practice mode even when Beastmaster was active.
+- Fixed a bug where custom portraits which used manual scaling on some frames could display incorrectly.
+- Fixed a bug where VFX and portrait color events would trigger in practice mode even when Beastmaster was active.
 
 Compatible with Patch 1.10.0.
 
 ## v1.1.0 - 14 November 2025
 ⚠️ **This release contains breaking changes.**
-- Adds support for beatmap events to change portraits, portrait color, or background VFX in the middle of a custom chart.
-- Significantly decreases memory usage and load times of all images loaded from the filesystem by the game (custom portraits, particles, and album arts).
-- Fixes a bug where background videos would not display in practice mode when the Beastmaster was disabed.
+- Added support for beatmap events to change portraits, portrait color, or background VFX in the middle of a custom chart.
+- Significantly decreased memory usage and load times of all images loaded from the filesystem by the game (custom portraits, particles, and album arts).
+- Fixed a bug where background videos would not display in practice mode when the Beastmaster was disabed.
 - ⚠️ Changed the 'Disable Version Check' configuration option to be a checkbox toggle.
 
 Compatible with Patch 1.10.0.
@@ -34,24 +35,24 @@ Updated game version. Compatible with Patch 1.7.0.
 
 ## v1.0.0 - 7 July 2025
 ⚠️ **This release contains breaking changes.**
-- ⚠️ Removes the mod's old functionality entirely in light of custom portraits now being supported by the base game.
-- Adds support for global overrides of portraits in base game levels, either on a per-character or per-track basis
-- Adds reskin toggles for Cadence (Crypt costume) and the NecroDancer (Crypt and Burger costumes).
-- Adds toggles to prevent Beastmaster, Coda, and Shopkeeper from overriding portraits in their respective extra modes.
-- Adds a version check which causes the mod to be automatically disabled when the game updates.
+- ⚠️ Removed the mod's old functionality entirely in light of custom portraits now being supported by the base game.
+- Added support for global overrides of portraits in base game levels, either on a per-character or per-track basis
+- Added reskin toggles for Cadence (Crypt costume) and the NecroDancer (Crypt and Burger costumes).
+- Added toggles to prevent Beastmaster, Coda, and Shopkeeper from overriding portraits in their respective extra modes.
+- Added a version check which causes the mod to be automatically disabled when the game updates.
 
 Updated game version. Compatible with Patch 1.6.0.
 
 ## v0.2.2 - 22 March 2025
-- Disables the underlying portrait animators, which was sometimes causing custom hero portraits to have a jittery offset.
-- Removes stray white pixels appearing along the border of custom sprites.
+- Disabled the underlying portrait animators, which was sometimes causing custom hero portraits to have a jittery offset.
+- Removed stray white pixels appearing along the border of custom sprites.
 
 ## v0.2.1 - 21 March 2025
-- Fixes a bug which caused portraits to sometimes not properly display on the first attempt of the level if they took a long time to load.
+- Fixed a bug which caused portraits to sometimes not properly display on the first attempt of the level if they took a long time to load.
 
 ## v0.2.0 - 21 March 2025
 ⚠️ **This release contains breaking changes.**
-- Adds support for custom hero portraits to replace Cadence on the left side. Hero portraits are loaded from `CustomPortRifts/Hero` and follow the same conventions as counterpart portraits.
+- Added support for custom hero portraits to replace Cadence on the left side. Hero portraits are loaded from `CustomPortRifts/Hero` and follow the same conventions as counterpart portraits.
 - ⚠️ Counterpart portraits are now loaded from `CustomPortRifts/Counterpart` instead of `CustomPortRifts`.
 - ⚠️ To maintain consistency, counterpart portraits are no longer shifted upwards 100 pixels.
 

@@ -127,9 +127,6 @@ public class PortraitViewState : State<RRPortraitView, PortraitViewState> {
         if(Animator == null) {
             return;
         }
-        Log.Message(Instance);
-        Log.Message(Instance._characterMask);
-        Log.Message(Instance._characterMaskImage);
         Instance._hasVibePowerAnimation = Animator.HasVibe;
         Instance._characterMask?.Pipe(x => x.enabled = !portrait.Metadata.DisableMask);
         Instance._characterMaskImage?.Pipe(x => x.enabled = !portrait.Metadata.DisableMask);

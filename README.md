@@ -228,7 +228,7 @@ There are a few DLC characters you can also override:
 - Cherry (Peppino)
 - CadenceCrypt (10th Anniversary Cadence)
 
-> [!INFO]
+> [!IMPORTANT]
 > Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits. Use track overrides instead, and take a look at the following section for further tips.
 
 ### Combining Track and Character Overrides

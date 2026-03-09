@@ -231,6 +231,9 @@ There are a few DLC characters you can also override:
 > [!IMPORTANT]
 > Due to the changes in how the game handled DLC portraits after the 10th Anniversary update, it is **not possible** to use character overrides to replace any other portraits. Use track overrides instead, and take a look at the following section for further tips.
 
+> [!TIP]
+> `Cadence` and `Cadence_Supporter` are two separate characters. If you're using the Supporter upgrade, this means you can easily switch between two different heroes using the settings menu. If your hero override isn't working, make sure you overrode the version of Cadence you currently have selected!
+
 ### Combining Track and Character Overrides
 
 If you want to use the same character in many track (or character) overrides, you can use the character override feature to avoid duplicating your image files and wasting storage space. In order to take advantage of this, make sure you have both the 'Track Override' and 'Character Override' configuration options turned on (this is the default). Then, anywhere you can add a portrait, instead create a file called `portrait.json` with the following contents:

@@ -15,33 +15,29 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
     public bool HasVibe => Instance.IsValidAnimation("VibePower");
     public Image? Image => Instance._targetImage;
     public Vector2 Position {
-        get => Instance._targetImage != null ? Instance._targetImage.rectTransform.anchoredPosition : Vector2.zero;
-        set {
-            if(Instance._targetImage != null) {
-                Instance._targetImage.rectTransform.anchoredPosition = value;
-            }
-        }
+        get => Instance._targetImage?.rectTransform.anchoredPosition ?? Vector2.zero;
+        set => Instance._targetImage?.rectTransform.anchoredPosition = value;
     }
-
+    
     public Vector2 Offset { get; private set; } = Vector2.zero;
     public Vector2 OriginalSize { get; private set; } = Vector2.zero;
-
+    
     public Color Color { get; private set; } = Color.white;
-
+    
     public float Opacity { get; private set; } = 1f;
-
+    
     public async Task<Dictionary<string, AnimationType>?> PreloadPortrait(Options options) {
         var temp = Instance._animations;
         Instance.Configure(options);
         var animations = Instance._animations;
         Instance._animations = temp;
-
+        
         foreach(var animation in animations.Values) {
             foreach(var frame in animation.Frames) {
                 await frame.SpriteTask;
             }
         }
-
+        
         return animations;
     }
     
@@ -49,30 +45,28 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         Color = color;
         RefreshColor();
     }
-
+    
     public void UpdateFade(float fade) {
         Opacity = 1 - fade;
         RefreshColor();
     }
-
+    
     public void RefreshColor() {
-        if(Image != null) {
-            Image.color = Color.AlphaMultiplied(Opacity);
-        }
+        Image?.color = Color.AlphaMultiplied(Opacity);
     }
-
+    
     public void UpdateOffset(Vector2 offset, bool update = true) {
-        if(update && Image != null) {
-            Image.rectTransform.anchoredPosition += offset - Offset;
+        if(update) {
+            Image?.rectTransform.anchoredPosition += offset - Offset;
         }
         Offset = offset;
     }
-
+    
     public void UpdatePortrait(Dictionary<string, AnimationType> animations) {
         Instance._animations = animations;
         Instance.Refresh();
     }
-
+    
     public void RefreshOffset() {
         if(
             Image == null
@@ -82,38 +76,38 @@ public class AnimatorState : State<DataDrivenAnimator, AnimatorState> {
         ) {
             return;
         }
-
+        
         var num = 0.0;
         AnimationFrame? animationFrame = null;
         foreach(var frame in frames.Frames) {
             if(frame.Sprite != null) {
                 animationFrame = frame;
             }
-
+            
             num += frame.Duration;
             if(num > Instance.TargetTime) {
                 break;
             }
         }
-
+        
         var sprite = animationFrame?.Sprite;
         if(sprite == null) {
             return;
         }
-
+        
         if(OriginalSize == Vector2.zero) {
             OriginalSize = Image.rectTransform.sizeDelta;
         }
-
+        
         if(animationFrame == null) {
             return;
         }
-
+        
         if(animationFrame.Offset.HasValue) {
             var offset = animationFrame.Offset.Value - Position + Offset;
             UpdateOffset(offset);
         }
-
+        
         if(frames.Frames.All(x => !x.Scale.HasValue)) {
             Image.rectTransform.sizeDelta = OriginalSize;
         }

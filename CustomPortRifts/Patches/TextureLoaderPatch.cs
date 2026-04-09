@@ -22,7 +22,7 @@ public static class TextureLoaderPatch {
         
         async Task<TextureLoader.LoadedImage> Wrapper() {
             var tcs = new TaskCompletionSource<TextureLoader.LoadedImage>();
-            __instance._cache.Add(url, tcs.Task);
+            __instance._cache.Add(url, new(tcs.Task));
             
             using UnityWebRequest webRequest = UnityWebRequestTexture.GetTexture(url, nonReadable: true);
             UnityWebRequestAsyncOperation response = webRequest.SendWebRequest();

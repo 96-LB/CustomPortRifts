@@ -5,7 +5,7 @@ This project is a mod for Rift of the NecroDancer which adds support for customi
 > [!WARNING]
 > BepInEx mods are <ins>**not officially supported**</ins> by Rift of the NecroDancer. If you encounter any issues with this mod, please open an issue on this GitHub repository, and do not submit reports to Brace Yourself Games!
 
-The current version is <ins>**v2.0.0**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
+The current version is <ins>**v2.1.0**</ins>. Downloads for the latest version can be found [here](https://github.com/96-LB/CustomPortRifts/releases/latest). The changelog can be found [here](Changelog.md).
 
 ## Installation
 

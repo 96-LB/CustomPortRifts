@@ -1,5 +1,8 @@
 # Changelog
 
+## v2.1.0 - 9 April 2026
+- Updated code to be compatible with the Patch 1.14.0.
+
 ## v2.0.0 - 19 February 2026
 ⚠️ **This release contains breaking changes.**
 - Removed the hardcoded version check in favor of an automated version control system.

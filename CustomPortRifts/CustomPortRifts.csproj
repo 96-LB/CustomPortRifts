@@ -47,7 +47,7 @@
       <HintPath>lib\Coffee.SoftMaskForUGUI.dll</HintPath>
     </Reference>
     <Reference Include="RiftOfTheNecroManager">
-      <HintPath>..\..\ShadowsReanimated\ShadowsReanimated\lib\RiftOfTheNecroManager.dll</HintPath>
+      <HintPath>lib\RiftOfTheNecroManager.dll</HintPath>
     </Reference>
     <Reference Include="Unity.Mathematics">
       <HintPath>lib\Unity.Mathematics.dll</HintPath>

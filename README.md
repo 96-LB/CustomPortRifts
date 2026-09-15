@@ -222,6 +222,24 @@ Here's a full list of track IDs. Your folders should use the name in the second 
 | ------------- | ------------- |
 | Sought (Among Us - Seek Remix) | DLCYuzu01 |
 
+| Omega Strikers DLC | Track ID |
+| ------------- | ------------- |
+| Curtain Call (Finii's Theme) | DLCLychee03 |
+| Go Strike! (Juliette's Theme) | DLCLychee04 |
+| Methods of Madness (Kazan's Theme) | DLCLychee05 |
+| The Girl Who Glitched (Ai.Mi's Theme) | DLCLychee01 |
+| Thousand Absolutes (Octavia's Theme) | DLCLychee02 |
+
+| Hatsune Miku DLC Volume 2 | Track ID |
+| ------------- | ------------- |
+| Artifact | DLCWatermelon04 |
+| CONNECT-COMMUNE | DLCWatermelon03 |
+| Hello Builder | DLCWatermelon05 |
+| Highlight | DLCWatermelon02 |
+| My One and Oni | DLCWatermelon01 |
+| Wonder Style | DLCWatermelon06 |
+
+
 To override the portraits for a workshop map, first find its Steam ID. You can identify this from the link to the workshop page (for example, the Tetoris map at [https://steamcommunity.com/sharedfiles/filedetails/?id=**3422450367**](https://steamcommunity.com/sharedfiles/filedetails/?id=3422450367) has ID `3422450367`). Then, prepend `ws` to it to get the name of the folder you should create (for example, Tetoris would use the folder `CustomPortRifts/Tracks/ws3422450367` for track overrides).
 
 ### Character Overrides

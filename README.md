@@ -300,18 +300,18 @@ CustomPortRifts/
   Characters/
     Teto/
         ...
-    Tracks/
-      DLCKiwi01/
-        portrait.json    <=  {"PortraitID": "Teto"}
-      DLCKiwi02/
-        portrait.json
-      DLCKiwi03/
-        portrait.json
-      DLCKiwi04/
-        portrait.json
-      DLCKiwi05/
-        portrait.json
-      DLCKiwi06/
-        portrait.json
+  Tracks/
+    DLCKiwi01/
+      portrait.json    <=  {"PortraitID": "Teto"}
+    DLCKiwi02/
+      portrait.json
+    DLCKiwi03/
+      portrait.json
+    DLCKiwi04/
+      portrait.json
+    DLCKiwi05/
+      portrait.json
+    DLCKiwi06/
+      portrait.json
 ```
 This allows you to replace Hatsune Miku with Kasane Teto in all of the Miku DLC tracks without needing six copies of Teto's portrait on your hard drive.

@@ -1,5 +1,9 @@
 # Changelog
 
+## 🧪 v2.2.0-beta - 8 October 2026
+⚠️ **WARNING:** This release is not compatible with the latest stable version of Rift of the NecroDancer!
+- Updated code to be compatible with the choreomaps beta on the `publicbetatesting` branch.
+
 ## v2.1.0 - 9 April 2026
 - Updated code to be compatible with the Patch 1.14.0.
 

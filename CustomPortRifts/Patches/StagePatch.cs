@@ -262,9 +262,9 @@ public static class StagePatch {
     [HarmonyPatch(nameof(RRStageController.Update))]
     [HarmonyPostfix]
     public static void Update(RRStageController __instance) {
-        if(__instance.BeatmapPlayer.IsPlaying()) {
+        if(__instance.TimelineMapPlayer.IsPlaying()) {
             var state = StageState.Of(__instance);
-            var beat = __instance.BeatmapPlayer.FmodTimeCapsule.TrueBeatNumber - 1;
+            var beat = __instance.TimelineMapPlayer.FmodTimeCapsule.TrueBeatNumber - 1;
             state.Transition.Update(beat);
         }
     }
